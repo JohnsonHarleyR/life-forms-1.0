@@ -130,7 +130,7 @@ const drawPlant = (canvas, plant) => {
 
 // object drawing
 
-export const drawObjects = (canvas, objects) => {
+export const drawAllObjects = (canvas, objects) => {
     objects.forEach((o) => {
         drawObject(canvas, o);
     });
