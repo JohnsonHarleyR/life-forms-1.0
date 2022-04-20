@@ -8,13 +8,13 @@ import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants } from 
 
 // Creating and generating functions
 
-export const createObjects = () => {
+export const createObjects = () => { // TODO create object class so that this will work
     let objs = [];
-    objs.push(new NewObject(ObjectType.WALL, "black", 65, 50, 15, 200));
-    objs.push(new NewObject(ObjectType.WALL, "black", 160, 140, 80, 20));
-    objs.push(new NewObject(ObjectType.WALL, "black", 320, 50, 15, 15));
-    objs.push(new NewObject(ObjectType.WALL, "black", 320, 95, 15, 110));
-    objs.push(new NewObject(ObjectType.WALL, "black", 320, 235, 15, 15));
+    // objs.push(new NewObject(ObjectType.WALL, "black", 65, 50, 15, 200));
+    // objs.push(new NewObject(ObjectType.WALL, "black", 160, 140, 80, 20));
+    // objs.push(new NewObject(ObjectType.WALL, "black", 320, 50, 15, 15));
+    // objs.push(new NewObject(ObjectType.WALL, "black", 320, 95, 15, 110));
+    // objs.push(new NewObject(ObjectType.WALL, "black", 320, 235, 15, 15));
     return objs;
 };
 
@@ -30,11 +30,11 @@ export const createCreatures = () => {
     return array;
 }
 
-const generateCreature = () => { // TODO
+const generateCreature = () => { // TODO Be sure to include an id too - make it easier to pull out
     
 }
 
-export const generatePlant = () => { // TODO
+export const generatePlant = () => { // TODO Be sure to include an id too - make it easier to pull out
 
 }
 
