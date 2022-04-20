@@ -1,4 +1,5 @@
 import React, {useRef, useContext} from 'react';
+import { LifeContext } from '../../../Context/LifeContext';
 
 const Controls = () => {
 
@@ -7,12 +8,15 @@ const Controls = () => {
     const targetYRef = useRef();
     const changeTargetRef = useRef();
 
+    const {creatures, chosenCreature,
+        setCreatures, setChosenCreatures} = useContext(LifeContext);
+
     const changeMoveMode = () => {
 
     }
 
     const changeTarget = () => {
-        
+
     }
 
     return (
