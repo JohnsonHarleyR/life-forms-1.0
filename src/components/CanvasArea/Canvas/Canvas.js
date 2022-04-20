@@ -27,8 +27,9 @@ const Canvas = () => {
         canvasRef.current.height = CanvasInfo.HEIGHT;
         let objs = createObjects();
         setObjects(objs);
-        setCreatures(createCreatures(objs, plants, shelters));
-        renderCanvas(canvasRef, creatures, plants, objects);
+        let newCreatures = createCreatures(objs, plants, shelters, setCreatures, setPlants, setShelters);
+        setCreatures(newCreatures);
+        renderCanvas(canvasRef, newCreatures, plants, objs);
         //setInitialTargetRefValues();
     }, []);
 
@@ -46,7 +47,7 @@ const Canvas = () => {
     // TODO refactor the below part after creating creature
     useEffect(() => {
         setIntervals(intervals + 1);
-        if (time && creatures) {
+        if (time && creatures && creatures.length !== 0) {
             let creaturesCopy = [...creatures];
             creaturesCopy.forEach(c => {
                 let result = c.move(objects, plants, creatures, CanvasInfo);

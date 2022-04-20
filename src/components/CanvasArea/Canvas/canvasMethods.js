@@ -79,7 +79,7 @@ export const renderCanvas = (canvasRef, creatures, plants, objects) => {
     drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
 };
 
-export const setCreatureResult = (creature, result, setPlants) => {
+export const setCreatureResult = (creature, result) => {
     creature.position = result.position;
     creature.speed = result.speed;
     creature.direction = result.direction;
@@ -94,8 +94,6 @@ export const setCreatureResult = (creature, result, setPlants) => {
     creature.sideOfCollision = result.sideOfCollison;
     creature.previousSide = result.previousSide;
     creature.newDirection = result.newDirection;
-    creature.setPlants = setPlants;
-    creature.setCreatures = null;
 }
 
 // testing functions

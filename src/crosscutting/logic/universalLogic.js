@@ -34,6 +34,15 @@ export const removeItemFromArray = (itemId, array, setFunction) => {
 
 // position and collision methods
 
+export const getPositionDifference = (startPosition, endPosition) => {
+    let xDifference = endPosition.x - startPosition.x;
+    let yDifference = endPosition.y - startPosition.y;
+    return {
+        xDifference: xDifference,
+        yDifference: yDifference
+    };
+};
+
 export const getCenterPosition = (xStart, yStart, width, height) => {
     let halfWidth = width / 2;
     let halfHeight = height / 2;

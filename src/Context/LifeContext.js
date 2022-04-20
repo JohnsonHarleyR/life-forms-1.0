@@ -17,9 +17,9 @@ const LifeProvider = ({children}) => {
         if (creatures) {
             let largest = 0;
             creatures.forEach(c => {
-                // if (c.size > largest) {
-                //     largest = c.size;
-                // }
+                if (c.size > largest) {
+                    largest = c.size;
+                }
             });
             setLargestCreatureSize(largest);
         }

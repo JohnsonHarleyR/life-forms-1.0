@@ -25,8 +25,8 @@ const drawXMark = (canvas, color, lineWidth, size, position) => {
 
     let leftXStart = position.x - halfX;
     let leftYStart = position.y - halfY;
-    let leftXEnd = leftXStart + XMark.WIDTH;
-    let leftYEnd = leftYStart + XMark.HEIGHT;
+    let leftXEnd = leftXStart + size;
+    let leftYEnd = leftYStart + size;
 
     let rightXStart = leftXEnd;
     let rightYStart = leftYStart;
@@ -72,6 +72,11 @@ export const fillBackground = (canvas, color) => {
 
 export const drawAllCreatures = (canvas, canvasInfo, creatures) => {
     if (creatures) {
+        // draw creature lines if they're supposed to show them
+        creatures.forEach(c => {
+            drawCreatureLines(canvas, canvasInfo, c);
+        })
+        // then draw creatures
         creatures.forEach(c => {
             drawCreature(canvas, canvasInfo, c);
         })
@@ -79,24 +84,55 @@ export const drawAllCreatures = (canvas, canvasInfo, creatures) => {
 }
 
 const drawCreature = (canvas, canvasInfo, creature) => { // TODO
-    //console.log('drawCreature');
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    let halfSize = creature.size / 2;
+    ctx.fillStyle = creature.color;
+    ctx.fillRect(
+      creature.position.x - halfSize,
+      creature.position.y - halfSize,
+      creature.size,
+      creature.size
+    );
+    ctx.closePath();
 }
 
-const drawPathLine = ({ canvas, xStart, xEnd, yStart, yEnd }) => {
+const drawCreatureLines = (canvas, canvasInfo, creature) => {
+    // draw sight box and also line info and mark if the creature says to
+    if (creature.showLines) {
+        drawSightBox(canvas, canvasInfo, creature);
+        if (creature.position && creature.targetPosition) {
+            if (creature.position.x !== creature.targetPosition.x && 
+                creature.position.y !== creature.targetPosition.y) {
+                    drawPathLine(canvas, creature);
+                }
+            drawTargetMark(canvas, creature.targetPosition);
+        }
+    }
+}
+
+const drawPathLine = (canvas, creature) => {
+    let xStart = creature.position.x;
+    let yStart = creature.position.x;
+    let xEnd = creature.targetPosition.x;
+    let yEnd = creature.targetPosition.y;
     drawLine(canvas, PathLine.COLOR, PathLine.LINE_WIDTH, xStart, xEnd, yStart, yEnd);
 };
+// const drawPathLine = ({ canvas, xStart, xEnd, yStart, yEnd }) => {
+//     drawLine(canvas, PathLine.COLOR, PathLine.LINE_WIDTH, xStart, xEnd, yStart, yEnd);
+// };
 
 const drawTargetMark = (canvas, position) => {
     drawXMark(canvas, XMark.COLOR, XMark.LINE_WIDTH, XMark.SIZE, position);
 };
 
 const drawSightBox = (canvas, canvasInfo, creature) => { // TODO - finish creature before using this method
-    //   let coords = creature.getSightCoordinates(canvasInfo);
+    let coords = creature.getSightCoordinates(canvasInfo);
 
     let color = SightLine.COLOR;
     let lineWidth = SightLine.LINE_WIDTH;
 
-    //drawBox(canvas, color, lineWidth, coords.xStart, coords.xEnd, coords.yStart, coords.yEnd);
+    drawBox(canvas, color, lineWidth, coords.xStart, coords.xEnd, coords.yStart, coords.yEnd);
 }
 
 
