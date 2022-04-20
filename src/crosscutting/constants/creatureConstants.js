@@ -1,9 +1,5 @@
 import { PlantSpecies } from "./plantConstants";
 
-export const CreatureDefaults = {
-    moveMode =  MoveMode.SEARCH
-}
-
 export const Direction = {
     NORTH: "NORTH",
     SOUTH: "SOUTH",
@@ -18,6 +14,10 @@ export const MoveMode = {
     HIDE: "HIDE",
     WANDER: "WANDER"
 };
+
+export const CreatureDefaults = {
+    moveMode:  MoveMode.SEARCH
+}
 
 export const Gender = {
     MALE: "MALE",

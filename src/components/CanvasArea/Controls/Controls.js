@@ -13,7 +13,7 @@ const Controls = () => {
     const {creatures, chosenCreature,
         setCreatures, setChosenCreatures} = useContext(LifeContext);
 
-    const setInitialTargetRefValues = () => {
+    const setInitialTargetRefValues = (endPosition) => {
         targetXRef.current.value = endPosition.x;
         targetYRef.current.value = endPosition.y;
     }

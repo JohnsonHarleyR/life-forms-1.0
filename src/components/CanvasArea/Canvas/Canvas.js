@@ -1,4 +1,4 @@
-import React, {useRef, useState, useContext} from 'react';
+import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
 import { 
     renderCanvas,
@@ -26,7 +26,7 @@ const Canvas = () => {
         canvasRef.current.height = CanvasInfo.HEIGHT;
         setObjects(createObjects());
         setCreatures(createCreatures());
-        renderCanvas();
+        renderCanvas(canvasRef, creatures, plants, objects);
         //setInitialTargetRefValues();
     }, []);
 
@@ -42,19 +42,19 @@ const Canvas = () => {
     }, []);
 
     // TODO refactor the below part after creating creature
-    // useEffect(() => {
-    //     setIntervals(intervals + 1);
-    //     if (time && creatures) {
-    //         let creaturesCopy = [...creatures];
-    //         creaturesCopy.forEach(c => {
-    //             let result = c.move(objects, plants, creatures, canvasInfo);
-    //             setCreatureResult(c, result);
-    //         })
-    //         //console.log(JSON.stringify(creaturesCopy));
-    //         setCreatures(creaturesCopy);
-    //     }
-    //     renderCanvas();
-    // }, [time]);
+    useEffect(() => {
+        setIntervals(intervals + 1);
+        if (time && creatures) {
+            // let creaturesCopy = [...creatures];
+            // creaturesCopy.forEach(c => {
+            //     let result = c.move(objects, plants, creatures, canvasInfo);
+            //     setCreatureResult(c, result);
+            // })
+            // //console.log(JSON.stringify(creaturesCopy));
+            // setCreatures(creaturesCopy);
+        }
+        renderCanvas(canvasRef, creatures, plants, objects);
+    }, [time]);
 
 
     const showMousePos = (evt) => {
