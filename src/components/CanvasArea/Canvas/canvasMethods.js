@@ -6,6 +6,8 @@ import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants } from 
 import { isCollision } from "../../../crosscutting/logic/universalLogic";
 import { getRandomPlantStartPosition } from "../../../crosscutting/logic/object/plants/plantsLogic";
 import Plant from "../../../crosscutting/logic/object/plants/plant";
+import { getRandomCreatureStartPosition } from "../../../crosscutting/logic/creature/creatureLogic";
+import Creature from "../../../crosscutting/logic/creature/creature";
 
 // TODO generateCreature, generatePlant
 
@@ -22,20 +24,24 @@ export const createObjects = () => { // TODO create object class so that this wi
     return objs;
 };
 
-export const createCreatures = (creature) => {
+export const createCreatures = (objects, plants, shelters, setCreatures, setPlants, setShelters) => {
     let array = [];
-    // array.push(creature); // HACK this is only while there is a main creature to test
+    //array.push(creature); // HACK this is only while there is a main creature to test
 
-    // // add test creatures
-    // array.push(generateCreature(Gender.FEMALE, Boop, array));
-    // array.push(generateCreature(Gender.MALE, Boop, array));
-    // array.push(generateCreature(Gender.MALE, Bleep, array));
+    // add test creatures
+    array.push(generateCreature(Gender.FEMALE, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, Bleep, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
 
     return array;
 }
 
-const generateCreature = () => { // TODO Be sure to include an id too - make it easier to pull out
-    
+const generateCreature = (gender, info, creatures, objects, plants, shelters, setCreatures, setPlants, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
+    let index = creatures.length;
+    let randomPosition = getRandomCreatureStartPosition(info, creatures, objects, plants, shelters);
+    let creature = new Creature({id: `c${index}`, gender: gender, position: randomPosition, 
+        targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
+    return creature;
 }
 
 export const generatePlants = (intervals, plants, creatures, objects, shelters, plantConstants, setPlants, largestCreatureSize) => { // TODO Be sure to include an id too - make it easier to pull out

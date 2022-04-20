@@ -25,8 +25,9 @@ const Canvas = () => {
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
-        setObjects(createObjects());
-        setCreatures(createCreatures());
+        let objs = createObjects();
+        setObjects(objs);
+        setCreatures(createCreatures(objs, plants, shelters));
         renderCanvas(canvasRef, creatures, plants, objects);
         //setInitialTargetRefValues();
     }, []);
@@ -46,13 +47,13 @@ const Canvas = () => {
     useEffect(() => {
         setIntervals(intervals + 1);
         if (time && creatures) {
-            // let creaturesCopy = [...creatures];
-            // creaturesCopy.forEach(c => {
-            //     let result = c.move(objects, plants, creatures, canvasInfo);
-            //     setCreatureResult(c, result);
-            // })
-            // //console.log(JSON.stringify(creaturesCopy));
-            // setCreatures(creaturesCopy);
+            let creaturesCopy = [...creatures];
+            creaturesCopy.forEach(c => {
+                let result = c.move(objects, plants, creatures, CanvasInfo);
+                setCreatureResult(c, result);
+            })
+            //console.log(JSON.stringify(creaturesCopy));
+            setCreatures(creaturesCopy);
         }
         renderCanvas(canvasRef, creatures, plants, objects);
     }, [time]);

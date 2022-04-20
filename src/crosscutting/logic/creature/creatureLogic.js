@@ -1,3 +1,5 @@
+import { getRandomStartPosition } from "../universalLogic";
+
 
 export const getSightLineInfo = (creature) => {
     let lineInfo = {
@@ -7,4 +9,11 @@ export const getSightLineInfo = (creature) => {
         yEnd: creature.targetPosition.y
     };
     return lineInfo;
+}
+
+// position methods
+
+export const getRandomCreatureStartPosition = (info, creatures, objects, plants, shelters) => {
+    let result = getRandomStartPosition(info, creatures, objects, plants, shelters);
+    return result;
 }

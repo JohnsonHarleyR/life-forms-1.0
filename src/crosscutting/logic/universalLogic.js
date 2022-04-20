@@ -1,5 +1,39 @@
 import { CanvasInfo } from "../constants/canvasConstants";
 
+// adding and removing items
+export const addItemToArray = (item, array, setFunction) => {
+    if (!item || !array || !setFunction) {
+        return false;
+    }
+
+    let arrayCopy = [...array];
+    arrayCopy.push(item);
+    setFunction(arrayCopy);
+
+    return true;
+}
+
+export const removeItemFromArray = (itemId, array, setFunction) => {
+    if (!itemId || !array || !setFunction) {
+        return false;
+    }
+
+    let didFind = false;
+    let arrayCopy = array.map(a => {
+        if (a.id !== itemId) {
+            return a;
+        } else {
+            didFind = true;
+        }
+    });
+    setFunction(arrayCopy);
+
+    return didFind;
+}
+
+
+// position and collision methods
+
 export const getCenterPosition = (xStart, yStart, width, height) => {
     let halfWidth = width / 2;
     let halfHeight = height / 2;
