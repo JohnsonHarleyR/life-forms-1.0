@@ -3,6 +3,8 @@ import { LifeContext } from '../../../Context/LifeContext';
 
 const Controls = () => {
 
+    // TODO create drop down of current creatures so the creature used to test the controls can be chosen - like in the sims!
+
     const moveModeRef = useRef();
     const targetXRef = useRef();
     const targetYRef = useRef();
