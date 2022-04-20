@@ -5,6 +5,7 @@ const LifeContext = createContext({creatures: [], plants: [], objects: []});
 const LifeProvider = ({children}) => {
 
     const [creatures, setCreatures] = useState([]);
+    const [shelters, setShelters] = useState([]);
     const [plants, setPlants] = useState([]);
     const [objects, setObjects] = useState([]);
 
@@ -13,8 +14,8 @@ const LifeProvider = ({children}) => {
 
     return (
         <LifeContext.Provider value={{
-            creatures, plants, objects, chosenCreature,
-            setCreatures, setPlants, setObjects, setChosenCreature
+            creatures, shelters, plants, objects, chosenCreature,
+            setCreatures, setShelters, setPlants, setObjects, setChosenCreature
         }}>
             {children}
         </LifeContext.Provider>

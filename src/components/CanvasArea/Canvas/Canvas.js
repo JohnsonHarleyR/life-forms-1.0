@@ -8,8 +8,8 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {creatures, plants, objects,
-        setCreatures, setPlants, setObjects} = useContext(LifeContext);
+    const {creatures, shelters, plants, objects,
+        setCreatures, setShelters, setPlants, setObjects} = useContext(LifeContext);
 
     const showMousePos = (evt) => {
 
@@ -23,7 +23,7 @@ const Canvas = () => {
             onClick={showMousePos}
             />
         </div>
-        );
+    );
 }
 
 export default Canvas;

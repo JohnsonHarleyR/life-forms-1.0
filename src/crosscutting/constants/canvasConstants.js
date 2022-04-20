@@ -6,8 +6,7 @@ export const CanvasInfo = {
 };
 
 export const XMark = {
-    WIDTH: 10,
-    HEIGHT: 10,
+    SIZE: 10,
     COLOR: "red",
     LINE_WIDTH: 2
 };
