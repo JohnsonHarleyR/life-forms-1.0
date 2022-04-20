@@ -1,5 +1,6 @@
 import React, {useRef, useState, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
+import { renderCanvas } from './canvasMethods';
 
 const Canvas = () => {
 
@@ -10,6 +11,7 @@ const Canvas = () => {
 
     const {creatures, shelters, plants, objects,
         setCreatures, setShelters, setPlants, setObjects} = useContext(LifeContext);
+
 
     const showMousePos = (evt) => {
 

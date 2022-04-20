@@ -13,11 +13,16 @@ const Controls = () => {
     const {creatures, chosenCreature,
         setCreatures, setChosenCreatures} = useContext(LifeContext);
 
-    const changeMoveMode = () => {
+    const setInitialTargetRefValues = () => {
+        targetXRef.current.value = endPosition.x;
+        targetYRef.current.value = endPosition.y;
+    }
+
+    const changeMoveMode = () => { // TODO (Canvas.js in old)
 
     }
 
-    const changeTarget = () => {
+    const changeTarget = () => { // TODO (Canvas.js in old)
 
     }
 
