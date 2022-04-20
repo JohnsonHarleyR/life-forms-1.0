@@ -79,7 +79,7 @@ export const drawAllCreatures = (canvas, canvasInfo, creatures) => {
 }
 
 const drawCreature = (canvas, canvasInfo, creature) => { // TODO
-    console.log('drawCreature');
+    //console.log('drawCreature');
 }
 
 const drawPathLine = ({ canvas, xStart, xEnd, yStart, yEnd }) => {

@@ -5,9 +5,10 @@ import {
     createObjects,
     createCreatures,
     setCreatureResult,
-    generatePlant
+    generatePlants
 } from './canvasMethods';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
+import { Plants } from '../../../crosscutting/constants/plantConstants';
 
 const Canvas = () => {
     
@@ -18,7 +19,7 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {creatures, shelters, plants, objects, chosenCreature,
+    const {creatures, shelters, plants, objects, chosenCreature, largestCreatureSize,
         setCreatures, setShelters, setPlants, setObjects, setChosenCreature} = useContext(LifeContext);
 
     useEffect(() => {
@@ -55,6 +56,12 @@ const Canvas = () => {
         }
         renderCanvas(canvasRef, creatures, plants, objects);
     }, [time]);
+
+    useEffect(() => {
+        if (intervals) {
+            generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, largestCreatureSize);
+        }
+    }, [intervals]);
 
 
     const showMousePos = (evt) => {

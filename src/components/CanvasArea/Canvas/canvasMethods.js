@@ -3,6 +3,9 @@ import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
 import { Gender, Boop, Bleep } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants } from "../../../crosscutting/logic/canvasLogic";
+import { isCollision } from "../../../crosscutting/logic/universalLogic";
+import { getRandomPlantStartPosition } from "../../../crosscutting/logic/object/plants/plantsLogic";
+import Plant from "../../../crosscutting/logic/object/plants/plant";
 
 // TODO generateCreature, generatePlant
 
@@ -21,12 +24,12 @@ export const createObjects = () => { // TODO create object class so that this wi
 
 export const createCreatures = (creature) => {
     let array = [];
-    array.push(creature); // HACK this is only while there is a main creature to test
+    // array.push(creature); // HACK this is only while there is a main creature to test
 
-    // add test creatures
-    array.push(generateCreature(Gender.FEMALE, Boop, array));
-    array.push(generateCreature(Gender.MALE, Boop, array));
-    array.push(generateCreature(Gender.MALE, Bleep, array));
+    // // add test creatures
+    // array.push(generateCreature(Gender.FEMALE, Boop, array));
+    // array.push(generateCreature(Gender.MALE, Boop, array));
+    // array.push(generateCreature(Gender.MALE, Bleep, array));
 
     return array;
 }
@@ -35,8 +38,27 @@ const generateCreature = () => { // TODO Be sure to include an id too - make it 
     
 }
 
-export const generatePlant = () => { // TODO Be sure to include an id too - make it easier to pull out
+export const generatePlants = (intervals, plants, creatures, objects, shelters, plantConstants, setPlants, largestCreatureSize) => { // TODO Be sure to include an id too - make it easier to pull out
+    if (creatures === null || creatures === undefined) {
+        return;
+    }
+    
+    let plantsCopy = [...plants];
+    let index = plantsCopy.length;
+    plantConstants.forEach(p => {
+        if (intervals % p.growInterval === 0) {
+            let newPlant = generatePlant(index, p, plantsCopy, creatures, objects, shelters, largestCreatureSize);
+            plantsCopy.push(newPlant);
+            index++;
+        }
+    })
+    setPlants(plantsCopy);
+}
 
+const generatePlant = (index, speciesInfo, plants, creatures, objects, shelters, largestCreatureSize) => { // TODO Be sure to include an id too - make it easier to pull out
+    let startPos = getRandomPlantStartPosition(speciesInfo, creatures, objects, plants, shelters, largestCreatureSize);
+    let newPlant = new Plant({...speciesInfo, id: `p${index}`, xStart: startPos.xStart, yStart: startPos.yStart});
+    return newPlant;
 }
 
 // helper functions
