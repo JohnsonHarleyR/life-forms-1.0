@@ -73,27 +73,28 @@ export const renderCanvas = (canvasRef, creatures, plants, objects) => {
     fillBackground(canvasRef.current, CanvasInfo.BG_COLOR);
     //drawPathLine({ canvas: canvasRef.current, ...lineInfo });
     //drawXMark(canvasRef.current, chosenCreature.targetPosition);
-    drawAllObjects(canvasRef.current, objects);
     drawAllPlants(canvasRef.current, plants);
     //drawCreature(canvasRef.current, CanvasInfo, creature);
     drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
+    drawAllObjects(canvasRef.current, objects);
 };
 
 export const setCreatureResult = (creature, result) => {
-    creature.position = result.position;
-    creature.speed = result.speed;
-    creature.direction = result.direction;
-    creature.moveMode = result.moveMode;
     creature.food = result.food;
     creature.targetType = result.targetType;
     creature.currentTarget = result.currentTarget;
-    creature.inventory = result.inventory;
-    creature.sightRadius = result.sightRadius;
-    creature.sightDistance = result.sightDistance;
     creature.targetPosition = result.targetPosition;
-    creature.sideOfCollision = result.sideOfCollison;
-    creature.previousSide = result.previousSide;
-    creature.newDirection = result.newDirection;
+    creature.inventory = result.inventory;
+    creature.position = result.position;
+    creature.movement = result.movement;
+    // creature.speed = result.speed;
+    // creature.direction = result.direction;
+    // creature.moveMode = result.moveMode;
+    // creature.sightRadius = result.sightRadius;
+    // creature.sightDistance = result.sightDistance;
+    // creature.sideOfCollision = result.sideOfCollison;
+    // creature.previousSide = result.previousSide;
+    // creature.newDirection = result.newDirection;
 }
 
 // testing functions

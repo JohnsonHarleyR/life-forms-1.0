@@ -16,8 +16,8 @@ export default class Creature {
         this.type = type;
         this.foodType = FoodType.PREY;
     
-        this.width = this.size;
-        this.height = this.size;
+        this.width = this.size; // Necessary?
+        this.height = this.size; // Necessary?
     
         this.shelter = null;
     
@@ -27,21 +27,25 @@ export default class Creature {
         };
         this.targetType = FoodType.BOTH;
         this.currentTarget = null;
-    
-        this.sightRadius = sightRadius;
-        this.sightDistance = sightDistance;
-        this.position = position;
-        this.speed = speed;
-        this.direction = {
-            x: null,
-            y: null
-        };
-        this.moveMode = MoveMode.SEARCH;
         this.targetPosition = targetPosition;
+
+        this.position = position;
+        this.movement = {
+            sightRadius: sightRadius,
+            sightDistance: sightDistance,
+            speed: speed,
+            direction: {
+                x: null,
+                y: null
+            },
+            moveMode: MoveMode.SEARCH,
+        
+            sideOfCollision: null,
+            previousSide: null,
+            newDirection: null,
+        }
     
-        this.sideOfCollision = null;
-        this.previousSide = null;
-        this.newDirection = null;
+
     
         this.setPlants = setPlants;
         this.setCreatures = setCreatures;
@@ -50,29 +54,31 @@ export default class Creature {
 
     returnProperties = () => {
         return {
-            position: this.position,
-            speed: this.speed,
-            direction: this.direction,
-            moveMode: this.moveMode,
             food: this.food,
             targetType: this.targetType,
             currentTarget: this.currentTarget,
-            inventory: this.inventory,
-            sightRadius: this.sightRadius,
-            sightDistance: this.sightDistance,
             targetPosition: this.targetPosition,
-            sideOfCollison: this.sideOfCollision,
-            previousSide: this.previousSide,
-            newDirection: this.newDirection,
+            inventory: this.inventory,
+            position: this.position,
+            movement: this.movement
+            // speed: this.speed,
+            // direction: this.direction,
+            // moveMode: this.moveMode,
+            // sightRadius: this.sightRadius,
+            // sightDistance: this.sightDistance,
+            // sideOfCollison: this.sideOfCollision,
+            // previousSide: this.previousSide,
+            // newDirection: this.newDirection,
         };
     }
 
     // sight targeting methods
     getSightCoordinates = (canvasInfo) => {
         let direction = null;
+        let m = this.movement;
         // if there is a newDirection set, use that for determining which way to show the site coordinates
-        if (this.newDirection) {
-        direction = this.newDirection;
+        if (m.newDirection) {
+        direction = m.newDirection;
         }
 
         // otherwise, use direction. For now, use the direction that is furthest from target if there's two
@@ -89,18 +95,21 @@ export default class Creature {
 
     // movement methods
     move = (objects, plants, creatures, CanvasInfo) => {
+        let m = this.movement;
 
         return this.returnProperties();
     }
 
     setDirection = (xDifference, yDifference) => {
-        this.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
-        if (Math.abs(xDifference) <= this.speed) {
-            this.direction.x = null;
+        let m = this.movement;
+
+        m.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
+        if (Math.abs(xDifference) <= m.speed) {
+            m.direction.x = null;
         }
-        this.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
-        if (Math.abs(yDifference) <= this.speed) {
-            this.direction.y = null;
+        m.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
+        if (Math.abs(yDifference) <= m.speed) {
+            m.direction.y = null;
         }
     };
 }

@@ -31,9 +31,11 @@ const setCreatureDirectionByTargetPosition = (creature) => {
 
 // methods about creature sight
 export const determineSightDirection = (creature) => {
-    let creatureDirection = creature.direction;
+    let m = creature.movement;
+
+    let creatureDirection = m.direction;
     let creaturePosition = creature.position;
-    let targetPosition = creature.targetPosition;
+    let targetPosition = m.targetPosition;
     // check to see if there is only one direction listed - if so, return that
     if (creatureDirection.x && !creatureDirection.y) {
         return creatureDirection.x;
@@ -42,7 +44,7 @@ export const determineSightDirection = (creature) => {
     } else if (!creatureDirection.x && !creatureDirection.y) {
       // if neither are there then figure out the direction based on the target
         setCreatureDirectionByTargetPosition(creature);
-        if (creature.direction.x === null && creature.direction.y === null) { // if still null, just return a default direction of south
+        if (m.direction.x === null && m.direction.y === null) { // if still null, just return a default direction of south
         return Direction.SOUTH;
         }
     }
@@ -59,6 +61,8 @@ export const determineSightDirection = (creature) => {
 }
 
 export const determineSightCoordinates = (creature, sightDirection, canvasInfo) => {
+    let m = creature.movement;
+
     let xStart = null;
     let xEnd = null;
     let yStart = null;
@@ -66,39 +70,39 @@ export const determineSightCoordinates = (creature, sightDirection, canvasInfo) 
     let width = null;
     let height = null;
 
-    let sightDiameter = creature.sightRadius * 2;
+    let sightDiameter = m.sightRadius * 2;
 
     switch (sightDirection) {
         case Direction.NORTH:
             width = sightDiameter;
-            xStart = creature.position.x - creature.sightRadius;
+            xStart = creature.position.x - m.sightRadius;
             xEnd = xStart + width;
-            height = creature.sightDistance;
+            height = m.sightDistance;
             yStart = creature.position.y - height;
             yEnd = creature.position.y;
             break;
         case Direction.SOUTH:
             width = sightDiameter;
-            xStart = creature.position.x - creature.sightRadius;
+            xStart = creature.position.x - m.sightRadius;
             xEnd = xStart + width;
-            height = creature.sightDistance;
+            height = m.sightDistance;
             yStart = creature.position.y;
             yEnd = creature.position.y + height;
             break;
         case Direction.WEST:
-            width = creature.sightDistance;
+            width = m.sightDistance;
             xStart = creature.position.x - width;
             xEnd = creature.position.x;
             height = sightDiameter;
-            yStart = creature.position.y - creature.sightRadius;
+            yStart = creature.position.y - m.sightRadius;
             yEnd = yStart + sightDiameter;
             break;
         case Direction.EAST:
-            width = creature.sightDistance;
+            width = m.sightDistance;
             xStart = creature.position.x;
             xEnd = creature.position.x + width;
             height = sightDiameter;
-            yStart = creature.position.y - creature.sightRadius;
+            yStart = creature.position.y - m.sightRadius;
             yEnd = yStart + sightDiameter;
             break;
     }
@@ -125,7 +129,7 @@ export const determineSightCoordinates = (creature, sightDirection, canvasInfo) 
     }
 
     // return result
-    let result = offsetValues(creature.sightOffset, width, height, xStart, xEnd, yStart, yEnd);
+    let result = offsetValues(m.sightOffset, width, height, xStart, xEnd, yStart, yEnd);
 
 
     return result;
