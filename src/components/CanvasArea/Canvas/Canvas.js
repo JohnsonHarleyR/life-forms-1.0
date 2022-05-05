@@ -50,7 +50,7 @@ const Canvas = () => {
         if (time && creatures && creatures.length !== 0) {
             let creaturesCopy = [...creatures];
             creaturesCopy.forEach(c => {
-                let result = c.move(objects, plants, creatures, CanvasInfo);
+                let result = c.update(objects, plants, creatures, CanvasInfo);
                 setCreatureResult(c, result);
             })
             //console.log(JSON.stringify(creaturesCopy));

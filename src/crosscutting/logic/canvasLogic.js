@@ -127,7 +127,7 @@ const drawTargetMark = (canvas, position) => {
 };
 
 const drawSightBox = (canvas, canvasInfo, creature) => { // TODO - finish creature before using this method
-    let coords = creature.getSightCoordinates(canvasInfo);
+    let coords = creature.movement.getSightCoordinates(canvasInfo);
 
     let color = SightLine.COLOR;
     let lineWidth = SightLine.LINE_WIDTH;

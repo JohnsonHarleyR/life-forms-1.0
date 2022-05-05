@@ -6,10 +6,11 @@ import {
 } from "./creatureLogic";
 
 export default class Creature {
-    constructor({ size, color, gender, type, food, sightRadius, sightDistance, position, speed, 
+    constructor({id, size, color, gender, type, food, sightRadius, sightDistance, position, speed, 
         targetPosition, setPlants, setCreatures, setShelters }) {
         this.showLines = true;
 
+        this.id = id;
         this.size = size;
         this.color = color;
         this.gender = gender;
@@ -30,23 +31,8 @@ export default class Creature {
         this.targetPosition = targetPosition;
 
         this.position = position;
-        this.movement = new CreatureMovement(sightRadius, sightDistance, speed, MoveMode.SEARCH);
-        // this.movement = {
-        //     sightRadius: sightRadius,
-        //     sightDistance: sightDistance,
-        //     speed: speed,
-        //     direction: {
-        //         x: null,
-        //         y: null
-        //     },
-        //     moveMode: MoveMode.SEARCH,
-        
-        //     sideOfCollision: null,
-        //     previousSide: null,
-        //     newDirection: null,
-        // }
+        this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed, MoveMode.SEARCH);
     
-
     
         this.setPlants = setPlants;
         this.setCreatures = setCreatures;
@@ -62,48 +48,22 @@ export default class Creature {
             inventory: this.inventory,
             position: this.position,
             movement: this.movement
-            // speed: this.speed,
-            // direction: this.direction,
-            // moveMode: this.moveMode,
-            // sightRadius: this.sightRadius,
-            // sightDistance: this.sightDistance,
-            // sideOfCollison: this.sideOfCollision,
-            // previousSide: this.previousSide,
-            // newDirection: this.newDirection,
         };
     }
 
-    // sight targeting methods
-    getSightCoordinates = (canvasInfo) => {
-        let direction = null;
-        let m = this.movement;
-        // if there is a newDirection set, use that for determining which way to show the site coordinates
-        if (m.newDirection) {
-        direction = m.newDirection;
-        }
-
-        // otherwise, use direction. For now, use the direction that is furthest from target if there's two
-        // this is for simplicity - in the future maybe make it diagonal too.
-        if (!direction) {
-        direction = determineSightDirection(this);
-        }
-
-        // now get the coordinates and return them
-        let coord = determineSightCoordinates(this, direction, canvasInfo);
-        //console.log(`sight coords: ${JSON.stringify(coord)}`);
-        return coord;
-    }
-
-    // movement methods
-    move = (objects, plants, creatures, CanvasInfo) => {
-        let m = this.movement;
+    update = (objects, plants, creatures, CanvasInfo) => {
+        // do other update stuff
+        this.movement.move(this, objects, plants, creatures, CanvasInfo);
 
         return this.returnProperties();
     }
+
+    // movement methods
 }
 
 class CreatureMovement {
-    constructor(sightRadius, sightDistance, speed, moveMode) {
+    constructor(creature, sightRadius, sightDistance, speed, moveMode) {
+        this.creature = creature;
         this.sightRadius = sightRadius;
         this.sightDistance = sightDistance;
         this.speed = speed;
@@ -118,6 +78,12 @@ class CreatureMovement {
         this.newDirection = null;
     }
 
+    move = (objects, plants, creatures, CanvasInfo) => {
+        console.log('moving creature');
+
+        //return this.returnProperties();
+    }
+
     setDirection = (xDifference, yDifference) => {
         this.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
         if (Math.abs(xDifference) <= this.speed) {
@@ -128,4 +94,24 @@ class CreatureMovement {
             this.direction.y = null;
         }
     };
+
+        // sight targeting methods
+    getSightCoordinates = (canvasInfo) => {
+        let direction = null;
+        // if there is a newDirection set, use that for determining which way to show the site coordinates
+        if (this.newDirection) {
+        direction = this.newDirection;
+        }
+
+        // otherwise, use direction. For now, use the direction that is furthest from target if there's two
+        // this is for simplicity - in the future maybe make it diagonal too.
+        if (!direction) {
+        direction = determineSightDirection(this.creature);
+        }
+
+        // now get the coordinates and return them
+        let coord = determineSightCoordinates(this.creature, direction, canvasInfo);
+        //console.log(`sight coords: ${JSON.stringify(coord)}`);
+        return coord;
+    }
 }
