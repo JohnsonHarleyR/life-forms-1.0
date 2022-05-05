@@ -106,15 +106,15 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
     }
 
     // loop through each one
-    console.log('checking objects');
+    //console.log('checking objects');
     if (checkAnyArrayCollision(creationPoints, objects, largestCreatureSize)) {
         return true;
     }
-    console.log('checking plants');
+    //console.log('checking plants');
     if (checkAnyArrayCollision(creationPoints, plants, largestCreatureSize)) {
         return true;
     }
-    console.log('checking shelters');
+    //console.log('checking shelters');
     if (checkAnyArrayCollision(creationPoints, shelters, largestCreatureSize)) {
         return true;
     }
@@ -127,10 +127,10 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
                 return c;
             }
         });
-        console.log(`checking creatures without id ${excludeCreatureId}`);
+        //console.log(`checking creatures without id ${excludeCreatureId}`);
         result = checkAnyArrayCollision(creationPoints, creaturesCopy, largestCreatureSize);
     } else {
-        console.log('checking creatures');
+        //console.log('checking creatures');
         result = checkAnyArrayCollision(creationPoints, creatures, largestCreatureSize);
     }
     // it's the last check so return the result

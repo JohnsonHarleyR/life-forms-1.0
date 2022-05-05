@@ -30,20 +30,21 @@ export default class Creature {
         this.targetPosition = targetPosition;
 
         this.position = position;
-        this.movement = {
-            sightRadius: sightRadius,
-            sightDistance: sightDistance,
-            speed: speed,
-            direction: {
-                x: null,
-                y: null
-            },
-            moveMode: MoveMode.SEARCH,
+        this.movement = new CreatureMovement(sightRadius, sightDistance, speed, MoveMode.SEARCH);
+        // this.movement = {
+        //     sightRadius: sightRadius,
+        //     sightDistance: sightDistance,
+        //     speed: speed,
+        //     direction: {
+        //         x: null,
+        //         y: null
+        //     },
+        //     moveMode: MoveMode.SEARCH,
         
-            sideOfCollision: null,
-            previousSide: null,
-            newDirection: null,
-        }
+        //     sideOfCollision: null,
+        //     previousSide: null,
+        //     newDirection: null,
+        // }
     
 
     
@@ -99,17 +100,32 @@ export default class Creature {
 
         return this.returnProperties();
     }
+}
+
+class CreatureMovement {
+    constructor(sightRadius, sightDistance, speed, moveMode) {
+        this.sightRadius = sightRadius;
+        this.sightDistance = sightDistance;
+        this.speed = speed;
+        this.direction = {
+            x: null,
+            y: null
+        };
+        this.moveMode = moveMode;
+
+        this.sideOfCollision = null;
+        this.previousSide = null;
+        this.newDirection = null;
+    }
 
     setDirection = (xDifference, yDifference) => {
-        let m = this.movement;
-
-        m.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
-        if (Math.abs(xDifference) <= m.speed) {
-            m.direction.x = null;
+        this.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
+        if (Math.abs(xDifference) <= this.speed) {
+            this.direction.x = null;
         }
-        m.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
-        if (Math.abs(yDifference) <= m.speed) {
-            m.direction.y = null;
+        this.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
+        if (Math.abs(yDifference) <= this.speed) {
+            this.direction.y = null;
         }
     };
 }

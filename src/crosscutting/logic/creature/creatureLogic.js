@@ -25,7 +25,7 @@ export const getRandomCreatureStartPosition = (info, creatures, objects, plants,
 
 const setCreatureDirectionByTargetPosition = (creature) => {
     let dif = getPositionDifference(creature.position, creature.targetPosition);
-    creature.setDirection(dif.xDifference, dif.yDifference);
+    creature.movement.setDirection(dif.xDifference, dif.yDifference);
 }
 
 
