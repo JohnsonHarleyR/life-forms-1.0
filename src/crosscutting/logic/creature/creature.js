@@ -15,7 +15,7 @@ export default class Creature {
         this.color = color;
         this.gender = gender;
         this.type = type;
-        this.foodType = FoodType.PREY;
+        this.foodType = FoodType.PREY; // this will always be prey - it helps a predator determine if it's food or not - this is included in plants too
     
         this.width = this.size; // Necessary?
         this.height = this.size; // Necessary?
@@ -59,6 +59,12 @@ export default class Creature {
     }
 
     // movement methods
+}
+
+class CreatureLife {
+    constructor() {
+        
+    }
 }
 
 class CreatureMovement {
