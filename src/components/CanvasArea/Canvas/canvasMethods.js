@@ -1,6 +1,6 @@
 import { ObjectType } from "../../../crosscutting/constants/objectConstants";
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
-import { Gender, Boop, Bleep } from "../../../crosscutting/constants/creatureConstants";
+import { Gender, LifeStage, Boop, Bleep } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants } from "../../../crosscutting/logic/canvasLogic";
 import { isCollision } from "../../../crosscutting/logic/universalLogic";
@@ -29,17 +29,17 @@ export const createCreatures = (objects, plants, shelters, setCreatures, setPlan
     //array.push(creature); // HACK this is only while there is a main creature to test
 
     // add test creatures
-    array.push(generateCreature(Gender.FEMALE, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    array.push(generateCreature(Gender.MALE, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    array.push(generateCreature(Gender.MALE, Bleep, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.CHILD, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ELDER, Bleep, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
 
     return array;
 }
 
-const generateCreature = (gender, info, creatures, objects, plants, shelters, setCreatures, setPlants, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
+const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, creatures, objects, plants, shelters, setCreatures, setPlants, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
     let index = creatures.length;
     let randomPosition = getRandomCreatureStartPosition(info, creatures, objects, plants, shelters);
-    let creature = new Creature({id: `c${index}`, gender: gender, position: randomPosition, 
+    let creature = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
         targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
     return creature;
 }
@@ -80,21 +80,18 @@ export const renderCanvas = (canvasRef, creatures, plants, objects) => {
 };
 
 export const setCreatureResult = (creature, result) => {
+    creature.color = result.color;
+    creature.size = result.size;
+    creature.width = result.width;
+    creature.height = result.height;
     creature.food = result.food;
+    creature.life = result.life;
     creature.targetType = result.targetType;
     creature.currentTarget = result.currentTarget;
     creature.targetPosition = result.targetPosition;
     creature.inventory = result.inventory;
     creature.position = result.position;
     creature.movement = result.movement;
-    // creature.speed = result.speed;
-    // creature.direction = result.direction;
-    // creature.moveMode = result.moveMode;
-    // creature.sightRadius = result.sightRadius;
-    // creature.sightDistance = result.sightDistance;
-    // creature.sideOfCollision = result.sideOfCollison;
-    // creature.previousSide = result.previousSide;
-    // creature.newDirection = result.newDirection;
 }
 
 // testing functions

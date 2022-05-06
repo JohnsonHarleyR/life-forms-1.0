@@ -1,21 +1,23 @@
 import { FoodType } from "../../constants/objectConstants";
-import { MoveMode, Direction, LifeStage, SizingAmounts } from "../../constants/creatureConstants";
+import { MoveMode, Direction, LifeStage, CreatureDefaults, AmountNeeded } from "../../constants/creatureConstants";
 import { 
     determineSightDirection,
     determineSightCoordinates
 } from "./creatureLogic";
-import { roundToPlace, millisecondsToMinutes } from "../universalLogic";
+import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder,
-        food, sightRadius, sightDistance, position, speed, 
+        food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded,
         targetPosition, setPlants, setCreatures, setShelters }) {
         this.showLines = true;
 
         // do not touch the stuff in the next paragraph - as in don't refactor
         this.id = id;
         this.adultSize = size;
+        this.adultColor = color;
         this.life = new CreatureLife(this, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder);
+        this.energy = energy;
         this.size = this.life.determineSize();
         this.color = color;
         this.gender = gender;
@@ -45,9 +47,11 @@ export default class Creature {
 
     returnProperties = () => {
         return {
+            color: this.color,
             size: this.size,
             width: this.width,
             height: this.height,
+            life: this.life,
             food: this.food,
             targetType: this.targetType,
             currentTarget: this.currentTarget,
@@ -93,14 +97,15 @@ class CreatureLife {
     updateLife = () => {
         this.age = this.determineAge();
         this.lifeStage = this.determineLifeStage();
+        this.creature.color = this.determineColor();
         let newSize = this.determineSize();
         this.updateSize(newSize);
 
         // test
-        this.intervals++;
-        if ((this.intervals < 11 && this.intervals % 10 === 0) || this.intervals % 100 === 0) {
-            this.showAgingInfo();
-        }
+        // this.intervals++;
+        // if ((this.intervals < 11 && this.intervals % 10 === 0) || this.intervals % 100 === 0) {
+        //     this.showAgingInfo();
+        // }
     }
 
     showAgingInfo = () => {
@@ -158,9 +163,28 @@ class CreatureLife {
                 return this.creature.adultSize;
             case LifeStage.ELDER:
                 return this.determineElderSize();
-            case LifeStage.DECEASED: // TODO do we want it to disappear or what? Consider changing colors with different stages slightly?
-                return 0;
+            case LifeStage.DECEASED:
+            return this.determineDeceasedSize();
         }
+    }
+
+    determineColor = () => {
+        switch (this.lifeStage) {
+            case LifeStage.CHILD:
+                return this.creature.adultColor;
+            default:
+            case LifeStage.ADULT:
+                return this.creature.adultColor;
+            case LifeStage.ELDER:
+                return this.determineElderColor();
+            case LifeStage.DECEASED:
+                return CreatureDefaults.DEATH_COLOR;
+        }
+    }
+
+    determineElderColor = () => {
+        let c = blendColors(this.creature.adultColor, CreatureDefaults.DEATH_COLOR, .5);
+        return c;
     }
 
     determineChildSize = () => {
@@ -179,8 +203,8 @@ class CreatureLife {
         let newSize = this.creature.adultSize * growthFraction;
 
         // don't let it be less than min
-        let minSize = this.creature.adultSize * SizingAmounts.CHILD_MIN_FRACTION;
-        minSize = minSize < SizingAmounts.CHILD_MIN ? SizingAmounts.CHILD_MIN : minSize;
+        let minSize = this.creature.adultSize * CreatureDefaults.CHILD_MIN_FRACTION;
+        minSize = minSize < CreatureDefaults.CHILD_MIN ? CreatureDefaults.CHILD_MIN : minSize;
         if (newSize < minSize) {
             newSize = minSize;
         }
@@ -193,8 +217,8 @@ class CreatureLife {
         let fullGrownAge = this.stageRanges.adult.range.start;
 
         // figure out growthFraction first
-        let minSize = this.creature.adultSize * SizingAmounts.CHILD_MIN_FRACTION;
-        minSize = minSize < SizingAmounts.CHILD_MIN ? SizingAmounts.CHILD_MIN : minSize;
+        let minSize = this.creature.adultSize * CreatureDefaults.CHILD_MIN_FRACTION;
+        minSize = minSize < CreatureDefaults.CHILD_MIN ? CreatureDefaults.CHILD_MIN : minSize;
         let growthFraction = minSize / this.creature.adultSize;
 
         // now determine the age to get that big
@@ -204,7 +228,13 @@ class CreatureLife {
     }
 
     determineElderSize = () => {
-        let chipAwayAmount = roundToPlace(this.creature.adultSize * SizingAmounts.ELDER_SHRINK, 1);
+        let chipAwayAmount = roundToPlace(this.creature.adultSize * CreatureDefaults.ELDER_SHRINK, 1);
+
+        return this.creature.adultSize - chipAwayAmount;
+    }
+
+    determineDeceasedSize = () => {
+        let chipAwayAmount = roundToPlace(this.creature.adultSize * CreatureDefaults.DECEASED_SHRINK, 1);
 
         return this.creature.adultSize - chipAwayAmount;
     }
@@ -299,7 +329,7 @@ class CreatureMovement {
     }
 
     move = (objects, plants, creatures, CanvasInfo) => {
-        console.log('moving creature');
+        //console.log('moving creature');
         // if the creature is dead, don't move at all.
         if (this.creature.life.lifeStage === LifeStage.DECEASED) {
             return;

@@ -1,5 +1,40 @@
 import { CanvasInfo } from "../constants/canvasConstants";
 
+// time and rounding methods
+export const minutesToMilliseconds = (minutes) => {
+    let minuteMilliseconds = Math.round(1000 * 60 * minutes);
+    return minuteMilliseconds;
+}
+
+export const millisecondsToMinutes = (milliseconds) => {
+    let minutes = milliseconds / 1000 / 60;
+    let secondsRemainder = (minutes - Math.floor(minutes)) * 60;
+    minutes = Math.floor(minutes);
+    let millisecondsRemainder = (secondsRemainder - Math.floor(secondsRemainder)) * 1000;
+    let seconds = Math.floor(secondsRemainder);
+    let ms = Math.round(millisecondsRemainder);
+    return `${minutes } min, ${seconds} sec, ${ms} ms`;
+}
+
+export const roundToPlace = (number, decimalPlaces) => {
+    let timesAmount = decimalPlaces === 0 ? 1 : Math.pow(10, decimalPlaces);
+    let newNumber = number * timesAmount;
+    newNumber = Math.round(newNumber);
+    newNumber = newNumber / timesAmount;
+    return newNumber;
+}
+
+// color methods
+// - is exactly color A, 1 is exactly color B
+export const blendColors = (colorA, colorB, amount) => {
+    const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+    const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+    const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+    const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+    const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+    return '#' + r + g + b;
+}
+
 // adding and removing items
 export const addItemToArray = (item, array, setFunction) => {
     if (!item || !array || !setFunction) {
