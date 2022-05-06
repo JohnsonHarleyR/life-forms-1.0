@@ -1,5 +1,5 @@
 import { FoodType } from "../../constants/objectConstants";
-import { MoveMode, Direction, LifeStage, CreatureDefaults, AmountNeeded } from "../../constants/creatureConstants";
+import { MoveMode, Direction, LifeStage, CreatureDefaults, AmountNeeded, Gender } from "../../constants/creatureConstants";
 import { 
     determineSightDirection,
     determineSightCoordinates
@@ -16,11 +16,11 @@ export default class Creature {
         this.id = id;
         this.adultSize = size;
         this.adultColor = color;
+        this.gender = gender;
         this.life = new CreatureLife(this, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder);
         this.energy = energy;
         this.size = this.life.determineSize();
-        this.color = color;
-        this.gender = gender;
+        this.color = this.life.determineColor();
         this.type = type;
         this.foodType = FoodType.PREY; // this will always be prey - it helps a predator determine if it's food or not - this is included in plants too
         this.width = this.size; // Necessary?
@@ -169,21 +169,39 @@ class CreatureLife {
     }
 
     determineColor = () => {
+        let def = this.creature.adultColor;
+
+        switch(this.creature.gender) {
+            case Gender.MALE:
+                def = blendColors(def, CreatureDefaults.MALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
+                break;
+            case Gender.FEMALE:
+                def = blendColors(def, CreatureDefaults.FEMALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
+                break;
+            default:
+                break;
+        }
+
         switch (this.lifeStage) {
             case LifeStage.CHILD:
-                return this.creature.adultColor;
+                return def;
             default:
             case LifeStage.ADULT:
-                return this.creature.adultColor;
+                return def;
             case LifeStage.ELDER:
-                return this.determineElderColor();
+                return this.determineElderColor(def);
             case LifeStage.DECEASED:
-                return CreatureDefaults.DEATH_COLOR;
+                return this.determineDeceasedColor(def);
         }
     }
 
-    determineElderColor = () => {
-        let c = blendColors(this.creature.adultColor, CreatureDefaults.DEATH_COLOR, .5);
+    determineElderColor = (def) => {
+        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .5);
+        return c;
+    }
+
+    determineDeceasedColor = (def) => {
+        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .9);
         return c;
     }
 

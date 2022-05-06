@@ -25,7 +25,7 @@ export const roundToPlace = (number, decimalPlaces) => {
 }
 
 // color methods
-// - is exactly color A, 1 is exactly color B
+// 0 is exactly color A, 1 is exactly color B
 export const blendColors = (colorA, colorB, amount) => {
     const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
     const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));

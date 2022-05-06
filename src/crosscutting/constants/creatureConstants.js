@@ -21,8 +21,11 @@ export const CreatureDefaults = {
     CHILD_MIN_FRACTION: .2,
     CHILD_MIN: 2.5,
     ELDER_SHRINK: .1,
-    DECEASED_SHRINK: .3,
-    DEATH_COLOR: "#808080"
+    DECEASED_SHRINK: .25,
+    DEATH_COLOR: "#808080",
+    FEMALE_COLOR: "#F020D1",
+    MALE_COLOR: "#001CDA",
+    GENDER_BLEND_AMOUNT: .15
 }
 
 export const Gender = {
