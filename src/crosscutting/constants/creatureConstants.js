@@ -46,9 +46,25 @@ export const AmountNeeded = {
     MAX: "MAX"
 }
 
+export const ActionType = {
+    FIND_SAFETY: "FIND_SAFETY",
+    FEED_SELF: "FEED_SELF", // if shelter, and food in shelter, eat food in shelter, otherwise eat outside shelter
+    FEED_FAMILY: "FEED_FAMILY", // bring food to shelter, eat from shelter if hunger over 20%
+    CREATE_SHELTER: "CREATE_SHELTER",
+    LEAVE_SHELTER: "LEAVE_SHELTER",
+    SLEEP_IN_SHELTER: "SLEEP_IN_SHELTER",
+    SLEEP_IN_SPOT: "SLEEP_IN_SPOT",
+    FIND_MATE: "FIND_MATE",
+    MATE: "MATE",
+    DIE: "DIE",
+    NONE: "NONE"
+}
+
 export const NeedType = {
     FOOD: "FOOD",
-    SHELTER: "SHELTER"
+    SHELTER: "SHELTER",
+    SLEEP: "SLEEP",
+    MATE: "MATE"
 }
 
 export const CreatureType = {
@@ -75,7 +91,8 @@ export const Boop = {
     fractionAsChild: .1,
     fractionAsElder: .15,
     sleepNeeded: AmountNeeded.AVG,
-    foodNeeded: AmountNeeded.AVG
+    foodNeeded: AmountNeeded.AVG,
+    matingNeeded: AmountNeeded.AVG
 };
 
 export const Bleep = {
@@ -97,5 +114,6 @@ export const Bleep = {
     fractionAsChild: .1,
     fractionAsElder: .15,
     sleepNeeded: AmountNeeded.MAX,
-    foodNeeded: AmountNeeded.MIN
+    foodNeeded: AmountNeeded.MIN,
+    matingNeeded: AmountNeeded.MAX
 };

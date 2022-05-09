@@ -29,19 +29,19 @@ export const createCreatures = (objects, plants, shelters, setCreatures, setPlan
     //array.push(creature); // HACK this is only while there is a main creature to test
 
     // add test creatures
-    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Boop, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Bleep, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Bleep, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Boop, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Boop, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Bleep, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Bleep, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
 
     return array;
 }
 
-const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, creatures, objects, plants, shelters, setCreatures, setPlants, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
+const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, mother, father, creatures, objects, plants, shelters, setCreatures, setPlants, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
     let index = creatures.length;
     let randomPosition = getRandomCreatureStartPosition(info, creatures, objects, plants, shelters);
     let creature = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
-        targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
+        mother: mother, father: father, targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
     return creature;
 }
 
@@ -85,8 +85,12 @@ export const setCreatureResult = (creature, result) => {
     creature.size = result.size;
     creature.width = result.width;
     creature.height = result.height;
-    creature.food = result.food;
+    creature.energy = result.energy;
     creature.life = result.life;
+    creature.family = result.family;
+    creature.safety = result.safety;
+    creature.needs = result.needs;
+    creature.food = result.food;
     creature.targetType = result.targetType;
     creature.currentTarget = result.currentTarget;
     creature.targetPosition = result.targetPosition;

@@ -6,6 +6,10 @@ export default class Shelter {
         this.position = position;
         this.color = color;
         this.size = creatureSize * ShelterLine.MULTIPLIER;
+
+        this.inventory = {
+            food: []
+        };
     }
 
     getXStart = () => {
