@@ -59,7 +59,7 @@ export default class Creature {
         this.targetPosition = targetPosition;
 
         this.position = position;
-        this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed, MoveMode.SEARCH);
+        this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed);
     
     
         this.setPlants = setPlants;
@@ -88,13 +88,14 @@ export default class Creature {
         };
     }
 
-    update = (objects, plants, creatures, CanvasInfo) => {
+    update = (objects, plants, creatures, shelters, CanvasInfo) => {
         // do other update stuff
         this.life.updateLife();
         //TODO check for predators in view
         this.safety.updateSafety();
         this.needs.updateNeeds();
-        this.movement.move(this, objects, plants, creatures, CanvasInfo); // act
+        this.movement.updateMovement(objects, plants, creatures, shelters, CanvasInfo);
+        //this.movement.move(this, objects, plants, creatures, CanvasInfo); // act
 
         return this.returnProperties();
     }

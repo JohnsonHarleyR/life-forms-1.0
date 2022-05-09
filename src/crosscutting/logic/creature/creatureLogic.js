@@ -3,6 +3,7 @@ import {
     getPositionDifference
 } from "../universalLogic";
 import { Direction } from "../../constants/creatureConstants";
+import { ShelterLine } from "../../constants/canvasConstants";
 
 
 export const getSightLineInfo = (creature) => {
@@ -28,6 +29,9 @@ const setCreatureDirectionByTargetPosition = (creature) => {
     creature.movement.setDirection(dif.xDifference, dif.yDifference);
 }
 
+// creature Corners
+
+
 
 // methods about creature sight
 export const determineSightDirection = (creature) => {
@@ -35,7 +39,7 @@ export const determineSightDirection = (creature) => {
 
     let creatureDirection = m.direction;
     let creaturePosition = creature.position;
-    let targetPosition = m.targetPosition;
+    let targetPosition = creature.targetPosition;
     // check to see if there is only one direction listed - if so, return that
     if (creatureDirection.x && !creatureDirection.y) {
         return creatureDirection.x;
@@ -152,4 +156,13 @@ const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
         yEnd: yEnd + offset.y
     };
     return result;
+}
+
+// shelter logic
+export const getRandomShelterPosition = (creature, creatures, objects, shelters) => {
+    let shelterSize = creature.size * ShelterLine.MULTIPLIER;
+    let shelterInfo = {width: shelterSize, height: shelterSize};
+    // don't worry about plants
+    let position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters);
+    return position;
 }

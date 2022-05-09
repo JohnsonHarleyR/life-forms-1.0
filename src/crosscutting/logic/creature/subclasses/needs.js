@@ -24,6 +24,7 @@ export default class CreatureNeeds {
         } 
 
         this.priority = this.determinePriority();
+        this.previousPriority = null;
 
         this.lastUpdate = Date.now();
 
@@ -42,10 +43,15 @@ export default class CreatureNeeds {
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
 
         // make sure creature is still alive - DONE?
+        
+        // set previous priority before changing the priority
+        this.previousPriority = this.priority;
 
         // set the priority based on new levels
         this.priority = this.determinePriority();
         //console.log(`priority for ${this.creature.id}: ${this.priority}`);
+
+        this.priorityComplete = false;
 
         // set lastUpdate after all this
         this.lastUpdate = newUpdate;
@@ -64,6 +70,21 @@ export default class CreatureNeeds {
                 break;
             }
         }
+
+        // only set the new priority is priority is complete OR new priority is about death, falling asleep, running away
+        if (!this.priorityComplete && (this.priority === ActionType.DIE ||
+            (this.priority === ActionType.FEED_SELF && this.foodLevel.percent <= 15) || 
+            this.priority === ActionType.LEAVE_SHELTER)) {
+                return  this.priority;
+            }
+
+        // What as I doing with the above part again?
+
+        // if the priority is complete or the priority does not equal previous, set priorityComplete to false;
+        if (this.priorityComplete || newPriority !== this.priority) {
+            this.priorityComplete = false;
+        }
+
         return newPriority;
     }
 

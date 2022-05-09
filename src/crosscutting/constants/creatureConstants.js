@@ -13,7 +13,9 @@ export const MoveMode = {
     TOWARD_POINT: "TOWARD_POINT",
     SEARCH: "SEARCH",
     HIDE: "HIDE",
-    WANDER: "WANDER"
+    WANDER: "WANDER",
+    THINK: "THINK", // for determining the next action,
+    NONE: "NONE"
 };
 
 export const CreatureDefaults = {
@@ -64,7 +66,8 @@ export const NeedType = {
     FOOD: "FOOD",
     SHELTER: "SHELTER",
     SLEEP: "SLEEP",
-    MATE: "MATE"
+    MATE: "MATE",
+    NONE: "NONE"
 }
 
 export const CreatureType = {

@@ -1,4 +1,6 @@
 import { CanvasInfo } from "../constants/canvasConstants";
+import { Corner, Side } from "../constants/objectConstants";
+import { Direction } from "../constants/creatureConstants";
 
 // time and rounding methods
 export const minutesToMilliseconds = (minutes) => {
@@ -69,6 +71,14 @@ export const removeItemFromArray = (itemId, array, setFunction) => {
 
 // position and collision methods
 
+export const isInPosition = (currentPosition, newPosition) => {
+    if (currentPosition.x === newPosition.x && 
+      currentPosition.y === newPosition.y) {
+        return true;
+      }
+    return false;
+  }
+
 export const getPositionDifference = (startPosition, endPosition) => {
     let xDifference = endPosition.x - startPosition.x;
     let yDifference = endPosition.y - startPosition.y;
@@ -104,6 +114,46 @@ export const getStartAndEndPoints = (position, width, height) => {
     }
 }
 
+export const getArrayOfCorners = (creationInfo) => {
+    let sae = getStartAndEndPoints(creationInfo.position, creationInfo.width, creationInfo.height);
+    let corners = [
+        getCornerObject(Corner.TOP_LEFT,sae.xStart, sae.yStart),
+        getCornerObject(Corner.TOP_RIGHT, sae.xEnd, sae.yStart),
+        getCornerObject(Corner.BOTTOM_RIGHT, sae.xStart, sae.yEnd),
+        getCornerObject(Corner.BOTTOM_RIGHT, sae.xEnd, sae.yEnd)
+    ];
+    return corners;
+}
+
+const getCornerObject = (corner, x, y) => {
+    return {
+        name: corner,
+        x: x,
+        y: y
+    }
+}
+
+export const addCornerSidesToArray = (corner, array) => {
+    switch (corner.name) {
+        case Corner.TOP_LEFT:
+          array.push(Side.TOP);
+          array.push(Side.LEFT);
+          break;
+        case Corner.TOP_RIGHT:
+          array.push(Side.TOP);
+          array.push(Side.RIGHT);
+          break;
+        case Corner.BOTTOM_LEFT:
+          array.push(Side.BOTTOM);
+          array.push(Side.LEFT);
+          break;
+        case Corner.BOTTOM_RIGHT:
+          array.push(Side.BOTTOM);
+          array.push(Side.RIGHT);
+          break;
+      }
+}
+
 export const isOnCanvas = ({startX, endX, startY, endY}) => {
     let width = CanvasInfo.WIDTH;
     let height = CanvasInfo.HEIGHT;
@@ -132,6 +182,8 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
   
     return randomPosition;
 }
+
+
 
 export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null) => {
     let creationPoints = getStartAndEndPoints(creationInfo.position, creationInfo.width, creationInfo.height);
@@ -289,3 +341,45 @@ const getCollisionCheckPoints = ({xStart, xEnd, yStart, yEnd, width, height}) =>
 
     return points;
 }
+
+export const getTriangleMovePosition = (
+    currentPosition,
+    xTotal,
+    xDirection,
+    yTotal,
+    yDirection,
+    speed
+  ) => {
+    if (!xTotal || !yTotal) {
+      return currentPosition;
+    }
+  
+    // console.log(
+    //   `xDirection: ${xDirection}, yDirection: ${yDirection}, speed: ${speed}`
+    // );
+  
+    //console.log(`xTotal: ${xTotal}, yTotal: ${yTotal}`);
+    let zTotal = Math.sqrt(Math.pow(xTotal, 2) + Math.pow(yTotal, 2));
+  
+    //console.log(`zTotal: ${zTotal}`);
+    let ratio = speed / zTotal;
+  
+    let xDistance = xTotal * ratio;
+    let yDistance = yTotal * ratio;
+  
+    let x =
+      xDirection === Direction.EAST
+        ? currentPosition.x + xDistance
+        : currentPosition.x - xDistance;
+  
+    let y =
+      yDirection === Direction.SOUTH
+        ? currentPosition.y + yDistance
+        : currentPosition.y - yDistance;
+  
+  
+    //console.log(`new Y: ${y}`);
+    // TODO consider adding an offet to this for the sake of sight direction stuff
+  
+    return { x: Math.round(x), y: Math.round(y) };
+  };

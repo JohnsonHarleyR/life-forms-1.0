@@ -113,7 +113,7 @@ const drawCreatureLines = (canvas, canvasInfo, creature) => {
 
 const drawPathLine = (canvas, creature) => {
     let xStart = creature.position.x;
-    let yStart = creature.position.x;
+    let yStart = creature.position.y;
     let xEnd = creature.targetPosition.x;
     let yEnd = creature.targetPosition.y;
     drawLine(canvas, PathLine.COLOR, PathLine.LINE_WIDTH, xStart, xEnd, yStart, yEnd);
