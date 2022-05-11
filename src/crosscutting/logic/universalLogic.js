@@ -1,4 +1,4 @@
-import { CanvasInfo } from "../constants/canvasConstants";
+import { CanvasInfo, Axis } from "../constants/canvasConstants";
 import { Corner, Side } from "../constants/objectConstants";
 import { Direction } from "../constants/creatureConstants";
 
@@ -96,7 +96,7 @@ export const getCenterPosition = (xStart, yStart, width, height) => {
     return {x: x, y: y};
 }
 
-export const getStartAndEndPoints = (position, width, height) => { 
+export const getStartAndEndPoints = (id, position, width, height) => { 
     let halfWidth = width / 2;
     let halfHeight = height / 2;
     let xStart = position.x - halfWidth;
@@ -104,6 +104,7 @@ export const getStartAndEndPoints = (position, width, height) => {
     let yStart = position.y - halfHeight;
     let yEnd = position.y + halfHeight;
     return {
+        id: id,
         width: width,
         height: height,
         position: position,
@@ -111,6 +112,19 @@ export const getStartAndEndPoints = (position, width, height) => {
         xEnd: xEnd,
         yStart: yStart,
         yEnd: yEnd
+    }
+}
+
+export const getObjectStartAndEndPoints = (obj) => { 
+    return {
+        id: obj.id,
+        width: obj.width,
+        height: obj.height,
+        position: obj.position,
+        xStart: obj.xStart,
+        xEnd: obj.xEnd,
+        yStart: obj.yStart,
+        yEnd: obj.yEnd
     }
 }
 
@@ -152,6 +166,7 @@ export const addCornerSidesToArray = (corner, array) => {
           array.push(Side.RIGHT);
           break;
       }
+    return array;
 }
 
 export const isOnCanvas = ({startX, endX, startY, endY}) => {
@@ -173,7 +188,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
         let x = Math.floor((Math.random() * maxX));
         let y = Math.floor((Math.random() * maxY));
         randomPosition = {x: x, y: y};
-        let creationInfo = {position: randomPosition, width: info.width, height: info.height};
+        let creationInfo = {id: null, position: randomPosition, width: info.width, height: info.height};
   
       // validate position
       isCollision = isAnyCollision(creationInfo, creatures, objects, plants, shelters, largestCreatureSize, excludeCreatureId);
@@ -186,7 +201,8 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null) => {
-    let creationPoints = getStartAndEndPoints(creationInfo.position, creationInfo.width, creationInfo.height);
+    let id = creationInfo.id ? creationInfo.id : null;
+    let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 
     if (!isOnCanvas({...creationPoints})) {
         return true;
@@ -194,20 +210,22 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
 
     // loop through each one
     //console.log('checking objects');
-    if (checkAnyArrayCollision(creationPoints, objects, largestCreatureSize)) {
+    let result = checkAnyArrayCollision(creationPoints, objects, largestCreatureSize);
+    if (result.isCollision) {
         return true;
     }
     //console.log('checking plants');
-    if (checkAnyArrayCollision(creationPoints, plants, largestCreatureSize)) {
+    result = checkAnyArrayCollision(creationPoints, plants, largestCreatureSize);
+    if (result.isCollision) {
         return true;
     }
     //console.log('checking shelters');
-    if (checkAnyArrayCollision(creationPoints, shelters, largestCreatureSize)) {
+    result = checkAnyArrayCollision(creationPoints, shelters, largestCreatureSize);
+    if (result.isCollision) {
         return true;
     }
 
     // THIS IS SPECIFICALLY FOR IF THE COLLISION BEING CHECKED IS FOR A CREATURE
-    let result;
     if (excludeCreatureId) {
         let creaturesCopy = creatures.map(c => {
             if (c.id !== excludeCreatureId) {
@@ -221,36 +239,59 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
         result = checkAnyArrayCollision(creationPoints, creatures, largestCreatureSize);
     }
     // it's the last check so return the result
-    return result;
+    return result.isCollision;
 }
 
-const checkAnyArrayCollision = (creationPoints, array, padding = 0) => {
+// idForSmaller is in case we want to specify which item to count as "smaller"
+//(mainly for creature object collisions in case an object is smaller than the creature)
+export const checkAnyArrayCollision = (creationPoints, array, padding = 0, idForSmaller = null) => {
+    let result = false;
+    let collidedWith = null;
+    let pointsToCollide = null;
+    let smallerId = idForSmaller;
     for (let i = 0; i < array.length; i++) {
         let a = array[i];
-        let comparePoints = getStartAndEndPoints(a.position, a.width, a.height);
-        if(isCollision(creationPoints, comparePoints, padding)) {
-            return true;
+        let id = a.id ? a.id : null;
+        let comparePoints = getStartAndEndPoints(id, a.position, a.width, a.height);
+        let collisionResult = isCollision(creationPoints, comparePoints, padding, idForSmaller)
+        if(collisionResult.isCollision) {
+            result = true;
+            collidedWith = a;
+            pointsToCollide = collisionResult.collisionPoints;
+            smallerId = collisionResult.smallId;
+            break;
         }
     }
-    return false;
+    return {
+        isCollision: result,
+        smallerId: smallerId,
+        pointsOfCollision: pointsToCollide,
+        collidedWith: collidedWith
+    };
 }
 
 
-export const getCollisionInfo = () => { // TODO write method - this will include corner information
+// idForSmaller is in case we want to specify which item to count as "smaller"
+//(mainly for creature object collisions in case an object is smaller than the creature)
+export const isCollision = (creation1, creation2, padding = 0, idForSmaller = null) => {
 
-}
+    let creation1Points = getStartAndEndPoints(creation1.id, creation1.position, creation1.width, creation1.height);
+    let creation2Points = getStartAndEndPoints(creation2.id, creation2.position, creation2.width, creation2.height);
 
-
-
-export const isCollision = (creation1, creation2, padding = 0) => {
-
-    let creation1Points = getStartAndEndPoints(creation1.position, creation1.width, creation1.height);
-    let creation2Points = getStartAndEndPoints(creation2.position, creation2.width, creation2.height);
-
+    let large;
+    let small;
     let creationsBySize = determineLargest(creation1Points, creation2Points);
 
-    let large = creationsBySize.large;
-    let small = getCollisionCheckPoints({...creationsBySize.small});
+    if (idForSmaller !== null && creation1Points.id === idForSmaller) {
+        creationsBySize.large = creation2Points;
+        creationsBySize.small = creation1Points;
+    } else if (idForSmaller !== null && creation2Points.id === idForSmaller) {
+        creationsBySize.large = creation1Points;
+        creationsBySize.small = creation2Points;
+    }
+
+    large = creationsBySize.large;
+    small = getCollisionCheckPoints({...creationsBySize.small});
 
     let halfPadding = padding / 2;
     large.xStart = large.xStart - halfPadding;
@@ -259,15 +300,21 @@ export const isCollision = (creation1, creation2, padding = 0) => {
     large.yEnd = large.yEnd + halfPadding;
 
     let collision = false;
+    let collisionPoints = [];
     for (let i = 0; i < small.length; i++) {
         let point = small[i];
         if (point.x >= large.xStart && point.x <= large.xEnd && 
             point.y >= large.yStart && point.y <= large.yEnd) {
                 collision = true;
-                break;
+                collisionPoints.push(point);
             }
     }
-    return collision;
+    return {
+        isCollision: collision,
+        collisionPoints: collisionPoints,
+        collidedWith: large,
+        smallId: creationsBySize.small.id
+    };
 }
 
 const determineLargest = (creation1, creation2) => {
@@ -295,46 +342,55 @@ const getCollisionCheckPoints = ({xStart, xEnd, yStart, yEnd, width, height}) =>
     let halfHeight = height / 2;
 
     points.push({ // 0
+        point: Corner.TOP_LEFT,
         x: xStart,
         y: yStart
     });
 
     points.push({ // 1
+        point: Side.TOP,
         x: xStart + halfWidth,
         y: yStart
     });
 
     points.push({ // 2
+        point: Corner.TOP_RIGHT,
         x: xEnd,
         y: yStart
     });
 
     points.push({ // 3
+        point: Side.LEFT,
         x: xStart,
         y: yStart + halfHeight
     });
 
     points.push({ // 4
+        point: Side.CENTER,
         x: xStart + halfWidth,
         y: yStart + halfHeight
     });
 
     points.push({ // 5
+        point: Side.RIGHT,
         x: xEnd,
         y: yStart + halfHeight
     });
 
     points.push({ // 6
+        point: Corner.BOTTOM_LEFT,
         x: xStart,
         y: yEnd
     });
 
     points.push({ // 7
+        point: Side.BOTTOM,
         x: xStart + halfWidth,
         y: yEnd
     });
 
     points.push({ // 8
+        point: Corner.BOTTOM_RIGHT,
         x: xEnd,
         y: yEnd
     });
@@ -383,3 +439,42 @@ export const getTriangleMovePosition = (
   
     return { x: Math.round(x), y: Math.round(y) };
   };
+
+export const determineAxisBySide = (side) => {
+    if (!side) {
+        throw "Side is null or undefined for determineAxisBySide.";
+      }
+      if (side === Side.TOP || side === Side.BOTTOM) {
+        return Axis.X;
+      }
+      return Axis.Y;
+}
+
+export const getCornerPositionFromStartAndEndPoints = (cornerName, points) => {
+    let position = {
+        x: null,
+        y: null
+    }
+    switch (cornerName) {
+        case Corner.TOP_LEFT:
+            position.x = points.xStart;
+            position.y = points.yStart;
+            break;
+        case Corner.TOP_RIGHT:
+            position.x = points.xEnd;
+            position.y = points.yStart;
+            break;
+        case Corner.BOTTOM_LEFT:
+            position.x = points.xStart;
+            position.y = points.yEnd;
+            break;
+        case Corner.BOTTOM_RIGHT:
+            position.x = points.xEnd;
+            position.y = points.yEnd;
+            break;
+        default:
+            break;
+    }
+
+    return position;
+}

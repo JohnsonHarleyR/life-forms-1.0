@@ -2,14 +2,17 @@ import { LifeStage, ActionType, NeedType } from "../../../constants/creatureCons
 import { Direction } from "../../../constants/creatureConstants";
 import { determineSightCoordinates,
     getRandomShelterPosition,
-    determineSightDirection, getRandomCreatureStartPosition } from "../creatureLogic";
+    determineSightDirection,
+    getRandomCreatureStartPosition,
+    getPositionInNewDirection} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
     getRandomStartPosition } from "../../universalLogic";
-import { checkAllCreatureObjectCollisions } from "../../object/objectsLogic";
+import { checkAllCreatureObjectCollisions, 
+  determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
 
 export default class CreatureMovement {
@@ -61,7 +64,7 @@ export default class CreatureMovement {
     }
 
     move = (objects, plants, creatures, shelters, canvasInfo, targetPosition = null) => {
-        console.log(`${this.creature.id} start: ${JSON.stringify(this.creature.position)}`);
+        //console.log(`${this.creature.id} start: ${JSON.stringify(this.creature.position)}`);
 
         
         //console.log('moving creature');
@@ -99,7 +102,7 @@ export default class CreatureMovement {
 
         this.creature.position = newPosition;
 
-        console.log(`${this.creature.id} end: ${JSON.stringify(newPosition)}`);
+        //console.log(`${this.creature.id} end: ${JSON.stringify(newPosition)}`);
     }
 
     determineModeByPriority = () => {
@@ -162,7 +165,7 @@ export default class CreatureMovement {
         
         // otherwise, what to do if searching for shelter
         } else if (this.creature.targetType === NeedType.SHELTER) {
-            newPosition = this.searchForShelter(plants, creatures, objects, canvasInfo);
+            newPosition = this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
         }
     
     
@@ -172,7 +175,7 @@ export default class CreatureMovement {
       }
 
     searchForShelter = (plants, creatures, objects, shelters, canvasInfo) => {
-        console.log('searchForShelter');
+        //console.log('searchForShelter');
         let newPosition = this.creature.position;
     
         // if a position does exist, move toward that position
@@ -180,7 +183,7 @@ export default class CreatureMovement {
 
 
         // for now do testing with this to get methods writting
-        newPosition = this.moveToPoint(this.creature.targetPosition, objects);
+        newPosition = this.moveToPoint(this.creature.targetPosition, objects, canvasInfo);
     
         // check if the creature is in that position. If so, create a shelter.
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
@@ -192,15 +195,15 @@ export default class CreatureMovement {
         return newPosition;
     }
 
-    runTest = (objects) => { // TODO add shelters
+    runTest = (objects, canvasInfo) => { // TODO add shelters
         // first test moving to a point
-        return this.moveToPoint(this.creature.targetPosition, objects);
+        return this.moveToPoint(this.creature.targetPosition, objects, canvasInfo);
     }
 
-    moveToPoint = (endPosition, objects) => {
+    moveToPoint = (endPosition, objects, canvasInfo) => {
         let newPosition = this.creature.position;
 
-        let result = this.moveTowardPosition(endPosition, objects);
+        let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
         if (result.success) {
             newPosition = result.forPosition;
             //this.finishedFirstDirection = false;
@@ -212,16 +215,13 @@ export default class CreatureMovement {
             }
       
           } else {
-            //console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
-            // this.objectCollided = result.objectCollided;
-            // newPosition = this.moveAroundObject(
-            //   endPosition,
-            //   result.forPosition,
-            //   result.difference,
-            //   result.objectCollided,
-            //   result.collisionSide,
-            //   canvasInfo
-            // );
+            console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
+            this.objectCollided = result.objectCollided;
+            newPosition = this.moveAroundObject(
+              result.objectCollided,
+              result.collisionSide,
+              canvasInfo
+            );
           }
 
         return newPosition;
@@ -229,6 +229,21 @@ export default class CreatureMovement {
 
     moveToRandomPosition = (objects, canvasInfo) => {
         console.log('moveToRandomPosition');
+    }
+
+    moveAroundObject = (obj, collisionSide, canvasInfo) => {
+      console.log(`Collision side: ${collisionSide}`);
+      this.sideOfCollision = collisionSide;
+      if (this.newDirection === null || this.previousSide !== collisionSide) {
+        this.newDirection = determineDirectionByTarget(this.creature, this.sideOfCollision, obj, canvasInfo);
+      console.log(`new direction: ${this.newDirection}`);
+      }
+      this.previousSide = collisionSide;
+
+      // now determine the new position based on the new direction
+      let newPosition = getPositionInNewDirection(this.creature, this.newDirection);
+
+      return newPosition;
     }
 
     moveTowardPosition = (endPosition, objects) => {

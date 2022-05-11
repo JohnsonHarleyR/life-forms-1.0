@@ -17,7 +17,8 @@ export const Side = {
     LEFT: "LEFT",
     RIGHT: "RIGHT",
     TOP: "TOP",
-    BOTTOM: "BOTTOM"
+    BOTTOM: "BOTTOM",
+    CENTER: "CENTER"
 };
 
 export const Corner = {

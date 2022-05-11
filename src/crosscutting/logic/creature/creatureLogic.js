@@ -139,6 +139,31 @@ export const determineSightCoordinates = (creature, sightDirection, canvasInfo) 
     return result;
 }
 
+export const getPositionInNewDirection = (creature, direction) => {
+    let newX = creature.position.x;
+    let newY = creature.position.y;
+    switch (direction) {
+      case Direction.NORTH:
+        newY = creature.position.y - creature.movement.speed;
+        break;
+      case Direction.SOUTH:
+        newY = creature.position.y + creature.movement.speed;
+        break;
+      case Direction.WEST:
+        newX = creature.position.x - creature.movement.speed;
+        break;
+      case Direction.EAST:
+        newX = creature.position.x + creature.movement.speed;
+        break;
+      default:
+        break;
+    }
+    return {
+      x: newX,
+      y: newY
+    };
+  };
+
 const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
     if (!offset) {
         offset = {
