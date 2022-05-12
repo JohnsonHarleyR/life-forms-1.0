@@ -12,7 +12,10 @@ export default class CreatureSafety {
     }
 
     updateSafety = () => {
-
+        // update shelter is there is a shelter
+        if (this.shelter !== null) {
+            this.shelter.updateShelter();
+        }
     }
 
     // TODO write method to check if creature is inside of shelter

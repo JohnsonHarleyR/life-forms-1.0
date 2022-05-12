@@ -1,4 +1,6 @@
 import { ShelterLine } from "../../../constants/canvasConstants";
+import { removeItemFromArray } from "../../universalLogic";
+import { LifeStage } from "../../../constants/creatureConstants";
 
 export default class Shelter {
     constructor(id, position, color, creatureSize) {
@@ -10,6 +12,65 @@ export default class Shelter {
         this.inventory = {
             food: []
         };
+        this.totalFoodEnergy = 0;
+
+        this.members = [];
+    }
+
+    updateShelter = () => {
+        // check that all the members are still part of this shelter
+        this.updateMembers();
+
+        // update Food Energy
+        this.updateFoodEnergy();
+    }
+
+    updateFoodEnergy = () => {
+        let total = 0;
+        this.inventory.food.forEach(f => {
+            total += f.energy;
+        });
+        this.totalFoodEnergy = total;
+    }
+
+    addMemberToShelter = (newMember) => {
+        if (!this.isMemberOfShelter(newMember.id)) {
+            this.members.push(newMember);
+        }
+    }
+
+    removeMemberFromShelter = (memberId) => {
+        if (this.isMemberOfShelter(memberId)) {
+            let newList = [];
+            this.members.forEach(m => {
+                if (m.id !== memberId) {
+                    newList.push(m);
+                }
+            });
+            this.members = newList;
+        }
+    }
+
+    updateMembers = () => {
+        let newList = [];
+        this.members.forEach(m => {
+            if (m.safety.shelter !== null && 
+                m.safety.shelter.id === this.id && 
+                m.life.lifeStage !== LifeStage.DECEASED) {
+                    newList.push(m);
+                }
+        });
+        this.members = newList();
+    }
+
+    isMemberOfShelter = (creatureId) => {
+        let result = false;
+        this.members.forEach(m => {
+            if (m.id === creatureId) {
+                result = true;
+            }
+        } );
+        return result;
     }
 
     getXStart = () => {
