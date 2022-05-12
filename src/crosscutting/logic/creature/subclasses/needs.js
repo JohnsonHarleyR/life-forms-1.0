@@ -1,5 +1,6 @@
 import { LifeStage, ActionType, AmountNeeded } from "../../../constants/creatureConstants";
 import { roundToPlace } from "../../universalLogic";
+import { doesPotentialMateExist } from "../creatureLogic";
 
 export default class CreatureNeeds {
     constructor(creature, foodNeeded, sleepNeeded, matingNeeded) {
@@ -30,7 +31,7 @@ export default class CreatureNeeds {
 
     }
 
-    updateNeeds = () => {
+    updateNeeds = (creatures) => {
         let newUpdate = Date.now();
         //let timeLapsed = newUpdate - this.lastUpdate;
 
@@ -48,7 +49,7 @@ export default class CreatureNeeds {
         this.previousPriority = this.priority;
 
         // set the priority based on new levels
-        this.priority = this.determinePriority();
+        this.priority = this.determinePriority(creatures);
         //console.log(`priority for ${this.creature.id}: ${this.priority}`);
 
         this.priorityComplete = false;
@@ -58,14 +59,14 @@ export default class CreatureNeeds {
     }
 
 
-    determinePriority = () => {
+    determinePriority = (creatures) => {
         // if the priority is not none, complete action? (consider)
         let possiblePriorities = this.getPriorityOrder();
 
         // loop through priorities and find the one that meets a condition
         let newPriority = ActionType.NONE;
         for (let i = 0; i < possiblePriorities.length; i++) {
-            if (possiblePriorities[i].meetsCondition()) {
+            if (possiblePriorities[i].meetsCondition(creatures)) {
                 newPriority = possiblePriorities[i].priority;
                 break;
             }
@@ -84,7 +85,7 @@ export default class CreatureNeeds {
         if (this.priorityComplete || newPriority !== this.priority) {
             this.priorityComplete = false;
         }
-        //console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
+        console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
         return newPriority;
     }
 
@@ -202,9 +203,10 @@ export default class CreatureNeeds {
                 priority: ActionType.FEED_FAMILY
             },
             {
-                meetsCondition: () => {
-                    if(this.creature.family.mate === null || 
-                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED) {
+                meetsCondition: (creatures) => {
+                    if((this.creature.family.mate === null || 
+                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
+                        && doesPotentialMateExist(this.creature, creatures)) {
                             return true;
                         }
                         return false;

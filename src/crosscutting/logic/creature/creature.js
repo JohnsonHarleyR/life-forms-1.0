@@ -93,7 +93,7 @@ export default class Creature {
         this.life.updateLife();
         //TODO check for predators in view
         this.safety.updateSafety();
-        this.needs.updateNeeds();
+        this.needs.updateNeeds(creatures);
         this.movement.updateMovement(objects, plants, creatures, shelters, CanvasInfo);
         //this.movement.move(this, objects, plants, creatures, CanvasInfo); // act
 

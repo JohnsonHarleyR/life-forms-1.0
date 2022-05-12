@@ -5,7 +5,7 @@ import {
     isAnyCollision,
     checkAnyArrayCollision
 } from "../universalLogic";
-import { Direction, ActionType, NeedType, MoveMode } from "../../constants/creatureConstants";
+import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage } from "../../constants/creatureConstants";
 import { ShelterLine } from "../../constants/canvasConstants";
 
 
@@ -239,6 +239,37 @@ export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
         didSeeTarget: didSeeTarget,
         targetsSeen: targetsSeen
     };
+}
+
+// mating logic
+export const getOppositeGender = (gender) => {
+    switch(gender) {
+        case Gender.MALE:
+            return Gender.FEMALE;
+        case Gender.FEMALE:
+            return Gender.MALE;
+        default:
+            return null;
+    }
+}
+export const doesPotentialMateExist = (creature, allCreatures) => {
+    let result = false;
+    allCreatures.forEach(c => {
+        if (isPotentialMate(creature, c)) {
+            result = true;
+        }
+    });
+    return result;
+}
+
+export const isPotentialMate = (creature, otherCreature) => {
+    if (creature.type === otherCreature.type &&
+        otherCreature.gender === getOppositeGender(creature.gender) &&
+        otherCreature.family.mate === null && 
+        otherCreature.life.lifeStage === LifeStage.ADULT) {
+            return true;
+        }
+    return false;
 }
 
 
