@@ -23,7 +23,7 @@ export const SightLine = {
 
 export const ShelterLine = {
     LINE_WIDTH: 2,
-    MULTIPLIER: 2
+    MULTIPLIER: 4
 };
 
 export const Axis = {

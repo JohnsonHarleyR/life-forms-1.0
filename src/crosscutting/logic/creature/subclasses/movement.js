@@ -195,7 +195,8 @@ export default class CreatureMovement {
           if (!canSetShelterInPosition(this.creature.targetPosition, this.creature.adultSize, creatures, objects, shelters)) {
             this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
           } else {
-            let newShelter = new Shelter(this.creature.position, this.creature.color, this.creature.size);
+            let shelterId = `sh${shelters.length}`;
+            let newShelter = new Shelter(shelterId, this.creature.position, this.creature.color, this.creature.size);
             newShelter.addMemberToShelter(this.creature);
             addItemToArray(newShelter, shelters, this.creature.setShelters);
           }

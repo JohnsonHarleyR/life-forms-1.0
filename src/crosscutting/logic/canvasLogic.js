@@ -138,8 +138,38 @@ const drawSightBox = (canvas, canvasInfo, creature) => { // TODO - finish creatu
 
 // shelter drawing
 
-const drawShelter = (canvas, canvasInfo, creature) => { 
-// TODO
+export const drawAllShelters = (canvas, shelters) => {
+    if (shelters) {
+        shelters.forEach(s => {
+            drawShelter(canvas, s);
+        })
+
+        if (shelters.length > 0) {
+            console.log('shelters drawn');
+        }
+    }
+}
+
+const drawShelter = (canvas, shelter) => { 
+    let color = shelter.color;
+    let lineWidth = ShelterLine.LINE_WIDTH;
+    let xStart = shelter.getXStart();
+    let yStart = shelter.getYStart();
+    let xEnd = shelter.getXEnd();
+    let yEnd = shelter.getYEnd();
+  
+    // draw each line edge
+  
+    // Top
+    drawLine(canvas, color, lineWidth, xStart, xEnd, yStart, yStart);
+    // Bottom
+    drawLine(canvas, color, lineWidth, xStart, xEnd, yEnd, yEnd);
+    // Left
+    drawLine(canvas, color, lineWidth, xStart, xStart, yStart, yEnd);
+    // Right
+    drawLine(canvas, color, lineWidth, xEnd, xEnd, yStart, yEnd);
+
+    // TODO add food energy number inside square
 }
 
 

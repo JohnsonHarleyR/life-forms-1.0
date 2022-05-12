@@ -29,7 +29,7 @@ const Canvas = () => {
         setObjects(objs);
         let newCreatures = createCreatures(objs, plants, shelters, setCreatures, setPlants, setShelters);
         setCreatures(newCreatures);
-        renderCanvas(canvasRef, newCreatures, plants, objs);
+        renderCanvas(canvasRef, newCreatures, plants, objs, shelters);
         //setInitialTargetRefValues();
     }, []);
 
@@ -56,7 +56,7 @@ const Canvas = () => {
             //console.log(JSON.stringify(creaturesCopy));
             setCreatures(creaturesCopy);
         }
-        renderCanvas(canvasRef, creatures, plants, objects);
+        renderCanvas(canvasRef, creatures, plants, objects, shelters);
     }, [time]);
 
     useEffect(() => {
