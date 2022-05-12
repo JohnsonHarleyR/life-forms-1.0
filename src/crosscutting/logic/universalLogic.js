@@ -178,7 +178,7 @@ export const isOnCanvas = ({startX, endX, startY, endY}) => {
     return true;
 }
 
-export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null) => {
+export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
     let maxX = CanvasInfo.WIDTH - (info.width); // this prevents going over edge
     let maxY = CanvasInfo.HEIGHT - (info.height);
   
@@ -191,7 +191,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
         let creationInfo = {id: null, position: randomPosition, width: info.width, height: info.height};
   
       // validate position
-      isCollision = isAnyCollision(creationInfo, creatures, objects, plants, shelters, largestCreatureSize, excludeCreatureId);
+      isCollision = isAnyCollision(creationInfo, creatures, objects, plants, shelters, largestCreatureSize, excludeCreatureId, checkForPlants);
   
     } while (isCollision);
   
@@ -200,7 +200,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 
-export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null) => {
+export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 
@@ -215,9 +215,11 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
         return true;
     }
     //console.log('checking plants');
-    result = checkAnyArrayCollision(creationPoints, plants, largestCreatureSize);
-    if (result.isCollision) {
-        return true;
+    if (checkForPlants) {
+        result = checkAnyArrayCollision(creationPoints, plants, largestCreatureSize);
+        if (result.isCollision) {
+            return true;
+        }
     }
     //console.log('checking shelters');
     result = checkAnyArrayCollision(creationPoints, shelters, largestCreatureSize);

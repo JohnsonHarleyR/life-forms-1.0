@@ -5,13 +5,14 @@ import { determineSightCoordinates,
     determineSightDirection,
     getRandomCreatureStartPosition,
     getPositionInNewDirection,
-  checkSightAreaForItemInArray} from "../creatureLogic";
+    checkSightAreaForItemInArray,
+    canSetShelterInPosition} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
-    getRandomStartPosition } from "../../universalLogic";
+    getRandomStartPosition, addItemToArray } from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
@@ -182,14 +183,23 @@ export default class CreatureMovement {
         // if a position does exist, move toward that position
         // then set it to move to that position.
 
+        // TODO check for predators in the area - change target to random spot if there is one
+        // ensure that the target position still does not overlap with any shelters
+
 
         // for now do testing with this to get methods writting
         newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
     
         // check if the creature is in that position. If so, create a shelter.
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+          if (!canSetShelterInPosition(this.creature.targetPosition, this.creature.adultSize, creatures, objects, shelters)) {
+            this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
+          } else {
             let newShelter = new Shelter(this.creature.position, this.creature.color, this.creature.size);
-            this.creature.shelter = newShelter;
+            newShelter.addMemberToShelter(this.creature);
+            addItemToArray(newShelter, shelters, this.creature.setShelters);
+          }
+
         }
     
         // return new position
@@ -339,7 +349,7 @@ export default class CreatureMovement {
         // sight targeting methods
 
     checkForPredators = () => {
-      
+
     }
 
     getSightCoordinates = (canvasInfo) => {

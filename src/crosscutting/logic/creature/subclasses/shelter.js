@@ -1,5 +1,5 @@
 import { ShelterLine } from "../../../constants/canvasConstants";
-import { removeItemFromArray } from "../../universalLogic";
+import { getStartAndEndPoints } from "../../universalLogic";
 import { LifeStage } from "../../../constants/creatureConstants";
 
 export default class Shelter {
@@ -36,18 +36,20 @@ export default class Shelter {
     addMemberToShelter = (newMember) => {
         if (!this.isMemberOfShelter(newMember.id)) {
             this.members.push(newMember);
+            newMember.safety.shelter = this;
         }
     }
 
-    removeMemberFromShelter = (memberId) => {
-        if (this.isMemberOfShelter(memberId)) {
+    removeMemberFromShelter = (member) => {
+        if (this.isMemberOfShelter(member.id)) {
             let newList = [];
             this.members.forEach(m => {
-                if (m.id !== memberId) {
+                if (m.id !== member.id) {
                     newList.push(m);
                 }
             });
             this.members = newList;
+            member.safety.shelter = null;
         }
     }
 
@@ -60,7 +62,7 @@ export default class Shelter {
                     newList.push(m);
                 }
         });
-        this.members = newList();
+        this.members = newList;
     }
 
     isMemberOfShelter = (creatureId) => {

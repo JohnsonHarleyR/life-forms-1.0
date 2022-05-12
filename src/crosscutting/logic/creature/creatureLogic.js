@@ -1,7 +1,8 @@
 import { 
     getRandomStartPosition,
     getPositionDifference,
-    getStartAndEndPoints
+    getStartAndEndPoints,
+    isAnyCollision
 } from "../universalLogic";
 import { Direction } from "../../constants/creatureConstants";
 import { ShelterLine } from "../../constants/canvasConstants";
@@ -245,6 +246,12 @@ export const getRandomShelterPosition = (creature, creatures, objects, shelters)
     let shelterSize = creature.size * ShelterLine.MULTIPLIER;
     let shelterInfo = {width: shelterSize, height: shelterSize};
     // don't worry about plants
-    let position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters);
+    let position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, 0, null, false);
     return position;
+}
+
+export const canSetShelterInPosition = (position, creatureSize, creatures, objects, shelters) => {
+    let shelterSize = creatureSize * ShelterLine.MULTIPLIER;
+    let creationInfo = {id: null, position: position, width: shelterSize, height: shelterSize};
+    return isAnyCollision(creationInfo, creatures, objects, [], shelters, 0, null, false);
 }
