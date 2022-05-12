@@ -169,10 +169,10 @@ export const addCornerSidesToArray = (corner, array) => {
     return array;
 }
 
-export const isOnCanvas = ({startX, endX, startY, endY}) => {
+export const isOnCanvas = (points) => {
     let width = CanvasInfo.WIDTH;
     let height = CanvasInfo.HEIGHT;
-    if (startX < 0 || endX >= width || startY < 0 || endY >= height) {
+    if (points.xStart < 0 || points.xEnd >= width || points.yStart < 0 || points.yEnd >= height) {
         return false;
     }
     return true;
@@ -204,7 +204,7 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 
-    if (!isOnCanvas({...creationPoints})) {
+    if (!isOnCanvas(creationPoints)) {
         return true;
     }
 
@@ -229,9 +229,10 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
 
     // THIS IS SPECIFICALLY FOR IF THE COLLISION BEING CHECKED IS FOR A CREATURE
     if (excludeCreatureId) {
-        let creaturesCopy = creatures.map(c => {
+        let creaturesCopy = [];
+        creatures.forEach(c => {
             if (c.id !== excludeCreatureId) {
-                return c;
+                creaturesCopy.push(c);
             }
         });
         //console.log(`checking creatures without id ${excludeCreatureId}`);

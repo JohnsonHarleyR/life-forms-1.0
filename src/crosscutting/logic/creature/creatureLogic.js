@@ -2,9 +2,10 @@ import {
     getRandomStartPosition,
     getPositionDifference,
     getStartAndEndPoints,
-    isAnyCollision
+    isAnyCollision,
+    checkAnyArrayCollision
 } from "../universalLogic";
-import { Direction } from "../../constants/creatureConstants";
+import { Direction, ActionType, NeedType, MoveMode } from "../../constants/creatureConstants";
 import { ShelterLine } from "../../constants/canvasConstants";
 
 
@@ -250,8 +251,28 @@ export const getRandomShelterPosition = (creature, creatures, objects, shelters)
     return position;
 }
 
-export const canSetShelterInPosition = (position, creatureSize, creatures, objects, shelters) => {
-    let shelterSize = creatureSize * ShelterLine.MULTIPLIER;
+export const canSetShelterInPosition = (position, creature, creatures, objects, shelters) => {
+    let shelterSize = creature.adultSize * ShelterLine.MULTIPLIER;
     let creationInfo = {id: null, position: position, width: shelterSize, height: shelterSize};
-    return isAnyCollision(creationInfo, creatures, objects, [], shelters, 0, null, false);
+    let collisionResult = isAnyCollision(creationInfo, creatures, objects, [], shelters, 0, creature.id, false);
+
+    // if the result is still false, also loop through creatures - if they are setting up shelter, check their target position
+    if (!collisionResult) {
+        let futureShelters = [];
+        creatures.forEach(c => {
+            if (c.id !== creature.id && c.needs.priority === ActionType.CREATE_SHELTER 
+                && c.movement.moveMode === MoveMode.SEARCH && c.targetType ==NeedType.SHELTER) {
+                let futureShelterSize = c.adultSize * ShelterLine.MULTIPLIER;
+                let futureShelter = {id: null, position: c.targetPosition, width: futureShelterSize, height: futureShelterSize};
+                futureShelters.push(futureShelter);
+            }
+        });
+        if (futureShelters.length > 0) {
+            let creationPoints = getStartAndEndPoints(null, creationInfo.position, creationInfo.width, creationInfo.height);
+            collisionResult = checkAnyArrayCollision(creationPoints, futureShelters, 2).isCollision;
+        }
+    }
+
+    // if the result 
+    return !collisionResult;
 }

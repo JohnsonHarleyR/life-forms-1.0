@@ -142,11 +142,7 @@ export const drawAllShelters = (canvas, shelters) => {
     if (shelters) {
         shelters.forEach(s => {
             drawShelter(canvas, s);
-        })
-
-        if (shelters.length > 0) {
-            console.log('shelters drawn');
-        }
+        });
     }
 }
 
