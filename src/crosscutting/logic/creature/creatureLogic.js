@@ -1,6 +1,7 @@
 import { 
     getRandomStartPosition,
-    getPositionDifference
+    getPositionDifference,
+    getStartAndEndPoints
 } from "../universalLogic";
 import { Direction } from "../../constants/creatureConstants";
 import { ShelterLine } from "../../constants/canvasConstants";
@@ -182,6 +183,62 @@ const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
     };
     return result;
 }
+
+// predator/prey logic
+export const getListOfPredators = (preyType, creatures) => {
+    let predators = [];
+    creatures.forEach(c => {
+        if (c.food.prey.includes(preyType)) {
+            predators.push(c);
+        }
+    });
+    return predators;
+}
+
+export const isPredatorInSightOrChasing = (creature, predator, canvasInfo) => {
+    if (isPredatorInSight(creature, predator, canvasInfo) || 
+        (predator.currentTarget !== null && predator.currentTarget.id === creature.id)) {
+            return true;
+        }
+    return false;
+}
+
+export const isPredatorInSight = (creature, predator, canvasInfo) => {
+    let sightCoords = creature.movement.getSightCoords(canvasInfo);
+    return isInSight(sightCoords, predator);
+}
+
+export const isPreyInSight = (creature, prey, canvasInfo) => {
+    let sightCoords = creature.movement.getSightCoords(canvasInfo);
+    return isInSight(sightCoords, prey);
+}
+
+// sight logic
+export const isInSight = (sightCoords, item) => {
+    let iPoints = getStartAndEndPoints(item.id, item.position, item.width, item.height);
+    if ((iPoints.xStart >= sightCoords.xStart && iPoints.xEnd <= sightCoords.xEnd) &&
+    (iPoints.yStart >= sightCoords.yStart && iPoints.yEnd <= sightCoords.yEnd)) {
+        return true;
+    }
+    return false;
+}
+export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
+    let sightCoords = creature.movement.getSightCoords(canvasInfo);
+    let didSeeTarget = false;
+    let targetsSeen = [];
+    items.forEach(i => {
+        if (isInSight(sightCoords, i)) {
+            didSeeTarget = true;
+            targetsSeen.push(i);
+        }
+    });
+
+    return {
+        didSeeTarget: didSeeTarget,
+        targetsSeen: targetsSeen
+    };
+}
+
 
 // shelter logic
 export const getRandomShelterPosition = (creature, creatures, objects, shelters) => {

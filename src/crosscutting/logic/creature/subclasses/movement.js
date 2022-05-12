@@ -4,7 +4,8 @@ import { determineSightCoordinates,
     getRandomShelterPosition,
     determineSightDirection,
     getRandomCreatureStartPosition,
-    getPositionInNewDirection} from "../creatureLogic";
+    getPositionInNewDirection,
+  checkSightAreaForItemInArray} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
@@ -87,7 +88,7 @@ export default class CreatureMovement {
               //this.targetPosition = this.position;
               break;
             case MoveMode.TOWARD_POINT:
-              newPosition = this.moveToPoint(endPosition, objects);
+              newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
               break;
             case MoveMode.WANDER:
               //console.log('wandering');
@@ -183,7 +184,7 @@ export default class CreatureMovement {
 
 
         // for now do testing with this to get methods writting
-        newPosition = this.moveToPoint(this.creature.targetPosition, objects, canvasInfo);
+        newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
     
         // check if the creature is in that position. If so, create a shelter.
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
@@ -195,12 +196,7 @@ export default class CreatureMovement {
         return newPosition;
     }
 
-    runTest = (objects, canvasInfo) => { // TODO add shelters
-        // first test moving to a point
-        return this.moveToPoint(this.creature.targetPosition, objects, canvasInfo);
-    }
-
-    moveToPoint = (endPosition, objects, canvasInfo) => {
+    moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
         let newPosition = this.creature.position;
 
         let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
@@ -341,6 +337,11 @@ export default class CreatureMovement {
     };
 
         // sight targeting methods
+
+    checkForPredators = () => {
+      
+    }
+
     getSightCoordinates = (canvasInfo) => {
         let direction = null;
         // if there is a newDirection set, use that for determining which way to show the site coordinates
