@@ -192,8 +192,15 @@ export default class CreatureMovement {
     
         // check if the creature is in that position. If so, create a shelter.
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+
+          // let shelterId = `sh${shelters.length}`;
+          // let newShelter = new Shelter(shelterId, this.creature.position, this.creature.color, this.creature.size);
+          // newShelter.addMemberToShelter(this.creature);
+          // addItemToArray(newShelter, shelters, this.creature.setShelters);
+
           if (!canSetShelterInPosition(this.creature.targetPosition, this.creature, creatures, objects, shelters)) {
             this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
+            return this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
           } else {
             let shelterId = `sh${shelters.length}`;
             let newShelter = new Shelter(shelterId, this.creature.position, this.creature.color, this.creature.size);
