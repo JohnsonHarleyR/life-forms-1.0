@@ -75,7 +75,7 @@ export const checkAllCreatureObjectCollisions = (creature, newPosition, objects)
         let objStartAndEndPositions = getObjectStartAndEndPoints(obj);
 
         // now determine collision side by the above info
-        endResult.collisionSide = determineCollisionSideByCollidingPoints(corners, sides, objStartAndEndPositions);
+        endResult.collisionSide = determineCollisionSideByCollidingPoints(creaturePoints, corners, sides, objStartAndEndPositions);
     }
 
     return endResult;
@@ -154,7 +154,7 @@ export const isCreatureObjectCollision = (creature, newPosition, obj) => {
             yStart: obj.yStart,
             yEnd: obj.yEnd
     };
-    collisionSide = determineCollisionSideByCollidingPoints(corners, cornerSides, objPositions);
+    collisionSide = determineCollisionSideByCollidingPoints(creaturePoints, corners, cornerSides, objPositions);
     if (!collisionSide) {
         console.log(`Phantom collision object: ${JSON.stringify(objPositions)}`);
         result = false;
@@ -166,9 +166,40 @@ export const isCreatureObjectCollision = (creature, newPosition, obj) => {
     };
 }
 
+const getMidCoordsBySide = (points, side) => {
+  let halfWidth = points.width / 2;
+  let halfHeight = points.height / 2;
+  switch(side) {
+    case Side.TOP:
+      return {
+        side: side,
+        x: points.xStart + halfWidth,
+        y: points.yStart
+      }
+    case Side.BOTTOM:
+      return {
+        side: side,
+        x: points.xStart + halfWidth,
+        y: points.yEnd
+      }
+    case Side.LEFT:
+      return {
+        side: side,
+        x: points.xStart,
+        y: points.yStart + halfHeight
+      }
+    case Side.RIGHT:
+      return {
+        side: side,
+        x: points.xEnd,
+        y: points.yStart + halfHeight
+      }
+  }
+}
+
 
 // determine which side of an object a creature/other collided with
-export const determineCollisionSideByCollidingPoints = (corners, sides, objPositions) => {
+export const determineCollisionSideByCollidingPoints = (creaturePoints, corners, sides, objPositions) => {
 
 
   let initialSide = null;
@@ -212,7 +243,10 @@ export const determineCollisionSideByCollidingPoints = (corners, sides, objPosit
     // that means it might be a tie so just return the first one?
     if (cornerSides.length > 0) {
       console.log(`Tie for collision side - choosing side ${cornerSides[0]}`);
-      initialSide = cornerSides[0];
+      //initialSide = cornerSides[0];
+      let closest = getSideClosestToOppositeOnObject(cornerSides, creaturePoints, objPositions);
+      console.log(`closest: ${closest}`);
+      initialSide = closest;
     }
 
     if (initialSide) {
@@ -256,6 +290,46 @@ export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo
     
     return direction;
 
+}
+
+const getSideClosestToOppositeOnObject = (sides, points, objPoints) => {
+  let sideToReturn = null;
+  let distanceToAxis = 0;
+  sides.forEach(s => {
+    let objS = getOppositeSide(s);
+    let side = getMidCoordsBySide(points, s);
+    let objSide = getMidCoordsBySide(objPoints, objS);
+
+    let distance = 0;
+
+    let coord = null;
+    let objCoord = null;
+    switch(s) {
+      case Side.TOP:
+      case Side.BOTTOM:
+        coord = side.y;
+        objCoord = objSide.y;
+        break;
+      case Side.LEFT:
+      case Side.RIGHT:
+        coord = side.x;
+        objCoord = objSide.x;
+        break;
+      default:
+        throw "Error in getSideClosestToOppositeOnObject in objectsLogic.";
+    }
+
+    distance = Math.abs(coord - objCoord);
+    if (sideToReturn === null || distance < distanceToAxis) {
+      sideToReturn = s;
+      distanceToAxis = distance;
+    } else if (sideToReturn !== null && distance === distanceToAxis) {
+      console.log(`Tie between side distances.`);
+    }
+    
+  })
+
+  return sideToReturn;
 }
 
 const getOppositeSide = (side) => {

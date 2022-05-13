@@ -332,6 +332,8 @@ export default class CreatureMovement {
         // and can only move up or down, left or right
         let collisionResult = checkAllCreatureObjectCollisions(this.creature, newPosition, objects);
     
+        //TODO write logic to also avoid going over other creature's shelters - move around them
+
         //console.log(newPosition);
         //return newPosition;
         return {

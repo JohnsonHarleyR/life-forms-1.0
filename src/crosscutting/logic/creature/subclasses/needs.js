@@ -85,7 +85,7 @@ export default class CreatureNeeds {
         if (this.priorityComplete || newPriority !== this.priority) {
             this.priorityComplete = false;
         }
-        console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
+        //console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
         return newPriority;
     }
 
