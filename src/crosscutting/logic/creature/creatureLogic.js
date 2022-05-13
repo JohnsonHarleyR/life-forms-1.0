@@ -278,7 +278,11 @@ export const getRandomShelterPosition = (creature, creatures, objects, shelters)
     let shelterSize = creature.size * ShelterLine.MULTIPLIER;
     let shelterInfo = {width: shelterSize, height: shelterSize};
     // don't worry about plants
-    let position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, 0, null, false);
+    let position = null;
+    do {
+        position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, 0, null, false);
+    } while (!canSetShelterInPosition(position, creature, creatures, objects, shelters));
+
     return position;
 }
 

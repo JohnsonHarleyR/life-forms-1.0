@@ -1,6 +1,8 @@
 export const ObjectType = {
     WALL: "WALL",
-    PLANT: "PLANT"
+    PLANT: "PLANT",
+    SHELTER: "SHELTER",
+    CREATURE: "CREATURE"
 };
 
 export const Wall = {

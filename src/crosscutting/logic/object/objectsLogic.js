@@ -65,7 +65,7 @@ export const checkAllCreatureObjectCollisions = (creature, newPosition, objects)
               y: newPos.y
             });
             //addCornerSidesToArray(p, cornerSides);
-          } else if (isSide(p.point)) {
+          } else if (isSide(p.point) && !sides.includes(p.point)) {
             sides.push(p.point);
           }
         });
@@ -109,7 +109,6 @@ export const isCreatureObjectCollision = (creature, newPosition, obj) => {
 
     let creaturePoints = getStartAndEndPoints(creature.id, creature.position, creature.width, creature.height);
     let newCreaturePoints = getStartAndEndPoints(creature.id, newPosition, creature.width, creature.height);
-    let testResult = checkAnyArrayCollision(creaturePoints, );
 
     let creatureCornersStart = getArrayOfCorners(
         {

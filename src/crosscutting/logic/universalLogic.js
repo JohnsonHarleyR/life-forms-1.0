@@ -200,7 +200,8 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 
-export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
+export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters,
+    largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true, isShelterAndObject = false) => {
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 
@@ -247,7 +248,7 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
 
 // idForSmaller is in case we want to specify which item to count as "smaller"
 //(mainly for creature object collisions in case an object is smaller than the creature)
-export const checkAnyArrayCollision = (creationPoints, array, padding = 0, idForSmaller = null) => {
+export const checkAnyArrayCollision = (creationPoints, array, padding = CanvasInfo.OBJECT_PADDING, idForSmaller = null) => {
     let result = false;
     let collidedWith = null;
     let pointsToCollide = null;
@@ -273,16 +274,121 @@ export const checkAnyArrayCollision = (creationPoints, array, padding = 0, idFor
     };
 }
 
+export const isOverlap = (smallerPoints, obj) => {
+    let isOverlap = false;
+    let overlapSides = [];
+
+    let sidesToCheck = getSidesForOverlapMethod(smallerPoints);
+
+    // check all positions along smaller edges for if position is on object
+    sidesToCheck.forEach(s => {
+        if (isAxisPositionInObjectRange(s.axis, s.otherCoord, obj)) {
+
+            for (let i = 0; i < s.length; i++) {
+                let position = {x: null, y: null};
+                switch (s.axis) {
+                    case Axis.X:
+                        position.x = s.startCoord + i;
+                        position.y = s.otherCoord;
+                        break;
+                    case Axis.Y:
+                        position.y = s.startCoord + i;
+                        position.x = s.otherCoord;
+                        break;
+                    default:
+                        throw "Error in isOverlap. No x or y axis specified.";
+                }
+                let isOnObject = isPositionOnObject(position, obj);
+                if (isOnObject) {
+                    isOverlap = true;
+                    overlapSides.push({
+                        point: s.side,
+                        x: position.x,
+                        y: position.y
+                    });
+                }
+            }
+        }
+    });
+    return {
+        isOverlap: isOverlap,
+        overlapSides: overlapSides
+    }
+}
+
+const isAxisPositionInObjectRange = (axis, coord, obj) => {
+    switch (axis) {
+        case Axis.X:
+            if (coord >= obj.yStart && coord <= obj.yEnd) {
+                return true;
+            }
+            return false;
+        case Axis.Y:
+            if (coord >= obj.xStart && coord <= obj.xEnd) {
+                return true;
+            }
+            return false;
+        default:
+            throw "Error in isAxisPositionInObjectRange. Invalid axis specified.";
+    }
+}
+
+const getSidesForOverlapMethod = (smallerPoints) => {
+    let width = smallerPoints.width;
+    let height = smallerPoints.height;
+    let array =
+    [
+        {
+            side: Side.TOP,
+            axis: Axis.X,
+            startCoord: smallerPoints.xStart,
+            otherCoord: smallerPoints.yStart,
+            length: width
+        },
+        {
+            side: Side.BOTTOM,
+            axis: Axis.X,
+            startCoord: smallerPoints.xStart,
+            otherCoord: smallerPoints.yEnd,
+            length: width
+        },
+        {
+            side: Side.LEFT,
+            axis: Axis.Y,
+            startCoord: smallerPoints.yStart,
+            otherCoord: smallerPoints.xStart,
+            length: height
+        },
+        {
+            side: Side.RIGHT,
+            axis: Axis.Y,
+            startCoord: smallerPoints.yStart,
+            otherCoord: smallerPoints.xEnd,
+            length: height
+        }
+    ];
+    return array;
+}
+
+export const isPositionOnObject = (position, objectStartAndEndPoints) => {
+    if (position.x >= objectStartAndEndPoints.xStart &&
+        position.x <= objectStartAndEndPoints.xEnd && 
+        position.y >= objectStartAndEndPoints.yStart &&
+        position.y <= objectStartAndEndPoints.yEnd) {
+            return true;
+    }
+    
+    return false;
+}
+
 
 // idForSmaller is in case we want to specify which item to count as "smaller"
 //(mainly for creature object collisions in case an object is smaller than the creature)
-export const isCollision = (creation1, creation2, padding = 0, idForSmaller = null) => {
+export const isCollision = (creation1, creation2, padding = CanvasInfo.OBJECT_PADDING, idForSmaller = null) => {
 
     let creation1Points = getStartAndEndPoints(creation1.id, creation1.position, creation1.width, creation1.height);
     let creation2Points = getStartAndEndPoints(creation2.id, creation2.position, creation2.width, creation2.height);
 
-    let large;
-    let small;
     let creationsBySize = determineLargest(creation1Points, creation2Points);
 
     if (idForSmaller !== null && creation1Points.id === idForSmaller) {
@@ -293,8 +399,31 @@ export const isCollision = (creation1, creation2, padding = 0, idForSmaller = nu
         creationsBySize.small = creation2Points;
     }
 
-    large = creationsBySize.large;
-    small = getCollisionCheckPoints({...creationsBySize.small});
+    let result = compareLargeAndSmallForCollisionCheck(creationsBySize, padding);
+
+    // if the collision resulted false, switch creationsBySize just to double check collision
+    if (!result.isCollision) {
+        // let creationsBySizeSwitched = switchCreationsBySize(creationsBySize);
+        // result = compareLargeAndSmallForCollisionCheck(creationsBySizeSwitched, padding);
+
+        // try using the isOverlap method
+        let overlapResult = isOverlap(creationsBySize.small, creationsBySize.large);
+        if (overlapResult.isOverlap) {
+            result.isCollision = overlapResult.isOverlap;
+            result.collisionPoints = overlapResult.overlapSides;
+            result.collidedWith = creationsBySize.large;
+            result.smallId = creationsBySize.small.id;
+        }
+
+    }
+
+    return result;
+
+}
+
+const compareLargeAndSmallForCollisionCheck = (creationsBySize, padding) => {
+    let large = {...creationsBySize.large};
+    let small = getCollisionCheckPoints({...creationsBySize.small});
 
     let halfPadding = padding / 2;
     large.xStart = large.xStart - halfPadding;
@@ -306,11 +435,15 @@ export const isCollision = (creation1, creation2, padding = 0, idForSmaller = nu
     let collisionPoints = [];
     for (let i = 0; i < small.length; i++) {
         let point = small[i];
-        if (point.x >= large.xStart && point.x <= large.xEnd && 
-            point.y >= large.yStart && point.y <= large.yEnd) {
-                collision = true;
-                collisionPoints.push(point);
-            }
+        if (isPositionOnObject(point, large)) {
+            collision = true;
+            collisionPoints.push(point);
+        }
+        // if (point.x >= large.xStart && point.x <= large.xEnd && 
+        //     point.y >= large.yStart && point.y <= large.yEnd) {
+        //         collision = true;
+        //         collisionPoints.push(point);
+        //     }
     }
     return {
         isCollision: collision,
@@ -318,6 +451,14 @@ export const isCollision = (creation1, creation2, padding = 0, idForSmaller = nu
         collidedWith: large,
         smallId: creationsBySize.small.id
     };
+}
+
+const switchCreationsBySize = (creationsBySize) => {
+    let large = creationsBySize.small;
+    let small = creationsBySize.large;
+    creationsBySize.large = large;
+    creationsBySize.small = small;
+    return creationsBySize;
 }
 
 const determineLargest = (creation1, creation2) => {
@@ -343,6 +484,12 @@ const getCollisionCheckPoints = ({xStart, xEnd, yStart, yEnd, width, height}) =>
 
     let halfWidth = width / 2;
     let halfHeight = height / 2;
+
+    //let quarterWidth = halfWidth / 2;
+    //let threeQuarterWidth = width - quarterWidth;
+
+    //let quarterHeight = halfHeight / 2;
+    //let threeQuarterHeight = height - quarterHeight;
 
     points.push({ // 0
         point: Corner.TOP_LEFT,
