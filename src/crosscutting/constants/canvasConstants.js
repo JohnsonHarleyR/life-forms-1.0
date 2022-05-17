@@ -24,7 +24,11 @@ export const SightLine = {
 
 export const ShelterLine = {
     LINE_WIDTH: 2,
-    MULTIPLIER: 4
+    MULTIPLIER: 4,
+    FONT: "10px serif",
+    FONT_COLOR: "#000000",
+    X_TEXT_OFFSET: 2,
+    Y_TEXT_OFFSET: 9
 };
 
 export const Axis = {

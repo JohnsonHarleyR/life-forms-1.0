@@ -6,7 +6,7 @@ import {
     checkAnyArrayCollision
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage } from "../../constants/creatureConstants";
-import { ShelterLine } from "../../constants/canvasConstants";
+import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
 
 
 export const getSightLineInfo = (creature) => {
@@ -242,6 +242,28 @@ export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
 }
 
 // mating logic
+export const searchAreaForMate = (creature, allCreatures) => {
+    
+    let sightCoords = creature.movement.getSightCoordinates(CanvasInfo);
+    let isMateFound = false;
+    let newMate = null;
+    // loop through creatures to check if one is in sight and could be a mate
+    for (let i = 0; i < allCreatures.length; i++) {
+        let c = allCreatures[i];
+        if (c.id !== creature.id && isInSight(sightCoords, c) && 
+            isPotentialMate(creature, c)) {
+                isMateFound = true;
+                newMate = c;
+                break;
+            }
+    }
+    return {
+        isMateFound: isMateFound,
+        newMate: newMate
+    }
+}
+
+
 export const getOppositeGender = (gender) => {
     switch(gender) {
         case Gender.MALE:

@@ -4,6 +4,14 @@ import { XMark, PathLine, SightLine, ShelterLine } from "../constants/canvasCons
 
 // basic drawing
 
+const drawText = (canvas, text, font, fontColor, xStart, yStart) => {
+    let ctx = canvas.getContext("2d");
+
+    ctx.font = font;
+    ctx.fillStyle = fontColor;
+    ctx.fillText(text, xStart, yStart);
+}
+
 const drawLine = (canvas, color, lineWidth, xStart, xEnd, yStart, yEnd) => {
     let ctx = canvas.getContext("2d");
 
@@ -166,6 +174,10 @@ const drawShelter = (canvas, shelter) => {
     drawLine(canvas, color, lineWidth, xEnd, xEnd, yStart, yEnd);
 
     // TODO add food energy number inside square
+
+    // draw food amount
+    drawText(canvas, shelter.totalFoodEnergy, ShelterLine.FONT, ShelterLine.FONT_COLOR, 
+        xStart + ShelterLine.X_TEXT_OFFSET, yStart + ShelterLine.Y_TEXT_OFFSET);
 }
 
 

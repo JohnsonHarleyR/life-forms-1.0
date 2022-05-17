@@ -6,7 +6,8 @@ import { determineSightCoordinates,
     getRandomCreatureStartPosition,
     getPositionInNewDirection,
     checkSightAreaForItemInArray,
-    canSetShelterInPosition} from "../creatureLogic";
+    canSetShelterInPosition,
+    searchAreaForMate} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
@@ -174,7 +175,7 @@ export default class CreatureMovement {
             newPosition = this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
         // searching for a mate
         } else if (this.creature.targetType === NeedType.MATE) {
-          
+          newPosition = this.searchForMate(plants, creatures, objects, shelters, canvasInfo);
         }
     
     
@@ -182,6 +183,20 @@ export default class CreatureMovement {
     
         return newPosition;
       }
+
+    searchForMate = (plants, creatures, objects, shelters, canvasInfo) => {
+      // check for a mate in search area
+      let mateResult = searchAreaForMate(this.creature, creatures);
+
+      // if it found one, set the target position to that creature's position
+      // TODO check if they are in the same position - if they are, make them mates
+      if (mateResult.isMateFound) {
+        console.log(`Mate found for ${this.creature.id}: ${mateResult.newMate.id}`);
+        return this.moveToPoint(mateResult.newMate.position, objects, creatures, shelters, canvasInfo);
+      } else {
+        return this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
+      }
+    }
 
     searchForShelter = (plants, creatures, objects, shelters, canvasInfo) => {
         //console.log('searchForShelter');
@@ -248,8 +263,16 @@ export default class CreatureMovement {
         return newPosition;
     }
 
-    moveToRandomPosition = (objects, canvasInfo) => {
+    moveToRandomPosition = (objects, creatures, shelters, canvasInfo) => {
         console.log('moveToRandomPosition');
+            //console.log('moving to random position');
+    // if creature is in the current target position, set the target position to a new random one
+    if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+      this.resetMovementProperties();
+      this.targetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, null, false);
+      //this.logMovementProperties();
+    }
+    return this.moveToPoint(this.targetPosition, objects, creatures, shelters, canvasInfo);
     }
 
     moveAroundObject = (obj, collisionSide, canvasInfo) => {
