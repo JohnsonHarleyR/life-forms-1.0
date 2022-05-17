@@ -127,6 +127,10 @@ export default class CreatureMovement {
                     this.moveMode = MoveMode.SEARCH;
                 }
                 break;
+            case ActionType.FIND_MATE:
+              this.creature.targetType = NeedType.MATE;
+              this.moveMode = MoveMode.SEARCH;
+              break;
             case ActionType.FEED_SELF:
                 this.creature.targetType = NeedType.FOOD;
                 this.moveMode = MoveMode.SEARCH;
@@ -168,6 +172,9 @@ export default class CreatureMovement {
         // otherwise, what to do if searching for shelter
         } else if (this.creature.targetType === NeedType.SHELTER) {
             newPosition = this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
+        // searching for a mate
+        } else if (this.creature.targetType === NeedType.MATE) {
+          
         }
     
     
