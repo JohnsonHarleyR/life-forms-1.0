@@ -41,12 +41,18 @@ export default class CreatureMovement {
         if (this.creature.needs.previousPriority === null || 
             this.creature.needs.previousPriority !== this.creature.needs.priority || 
             this.creature.needs.prioriityComplete) {
+              console.log(`Creature ${this.creature.id} about to think`);
                 this.moveMode = MoveMode.THINK;
                 this.resetMovementProperties(); // keey?
+              if (this.creature.needs.prioriityComplete) {
+                console.log('priority complete');
+                this.creature.needs.priorityComplete = false;
+              }
         }
 
         // if creature is thinking, determine move mode based on priority
         if (this.moveMode === MoveMode.THINK) {
+          console.log(`Creature ${this.creature.id} thinking`);
             this.determineModeByPriority();
             this.creature.targetPosition = this.getInitialTargetPosition(objects, creatures, plants, shelters);
         }
@@ -73,7 +79,7 @@ export default class CreatureMovement {
         //console.log('moving creature');
         // if the creature is dead, don't move at all.
         if (this.creature.life.lifeStage === LifeStage.DECEASED || 
-            this.moveMode === MoveMode.NONE || this.moveMode === MoveMode.STAND_STILL) {
+            this.moveMode === MoveMode.NONE) {
             return;
         }
 
@@ -87,7 +93,8 @@ export default class CreatureMovement {
         switch (this.moveMode) {
             default:
             case MoveMode.STAND_STILL:
-              //this.targetPosition = this.position;
+              //console.log('STAND_STILL');
+              newPosition = this.standStill();
               break;
             case MoveMode.TOWARD_POINT:
               newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
@@ -100,6 +107,17 @@ export default class CreatureMovement {
               // first wander
               // then look at the result to see
               newPosition = this.searchForTarget(plants, creatures, objects, shelters, canvasInfo);
+              break;
+            case MoveMode.GO_TO_SHELTER:
+              newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
+              if (newPosition.x === endPosition.x && newPosition.y === endPosition.y) {
+                this.moveMode = MoveMode.THINK;
+              }
+              break;
+            case MoveMode.COMPLETE_MATING:
+              console.log('COMPLETE_MATING');
+              this.creature.mating.produceOffspring();
+              newPosition = this.creature.position;
               break;
           }
 
@@ -136,6 +154,24 @@ export default class CreatureMovement {
                 this.creature.targetType = NeedType.FOOD;
                 this.moveMode = MoveMode.SEARCH;
                 break;
+            case ActionType.MATE:
+              if (this.creature.safety.shelter) {
+                this.creature.targetType = NeedType.MATE;
+                let centerPosition = this.creature.safety.shelter.getCenterPosition();
+                if (isInPosition(this.creature.position, centerPosition) && 
+                isInPosition(this.creature.family.mate.position, centerPosition)) {
+                  this.moveMode = MoveMode.COMPLETE_MATING;
+                } else {
+                  this.moveMode = MoveMode.GO_TO_SHELTER;
+                }
+              } else {
+                console.log(`error: creature ${this.creature.id} has no shelter`);
+              }
+
+              break;
+            case ActionType.HAVE_CHILD:
+              console.log(`creature ${this.creature.id} HAVE_CHILD`);
+              this.moveMode = MoveMode.STAND_STILL;
 
         }
     }
@@ -149,8 +185,29 @@ export default class CreatureMovement {
                 return getRandomShelterPosition(this.creature, creatures, objects, shelters);
             case ActionType.FEED_SELF:
                 return this.creature.targetPosition; // temp
+            case ActionType.MATE:
+              if (this.creature.safety.shelter) {
+                return this.creature.safety.shelter.getCenterPosition();
+              } else {
+                return this.creature.position;
+              }
 
         }
+    }
+
+    standStill = () => {
+      //console.log(`creature ${this.creature.id} is standing still`);
+      // do actions depending on action type
+      switch (this.creature.needs.priority) {
+        default:
+          break;
+        case ActionType.HAVE_CHILD:
+          console.log(`having child`);
+          this.creature.mating.haveChild();
+          break;
+      }
+
+      return this.creature.position;
     }
 
     searchForTarget = (plants, creatures, objects, shelters, canvasInfo) => {
@@ -185,17 +242,40 @@ export default class CreatureMovement {
       }
 
     searchForMate = (plants, creatures, objects, shelters, canvasInfo) => {
-      // check for a mate in search area
-      let mateResult = searchAreaForMate(this.creature, creatures);
 
-      // if it found one, set the target position to that creature's position
-      // TODO check if they are in the same position - if they are, make them mates
-      if (mateResult.isMateFound) {
-        console.log(`Mate found for ${this.creature.id}: ${mateResult.newMate.id}`);
-        return this.moveToPoint(mateResult.newMate.position, objects, creatures, shelters, canvasInfo);
+      // first determine if they already have a mate target or are a mate target
+      if (this.creature.mating.hasMateTarget) {
+        this.creature.targetPosition = this.creature.mating.mateTarget.position; // make mate position the target
+        // now check if they are in the same position - if so, make that creature their mate
+        let newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+        if (isInPosition(newPosition, this.creature.targetPosition)) {
+          let newMate = this.creature.mating.mateTarget;
+          this.creature.mating.makeMate(newMate);
+          // also change the move mode to think for both creatures so they can proceed to mate
+          this.moveMode = MoveMode.THINK;
+          newMate.movement.moveMode = MoveMode.THINK;
+        }
+        return newPosition;
+      } else if (this.creature.mating.isMateTarget) { // if they are a target, just stay in the same position
+        return this.creature.position;
       } else {
-        return this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
+
+        // check for a mate in search area
+        let mateResult = searchAreaForMate(this.creature, creatures);
+
+        // if it found one, set the target position to that creature's position
+        // TODO check if they are in the same position - if they are, make them mates
+        if (mateResult.isMateFound) {
+          console.log(`Mate found for ${this.creature.id}: ${mateResult.newMate.id}`);
+          this.creature.mating.makeMateTarget(mateResult.newMate);
+          this.creature.targetPosition = mateResult.newMate.position;
+          return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+        } else { // if there's no targeted mate/mate targeting them, then move to random spot to look for a mate
+          return this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
+        }
       }
+
+
     }
 
     searchForShelter = (plants, creatures, objects, shelters, canvasInfo) => {
@@ -245,13 +325,13 @@ export default class CreatureMovement {
             //this.finishedFirstDirection = false;
             // // reset avoid object variables if they need to be reset
             if (this.newDirection) {
-              console.log(`Going in new direction around object`);
+              //console.log(`Going in new direction around object`);
               this.newDirection = null;
               this.previousSide = null;
             }
       
           } else {
-            console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
+            //console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
             this.objectCollided = result.objectCollided;
             newPosition = this.moveAroundObject(
               result.objectCollided,
@@ -264,23 +344,27 @@ export default class CreatureMovement {
     }
 
     moveToRandomPosition = (objects, creatures, shelters, canvasInfo) => {
-        console.log('moveToRandomPosition');
+        //console.log('moveToRandomPosition');
             //console.log('moving to random position');
     // if creature is in the current target position, set the target position to a new random one
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+      //console.log(`creature ${this.creature.id} is in position, targetting new position`);
       this.resetMovementProperties();
-      this.targetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, null, false);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, this.creature.id, false);
+      //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
+      this.creature.targetPosition = newTargetPosition;
       //this.logMovementProperties();
     }
-    return this.moveToPoint(this.targetPosition, objects, creatures, shelters, canvasInfo);
+    //console.log(`creature ${this.creature.id} moving to position ${JSON.stringify(this.creature.targetPosition)}`);
+    return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
     }
 
     moveAroundObject = (obj, collisionSide, canvasInfo) => {
-      console.log(`Collision side: ${collisionSide}`);
+      //console.log(`Collision side: ${collisionSide}`);
       this.sideOfCollision = collisionSide;
       if (this.newDirection === null || this.previousSide !== collisionSide) {
         this.newDirection = determineDirectionByTarget(this.creature, this.sideOfCollision, obj, canvasInfo);
-      console.log(`new direction: ${this.newDirection}`);
+      //console.log(`new direction: ${this.newDirection}`);
       }
       this.previousSide = collisionSide;
 

@@ -26,6 +26,11 @@ export const roundToPlace = (number, decimalPlaces) => {
     return newNumber;
 }
 
+export const getRandomIntInRange = (min, max) => {
+    let result = Math.floor((Math.random() * max) + min)
+    return result;
+}
+
 // color methods
 // 0 is exactly color A, 1 is exactly color B
 export const blendColors = (colorA, colorB, amount) => {

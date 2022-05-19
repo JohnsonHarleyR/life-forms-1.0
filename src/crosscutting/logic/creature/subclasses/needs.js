@@ -119,6 +119,27 @@ export default class CreatureNeeds {
                 },
                 priority: ActionType.DIE
             },
+            { // if the creature is mating, make that the priority
+                meetsCondition: () => {
+                    if (this.creature.family.mate !== null && this.creature.lifeStage !== LifeStage.DECEASED && 
+                        this.creature.mating.isMating === true) {
+                            //console.log(`creature ${this.creature.id} is mating with ${this.creature.family.mate.id}`);
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.MATE
+            },
+            { // if the creature is pregnant, have a child
+                meetsCondition: () => {
+                    if (this.creature.mating.isPregnant) {
+                        console.log(`creature ${this.creature.id} is having a child`);
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.HAVE_CHILD
+            },
             {
                 meetsCondition: () => { // if sleep is less than 5%, they are going to sleep no matter what...
                     if (this.sleepLevel.percent <= 5) {
@@ -145,6 +166,17 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
+            },
+            { // check if they're a target of a mate or they have a mating target - then prioritize finding that mate
+                meetsCondition: () => {
+                    if(this.creature.family.mate === null && 
+                        this.creature.life.lifeStage !== LifeStage.DECEASED
+                        && (this.creature.mating.hasMateTarget || this.creature.mating.isMateTarget)) {
+                            return true;
+                        }
+                        return false;
+                },
+                priority: ActionType.FIND_MATE
             },
             {
                 meetsCondition: () => {

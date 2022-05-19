@@ -222,7 +222,7 @@ export const determineCollisionSideByCollidingPoints = (creaturePoints, corners,
 
 
     // otherwise, use the one corner to determine
-    console.log( `corners: ${corners.length}`);
+    //console.log( `corners: ${corners.length}`);
     let corner = corners[0];
     let position = {x: corner.x, y: corner.y};
     let cornerSides = [];
@@ -430,7 +430,7 @@ const getOppositeSide = (side) => {
     } else if (cornerBDif < cornerADif) {
       cornerToMoveToward = cornerB;
     }
-    console.log(`moving to corner: ${cornerToMoveToward}`);
+    //console.log(`moving to corner: ${cornerToMoveToward}`);
   
     // now use the gathered info to find the direction
     return determineDirectionByAxisAndCorner(axis, cornerToMoveToward);

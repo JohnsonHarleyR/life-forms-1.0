@@ -14,6 +14,8 @@ export const MoveMode = {
     SEARCH: "SEARCH",
     HIDE: "HIDE",
     WANDER: "WANDER",
+    GO_TO_SHELTER: "GO_TO_SHELTER",
+    COMPLETE_MATING: "COMPLETE_MATING",
     THINK: "THINK", // for determining the next action,
     NONE: "NONE"
 };
@@ -58,6 +60,7 @@ export const ActionType = {
     SLEEP_IN_SPOT: "SLEEP_IN_SPOT",
     FIND_MATE: "FIND_MATE",
     MATE: "MATE",
+    HAVE_CHILD: "HAVE_CHILD",
     DIE: "DIE",
     NONE: "NONE"
 }
@@ -95,7 +98,13 @@ export const Boop = {
     fractionAsElder: .15,
     sleepNeeded: AmountNeeded.AVG,
     foodNeeded: AmountNeeded.AVG,
-    matingNeeded: AmountNeeded.AVG
+    matingNeeded: AmountNeeded.AVG,
+    genderOfProvider: Gender.FEMALE,
+    genderOfCaregiver: Gender.MALE,
+    genderOfShelterMaker: Gender.FEMALE,
+    pregnancyTerm: 1, // TODO determine quotient
+    minOffspring: 1,
+    maxOffspring: 3
 };
 
 export const Bleep = {
@@ -118,5 +127,11 @@ export const Bleep = {
     fractionAsElder: .15,
     sleepNeeded: AmountNeeded.MAX,
     foodNeeded: AmountNeeded.MIN,
-    matingNeeded: AmountNeeded.MAX
+    matingNeeded: AmountNeeded.MAX,
+    genderOfProvider: Gender.MALE,
+    genderOfCaregiver: Gender.FEMALE,
+    genderOfShelterMaker: Gender.MALE,
+    pregnancyTerm: .7,  // TODO determine quotient
+    minOffspring: 2,
+    maxOffspring: 5
 };

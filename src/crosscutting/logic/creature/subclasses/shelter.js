@@ -75,6 +75,14 @@ export default class Shelter {
         return result;
     }
 
+    getCenterPosition = () => {
+        return this.position;
+    }
+
+    getRandomPositionInsideShelter = () => {
+
+    }
+
     getXStart = () => {
         let halfSize = this.size / 2;
         return this.position.x - halfSize;

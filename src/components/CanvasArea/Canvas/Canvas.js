@@ -5,7 +5,8 @@ import {
     createObjects,
     createCreatures,
     setCreatureResult,
-    generatePlants
+    generatePlants,
+    updateShelters
 } from './canvasMethods';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 import { Plants } from '../../../crosscutting/constants/plantConstants';
@@ -55,6 +56,8 @@ const Canvas = () => {
             })
             //console.log(JSON.stringify(creaturesCopy));
             setCreatures(creaturesCopy);
+            // update shelters too
+            updateShelters(creatures, setShelters);
         }
         renderCanvas(canvasRef, creatures, plants, objects, shelters);
     }, [time]);

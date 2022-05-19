@@ -82,6 +82,19 @@ export const renderCanvas = (canvasRef, creatures, plants, objects, shelters) =>
     drawAllObjects(canvasRef.current, objects);
 };
 
+export const updateShelters = (creatures, setShelters) => {
+    let shelters = [];
+    let shelterNames = [];
+    creatures.forEach(c => {
+        if (c.safety.shelter !== null && 
+            !shelterNames.includes(c.safety.shelter.id)) {
+                shelterNames.push(c.safety.shelter.id);
+                shelters.push(c.safety.shelter);
+            }
+    })
+    setShelters(shelters);
+}
+
 export const setCreatureResult = (creature, result) => {
     creature.color = result.color;
     creature.size = result.size;
@@ -89,8 +102,9 @@ export const setCreatureResult = (creature, result) => {
     creature.height = result.height;
     creature.energy = result.energy;
     creature.life = result.life;
-    creature.family = result.family;
     creature.safety = result.safety;
+    creature.family = result.family;
+    creature.mating = result.mating;
     creature.needs = result.needs;
     creature.food = result.food;
     creature.targetType = result.targetType;

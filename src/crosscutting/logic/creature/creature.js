@@ -11,6 +11,7 @@ import CreatureNeeds from "./subclasses/needs";
 import CreatureSafety from "./subclasses/safety";
 import CreatureLife from "./subclasses/life";
 import CreatureMovement from "./subclasses/movement";
+import CreatureMating from "./subclasses/mating";
 import { 
     determineSightDirection,
     determineSightCoordinates
@@ -20,6 +21,7 @@ import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLo
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder,
         food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
+        genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring,
         mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
         this.showLines = true;
 
@@ -45,6 +47,7 @@ export default class Creature {
             mother: mother,
             father: father
         };
+        this.mating = new CreatureMating(this, genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring);
     
         this.food = food; // what types of food does the creature eat? Two categories: plants and prey, both arrays
 
@@ -75,8 +78,9 @@ export default class Creature {
             height: this.height,
             energy: this.energy, // TODO consider decreasing energy amount for children, seniors, dead, etc. (Maybe have option to be vulture type? add that stuff later... as enhancements)
             life: this.life,
-            family: this.family,
             safety: this.safety,
+            family: this.family,
+            mating: this.mating,
             needs: this.needs,
             food: this.food,
             targetType: this.targetType,
@@ -93,6 +97,7 @@ export default class Creature {
         this.life.updateLife();
         //TODO check for predators in view
         this.safety.updateSafety();
+        this.mating.updateMating();
         this.needs.updateNeeds(creatures);
         this.movement.updateMovement(objects, plants, creatures, shelters, CanvasInfo);
         //this.movement.move(this, objects, plants, creatures, CanvasInfo); // act
