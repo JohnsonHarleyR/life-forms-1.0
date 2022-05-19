@@ -22,8 +22,17 @@ const LifeProvider = ({children}) => {
                 }
             });
             setLargestCreatureSize(largest);
+            showListOfCreatures();
         }
     }, [creatures]);
+
+    const showListOfCreatures = () => {
+        let str = "creatures: ";
+        creatures.forEach(c => {
+            str += `${c.id}, `;
+        });
+        console.log(str);
+    }
 
 
     return (

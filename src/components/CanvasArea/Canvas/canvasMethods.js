@@ -95,6 +95,34 @@ export const updateShelters = (creatures, setShelters) => {
     setShelters(shelters);
 }
 
+export const updateCreatures = (creatures, setCreatures) => {
+    let newCreatures = [];
+    let creatureNames = [];
+    creatures.forEach(c => {
+        if (!creatureNames.includes(c.id)) {
+            newCreatures.push(c);
+            creatureNames.push(c.id);
+        }
+        c.family.children.forEach(ch => {
+            if (!isInArray(ch.id, creatureNames)) {
+                newCreatures.push(ch);
+                creatureNames.push(ch.id);
+            }
+        })
+    })
+    setCreatures(newCreatures);
+}
+
+const isInArray = (str, array) => {
+    let result = false;
+    array.forEach(a => {
+        if (a === str) {
+            result = true;
+        }
+    });
+    return result;
+}
+
 export const setCreatureResult = (creature, result) => {
     creature.color = result.color;
     creature.size = result.size;

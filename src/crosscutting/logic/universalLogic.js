@@ -183,6 +183,22 @@ export const isOnCanvas = (points) => {
     return true;
 }
 
+export const getRandomPositionInBounds = (xStart, xEnd, yStart, yEnd, padding) => {
+    let width = xEnd - xStart;
+    let height = yEnd - yStart;
+    let x;
+    do {
+        x = Math.floor((Math.random() * width) + xStart);
+    } while (x < xStart - padding || x > xEnd - padding);
+
+    let y;
+    do {
+        y = Math.floor((Math.random() * height) + yStart);
+    } while (y < yStart - padding || y > yEnd - padding);
+
+    return {x: x, y: y};
+}
+
 export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
     let maxX = CanvasInfo.WIDTH - (info.width); // this prevents going over edge
     let maxY = CanvasInfo.HEIGHT - (info.height);

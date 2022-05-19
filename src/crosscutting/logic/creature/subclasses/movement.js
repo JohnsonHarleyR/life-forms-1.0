@@ -94,7 +94,7 @@ export default class CreatureMovement {
             default:
             case MoveMode.STAND_STILL:
               //console.log('STAND_STILL');
-              newPosition = this.standStill();
+              newPosition = this.standStill(creatures);
               break;
             case MoveMode.TOWARD_POINT:
               newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
@@ -195,7 +195,7 @@ export default class CreatureMovement {
         }
     }
 
-    standStill = () => {
+    standStill = (creatures) => {
       //console.log(`creature ${this.creature.id} is standing still`);
       // do actions depending on action type
       switch (this.creature.needs.priority) {
@@ -203,7 +203,7 @@ export default class CreatureMovement {
           break;
         case ActionType.HAVE_CHILD:
           console.log(`having child`);
-          this.creature.mating.haveChild();
+          this.creature.mating.haveChild(creatures);
           break;
       }
 

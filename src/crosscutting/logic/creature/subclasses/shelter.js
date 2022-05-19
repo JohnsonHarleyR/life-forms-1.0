@@ -1,5 +1,8 @@
 import { ShelterLine } from "../../../constants/canvasConstants";
-import { getStartAndEndPoints } from "../../universalLogic";
+import { 
+    getStartAndEndPoints,
+    getRandomPositionInBounds
+} from "../../universalLogic";
 import { LifeStage } from "../../../constants/creatureConstants";
 
 export default class Shelter {
@@ -79,8 +82,10 @@ export default class Shelter {
         return this.position;
     }
 
-    getRandomPositionInsideShelter = () => {
-
+    getRandomPositionInsideShelter = (creatureSize) => {
+        let padding = creatureSize / 2;
+        let result = getRandomPositionInBounds(this.getXStart(), this.getXEnd(), this.getYStart(), this.getYEnd(), padding);
+        return result;
     }
 
     getXStart = () => {

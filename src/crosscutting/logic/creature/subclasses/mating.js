@@ -1,6 +1,7 @@
-import { isPotentialMate } from "../creatureLogic";
+import { isPotentialMate, getRandomGender, getCreatureInfoByType } from "../creatureLogic";
 import { LifeStage, Gender } from "../../../constants/creatureConstants";
-import { getRandomIntInRange } from "../../universalLogic";
+import { getRandomIntInRange, getRandomPositionInBounds, addItemToArray } from "../../universalLogic";
+import Creature from "../creature";
 export default class CreatureMating {
     constructor(creature, genderOfProvider, genderOfCaregiver, genderOfShelterMaker,
         pregnancyTerm, minOffspring, maxOffspring) {
@@ -45,17 +46,61 @@ export default class CreatureMating {
         this.isMating = false;
     }
 
-    haveChild = () => {
+    haveChild = (creatures) => {
         console.log(`Creature ${this.creature.id} is giving birth. Offspring left: ${this.offspringCount}`);
         if (this.isPregnant && this.offspringCount > 0) {
-            // TODO create child
+            let newChild = this.createChild(creatures);
+            this.creature.family.children.push(newChild);
+            if (this.creature.family.mate) {
+                this.creature.family.mate.family.children.push(newChild);
+            }
+            // let creaturesCopy = [...creatures];
+            // creaturesCopy.push(newChild);
+            // this.creature.setCreatures(creaturesCopy);
+            //addItemToArray(newChild, creatures, this.creature.setCreatures);
             this.offspringCount--;
             console.log(`having child - ${this.offspringCount} left`);
         } else if (this.isPregnant && this.offspringCount === 0) {
             console.log(`creature ${this.creature.id} has 0 children left to birth - stopping pregnancy`);
             this.isPregnant = false;
             this.offspringCount = null;
+            this.displayNewChildren(creatures);
         }
+    }
+
+    displayNewChildren = (creatures) => {
+        let str = "children: ";
+        this.creature.family.children.forEach(c => {
+            str += `${c.id}, `;
+        });
+        console.log(str);
+    }
+
+    createChild = (creatures) => {
+        let mother = null;
+        let father = null;
+        let index = creatures.length;
+        let lifeStage = LifeStage.CHILD;
+        let gender = getRandomGender();
+        let randomPosition = this.creature.safety.shelter.getRandomPositionInsideShelter(this.creature.size);
+        let info = getCreatureInfoByType(this.creature.type);
+        let setPlants = this.creature.setPlants;
+        let setCreatures = this.creature.setCreatures;
+        let setShelters = this.creature.setShelters;
+        switch(this.creature.gender) {
+            case Gender.MALE:
+                father = this.creature;
+                mother = this.creature.family.mate;
+                break;
+            case Gender.FEMALE:
+                mother = this.creature;
+                father = this.creature.family.mate;
+                break;
+        }
+
+        let newChild = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
+        mother: mother, father: father, targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
+        return newChild;
     }
 
     makeMate = (newMate) => {

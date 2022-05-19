@@ -3,9 +3,11 @@ import {
     getPositionDifference,
     getStartAndEndPoints,
     isAnyCollision,
-    checkAnyArrayCollision
+    checkAnyArrayCollision,
+    getRandomIntInRange
 } from "../universalLogic";
-import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage } from "../../constants/creatureConstants";
+import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
+    CreatureType, Bleep, Boop } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
 
 
@@ -242,6 +244,30 @@ export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
 }
 
 // mating logic
+
+export const getRandomGender = () => {
+    let random = getRandomIntInRange(0, 1);
+    switch(random) {
+        case 0:
+            return Gender.MALE;
+        case 1:
+            return Gender.FEMALE;
+        default:
+            throw "Error inside of getRandomGender inside of CreatureLogic.js.";
+    }
+}
+
+export const getCreatureInfoByType = (type) => {
+    switch(type) {
+        case CreatureType.BOOP:
+            return Boop;
+        case CreatureType.BLEEP:
+            return Bleep;
+        default:
+            throw "Error: No relevent creature type specified inside getCreatureInfoByType inside of CreatureLogic.js.";
+    }
+}
+
 export const searchAreaForMate = (creature, allCreatures) => {
     
     let sightCoords = creature.movement.getSightCoordinates(CanvasInfo);
