@@ -17,6 +17,10 @@ import { isInPosition, getPositionDifference, getTriangleMovePosition,
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
+import { 
+  makeCreatureDie,
+  makeCreatureSleep
+} from "./logic/actionLogic";
 
 export default class CreatureMovement {
     constructor(creature, sightRadius, sightDistance, speed) {
@@ -130,10 +134,17 @@ export default class CreatureMovement {
         switch(this.creature.needs.priority) {
             default:
             case ActionType.NONE:
-                this.searchNeed = NeedType.NONE;
+                //this.searchNeed = NeedType.NONE;
+                this.creature.targetType = NeedType.NONE;
                 this.resetMovementProperties();
                 this.moveMode = MoveMode.STAND_STILL;
                 break;
+            case ActionType.DIE:
+              this.creature.targetType = NeedType.NONE;
+              this.moveMode = MoveMode.STAND_STILL;
+            case ActionType.SLEEP_IN_SPOT:
+              this.creature.targetType = NeedType.SLEEP;
+              this.moveMode = MoveMode.STAND_STILL;
             case ActionType.CREATE_SHELTER:
                 // if the creature's shelter is not null anymore,
                 // set their priority to complete
@@ -181,6 +192,9 @@ export default class CreatureMovement {
             default:
             case ActionType.NONE:
                 return this.creature.targetPosition; // temp
+            case ActionType.DIE:
+            case ActionType.SLEEP_IN_SPOT:
+              return this.creature.position;
             case ActionType.CREATE_SHELTER:
                 return getRandomShelterPosition(this.creature, creatures, objects, shelters);
             case ActionType.FEED_SELF:
@@ -201,6 +215,11 @@ export default class CreatureMovement {
       switch (this.creature.needs.priority) {
         default:
           break;
+        case ActionType.DIE:
+          makeCreatureDie(this.creature);
+          break;
+        case ActionType.SLEEP_IN_SPOT:
+          makeCreatureSleep(this.creature);
         case ActionType.HAVE_CHILD:
           console.log(`having child`);
           this.creature.mating.haveChild(creatures);

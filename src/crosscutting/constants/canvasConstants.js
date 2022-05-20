@@ -31,6 +31,13 @@ export const ShelterLine = {
     Y_TEXT_OFFSET: 9
 };
 
+export const SleepIndicator = {
+    X_OFFSET: -5,
+    Y_OFFSET: -5,
+    FONT: "10px serif",
+    TEXT: "Z"
+}
+
 export const Axis = {
     X: "X",
     Y: "Y"

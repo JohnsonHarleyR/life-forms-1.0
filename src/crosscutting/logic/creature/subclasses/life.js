@@ -200,6 +200,10 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
     }
 
     determineLifeStage = () => {
+        if (this.lifeStage === LifeStage.DECEASED) {
+            return LifeStage.DECEASED;
+        }
+
         let ranges = [this.stageRanges.child, this.stageRanges.adult, this.stageRanges.elder, this.stageRanges.deceased];
         for (let i = 0; i < ranges.length; i++) {
             let s = ranges[i];

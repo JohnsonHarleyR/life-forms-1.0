@@ -1,4 +1,4 @@
-import { AmountNeeded } from "../constants/creatureConstants";
+import { AmountNeeded, AddOrSubtract, SleepProps } from "../../../../constants/creatureConstants";
 
 export const getAmountNeededDecimal = (amountNeeded) => {
     switch (amountNeeded) {
@@ -29,11 +29,34 @@ export const calculateAmountLost = (msPassed, amountPerMs) => {
     return amountLost;
 }
 
-export const calculateNewAmount = (currentAmount, amountLostPerMs, msPassed) => {
+export const calculateNewAmount = (currentAmount, amountLostPerMs, msPassed, addOrSubtract) => {
     let amountLost = calculateAmountLost(msPassed, amountLostPerMs);
-    let newAmount = currentAmount - amountLost;
+    let newAmount = 0;
+    if (addOrSubtract === AddOrSubtract.ADD) {
+        newAmount = currentAmount + amountLost;
+    } else {
+        newAmount = currentAmount - amountLost;
+    }
     if (newAmount < 0) {
         newAmount = 0;
     }
     return newAmount;
+}
+
+// sleep
+export const calculateSleepRecoveryPerMs = (maxSleep, msPerYear) => {
+    let msForMaxRecovery = calculateMsForMaxSleepRecovery(msPerYear);
+    let sleepPerMs = maxSleep / msForMaxRecovery;
+    return sleepPerMs;
+}
+
+const calculateMsForMaxSleepRecovery = (msPerYear) => {
+    let recoveryRate = calculateFullSleepRecoveryRate();
+    let msForMaxRecover = msPerYear * recoveryRate;
+    return msForMaxRecover;
+}
+
+const calculateFullSleepRecoveryRate = () => {
+    let rate = SleepProps.HOURS_FOR_FULL_RESTORE / SleepProps.HOURS_PER_YEAR;
+    return rate;
 }

@@ -1,4 +1,5 @@
-import { XMark, PathLine, SightLine, ShelterLine } from "../constants/canvasConstants";
+import { XMark, PathLine, SightLine, ShelterLine, SleepIndicator } from "../constants/canvasConstants";
+import { getStartAndEndPoints } from "./universalLogic";
 
 // TODO drawCreature, drawSightBox
 
@@ -103,6 +104,21 @@ const drawCreature = (canvas, canvasInfo, creature) => { // TODO
       creature.size
     );
     ctx.closePath();
+
+    if (creature.needs.isSleeping) {
+        console.log(`drawing sleep for ${creature.id}`);
+        drawSleepIndicator(canvas, creature);
+    }
+}
+
+const drawSleepIndicator = (canvas, creature) => {
+    let points = getStartAndEndPoints(creature.id, creature.position, creature.size, creature.size);
+    let text = SleepIndicator.TEXT;
+    let font = SleepIndicator.FONT;
+    let fontColor = creature.color;
+    let xStart = points.xEnd + SleepIndicator.X_OFFSET;
+    let yStart = creature.yEnd + SleepIndicator.Y_OFFSET;
+    drawText(canvas, text, font, fontColor, xStart, yStart);
 }
 
 const drawCreatureLines = (canvas, canvasInfo, creature) => {

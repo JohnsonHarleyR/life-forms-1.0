@@ -73,6 +73,16 @@ export const NeedType = {
     NONE: "NONE"
 }
 
+export const SleepProps = {
+    HOURS_PER_YEAR: 24,
+    HOURS_FOR_FULL_RESTORE: 8
+}
+
+export const AddOrSubtract = {
+    ADD: "ADD",
+    SUBTRACT: "SUBTRACT"
+}
+
 export const CreatureType = {
     BOOP: "BOOP",
     BLEEP: "BLEEP"
