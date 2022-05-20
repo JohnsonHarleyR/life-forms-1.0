@@ -20,7 +20,7 @@ import {
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 
 export default class Creature {
-    constructor({id, size, color, gender, type, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder,
+    constructor({id, size, color, gender, type, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
         food, energy, sightRadius, sightDistance, position, speed, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded,
         genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring,
         mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
@@ -54,7 +54,8 @@ export default class Creature {
         this.food = food; // what types of food does the creature eat? Two categories: plants and prey, both arrays
 
         this.inventory = {
-            food: []
+            food: [],
+            foodToGatherAtOnce: foodToGatherAtOnce
         };
 
         this.needs = new CreatureNeeds(this, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded);

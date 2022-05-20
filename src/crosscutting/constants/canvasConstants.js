@@ -32,9 +32,9 @@ export const ShelterLine = {
 };
 
 export const SleepIndicator = {
-    X_OFFSET: -5,
-    Y_OFFSET: -5,
-    FONT: "10px serif",
+    X_OFFSET: 3,
+    Y_OFFSET: -10,
+    FONT: "7px serif",
     TEXT: "Z"
 }
 

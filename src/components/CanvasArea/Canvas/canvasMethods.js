@@ -119,7 +119,8 @@ export const updateCreatures = (creatures, setCreatures) => {
                 creatureNames.push(ch.id);
             }
         })
-    })
+    });
+    console.log(`number of creatures: ${newCreatures.length}`);
     setCreatures(newCreatures);
 }
 

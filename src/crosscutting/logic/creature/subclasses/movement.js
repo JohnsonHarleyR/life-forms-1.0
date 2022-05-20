@@ -26,7 +26,8 @@ import {
   eatFoodFromInventory,
   eatFoodFromShelter,
   findFoodTargetInArea,
-  putTargetInFoodInventory
+  putTargetInFoodInventory,
+  addFoodToShelter
 } from "./logic/actionLogic";
 
 export default class CreatureMovement {
@@ -173,6 +174,11 @@ export default class CreatureMovement {
                 this.creature.targetType = NeedType.FOOD_FOR_SELF;
                 this.moveMode = MoveMode.SEARCH;
                 break;
+            case ActionType.FEED_FAMILY:
+              console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY`);
+                this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
+                this.moveMode = MoveMode.SEARCH;
+                break;
             case ActionType.MATE:
               if (this.creature.safety.shelter) {
                 this.creature.targetType = NeedType.MATE;
@@ -206,7 +212,8 @@ export default class CreatureMovement {
             case ActionType.CREATE_SHELTER:
                 return getRandomShelterPosition(this.creature, creatures, objects, shelters);
             case ActionType.FEED_SELF:
-                return this.creature.targetPosition; // temp
+            case ActionType.FEED_FAMILY:
+                return this.creature.position; // temp
             case ActionType.MATE:
               if (this.creature.safety.shelter) {
                 return this.creature.safety.shelter.getCenterPosition();
@@ -258,6 +265,9 @@ export default class CreatureMovement {
         } else if (this.creature.targetType === NeedType.FOOD_FOR_SELF) {
           console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForSelf`);
           newPosition = this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
+        } else if (this.creature.targetType === NeedType.FOOD_FOR_FAMILY) {
+          console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForFamily`);
+          newPosition = this.searchForFoodForFamily(plants, creatures, objects, shelters, canvasInfo);
         }
     
     
@@ -294,6 +304,32 @@ export default class CreatureMovement {
         //console.log(`creature ${this.creature.id} needs to search elsewhere for food`);
         return this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
       }
+    }
+
+    searchForFoodForFamily = (plants, creatures, objects, shelters, canvasInfo) => {
+      // if shelter and if the amount of food in the shelter inventory is greater than the amount to gather at once, let the creature get food for themselves
+      if (this.creature.safety.shelter && this.creature.safety.shelter.inventory.food.length > this.creature.inventory.foodToGatherAtOnce) {
+        return this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
+      } // otherwise, if shelter and if the amount of food in their own inventory is greater than or equal to the amount to gather at once, take that food to shelter inventory
+      else if (this.creature.safety.shelter && this.creature.inventory.food.length >= this.creature.inventory.foodToGatherAtOnce) {
+        // see if creature is inside shelter - if they are, put creature food into shelter inventory
+        if (this.creature.safety.shelter.isInsideShelter(this.creature)) {
+          addFoodToShelter(this.creature);
+          return this.creature.position;
+
+        }  // if they are not, head for the shelter!
+        else {
+          this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
+          return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
+        }
+
+
+      } // otherwise, search for food
+      else {
+        return this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
+      }
+
+      
     }
 
     searchForFoodTarget = (plants, creatures, objects, shelters, canvasInfo) => {

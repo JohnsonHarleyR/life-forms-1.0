@@ -58,6 +58,17 @@ const addFoodEnergyToCreature = (energy, creature) => {
     creature.needs.updateNeedLevels(creature.needs.foodLevel.points, creature.needs.sleepLevel.points, creature.needs.matingLevel.points);
 }
 
+export const addFoodToShelter = (creature) => {
+    if (creature.safety.shelter === null) {
+        return;
+    }
+
+    creature.inventory.food.forEach(f => {
+        creature.safety.shelter.inventory.food.push(f);
+    });
+    creature.inventory.food = [];
+}
+
 export const creatureHasFoodInInventory = (creature) => {
     if (creature.inventory.food.length > 0) {
         return true;

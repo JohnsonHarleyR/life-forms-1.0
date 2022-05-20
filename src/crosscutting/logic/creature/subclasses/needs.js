@@ -55,9 +55,13 @@ export default class CreatureNeeds {
         // TODO determine how much the points have decayed
         let timeLapsed = newUpdate - this.lastUpdate;
 
-        let foodPoints = calculateNewAmount(this.foodLevel.points, this.foodLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT); // TODO change
-        let sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
-        let matingPoints = calculateNewAmount(this.matingLevel.points, this.matingLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
+        let foodPoints = this.foodLevel.points;
+        let sleepPoints = this.sleepLevel.points;
+        let matingPoints = this.matingLevel.points;
+
+        // let foodPoints = calculateNewAmount(this.foodLevel.points, this.foodLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT); // TODO change
+        // let sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
+        // let matingPoints = calculateNewAmount(this.matingLevel.points, this.matingLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
 
         // double check sleep - if the creature is sleeping then recalculate sleep amount
         if (this.isSleeping) {

@@ -117,7 +117,8 @@ const drawSleepIndicator = (canvas, creature) => {
     let font = SleepIndicator.FONT;
     let fontColor = creature.color;
     let xStart = points.xEnd + SleepIndicator.X_OFFSET;
-    let yStart = creature.yEnd + SleepIndicator.Y_OFFSET;
+    let yStart = points.yEnd + SleepIndicator.Y_OFFSET;
+    drawText(canvas, text, font, fontColor, xStart, yStart);
     drawText(canvas, text, font, fontColor, xStart, yStart);
 }
 
