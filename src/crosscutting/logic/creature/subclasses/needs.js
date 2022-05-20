@@ -149,7 +149,8 @@ export default class CreatureNeeds {
                 // TODO write if statement for if creature is eaten
                 meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
                     if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
-                        || this.foodLevel.percent <= 0 || (this.creature.life.age > this.creature.life.lifeSpan)) {
+                        || this.foodLevel.points <= 0 || (this.creature.life.age > this.creature.life.lifeSpan)
+                        || this.creature.life.LifeStage === LifeStage.DECEASED) {
                         return true;
                     }
                     return false;

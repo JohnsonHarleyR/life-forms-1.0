@@ -19,7 +19,14 @@ import { checkAllCreatureObjectCollisions,
 import Shelter from "./shelter";
 import { 
   makeCreatureDie,
-  makeCreatureSleep
+  makeCreatureSleep,
+  eatFood,
+  creatureHasFoodInInventory,
+  creatureHasFoodInShelter,
+  eatFoodFromInventory,
+  eatFoodFromShelter,
+  findFoodTargetInArea,
+  putTargetInFoodInventory
 } from "./logic/actionLogic";
 
 export default class CreatureMovement {
@@ -162,7 +169,8 @@ export default class CreatureMovement {
               this.moveMode = MoveMode.SEARCH;
               break;
             case ActionType.FEED_SELF:
-                this.creature.targetType = NeedType.FOOD;
+              console.log(`creature ${this.creature.id} determineModeByPriority: FEED_SELF`);
+                this.creature.targetType = NeedType.FOOD_FOR_SELF;
                 this.moveMode = MoveMode.SEARCH;
                 break;
             case ActionType.MATE:
@@ -236,22 +244,20 @@ export default class CreatureMovement {
         if (this.creature.targetType === NeedType.SHELTER) {
             
             
-        } else if (this.creature.targetType === NeedType.FOOD) {
+        } else if (this.creature.targetType === NeedType.FOOD_FOR_SELF) {
         }
     
         let newPosition = this.creature.position;
     
     
-        // first what to do if simply searching for food
-        if (this.targetType === FoodType.BOTH || this.targetType === FoodType.PREY || 
-          this.targetType === FoodType.PLANT) {
-        
-        // otherwise, what to do if searching for shelter
-        } else if (this.creature.targetType === NeedType.SHELTER) {
+        if (this.creature.targetType === NeedType.SHELTER) {
             newPosition = this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
         // searching for a mate
         } else if (this.creature.targetType === NeedType.MATE) {
           newPosition = this.searchForMate(plants, creatures, objects, shelters, canvasInfo);
+        } else if (this.creature.targetType === NeedType.FOOD_FOR_SELF) {
+          console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForSelf`);
+          newPosition = this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
         }
     
     
@@ -259,6 +265,66 @@ export default class CreatureMovement {
     
         return newPosition;
       }
+
+    searchForFoodForSelf = (plants, creatures, objects, shelters, canvasInfo) => {
+      // first determine if creature has food in shelter or personal inventory
+      if (creatureHasFoodInShelter(this.creature)) {
+        //console.log(`creature ${this.creature.id} has food in shelter`);
+        if (this.creature.safety.shelter.isInsideShelter(this.creature)) { // if inside shelter, eat from shelter inventory
+          //console.log(`creature ${this.creature.id} is inside shelter`);
+          eatFoodFromShelter(this.creature);
+          this.creature.currentTarget = null;
+          return this.creature.position;
+        } else { // otherwise move to the creature's shelter to eat
+          //console.log(`creature ${this.creature.id} is moving to shelter`);
+          return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
+        }
+
+      } else if (creatureHasFoodInInventory(this.creature)) {
+        //console.log(`creature ${this.creature.id} has food in inventory`);
+        eatFoodFromInventory(this.creature);
+        this.creature.currentTarget = null;
+        return this.creature.position;
+        
+      } else if (this.creature.life.lifeStage === LifeStage.CHILD) { // if child there's not much else to do but be hungry
+        //console.log(`creature ${this.creature.id} is child`);
+        return this.creature.position; // TODO change to moving to random position in shelter
+
+      } else { // otherwise search for food!
+        //console.log(`creature ${this.creature.id} needs to search elsewhere for food`);
+        return this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
+      }
+    }
+
+    searchForFoodTarget = (plants, creatures, objects, shelters, canvasInfo) => {
+      let newPosition = this.creature.position;
+      // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
+      if (this.creature.currentTarget !== null) {
+        //console.log(`creature ${this.creature.id} has food target, moving toward target`);
+        newPosition = this.moveToPoint(this.creature.currentTarget.position, objects, creatures, shelters, canvasInfo);
+        if (isInPosition(newPosition, this.creature.currentTarget.position)) {
+          //console.log(`creature ${this.creature.id} has captured food target`);
+          putTargetInFoodInventory(this.creature);
+        }
+
+         // if there is no current target, search for a target. If one is found, set that to new target and move toward it
+      } else {
+        //console.log(`creature ${this.creature.id} searching for food in area`);
+        let newTarget = findFoodTargetInArea(this.creature, plants, creatures, canvasInfo);
+        if (newTarget !== null) {
+          this.creature.currentTarget = newTarget;
+          //console.log(`creature ${this.creature.id} has new food target found`);
+          this.creature.targetPosition = newTarget.position;
+          newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
+        // if there is no target, move to random position
+        } else {
+          //console.log(`creature ${this.creature.id} sees no food, moving toward random position`);
+          newPosition = this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
+        }
+        
+      }
+      return newPosition;
+    }
 
     searchForMate = (plants, creatures, objects, shelters, canvasInfo) => {
 

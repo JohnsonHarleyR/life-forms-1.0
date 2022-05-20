@@ -9,6 +9,22 @@ import {
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
+import { FoodType } from "../../constants/objectConstants";
+
+
+// search methods
+export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) => {
+    let newTarget = null;
+    possibleTargets.forEach(t => {
+      if (possibleTypes.includes(t.type)) {
+        if ((t.xStart >= sightCoords.xStart && t.xEnd <= sightCoords.xEnd) &&
+            (t.yStart >= sightCoords.yStart && t.yEnd <= sightCoords.yEnd)) {
+              newTarget = t;
+            }
+      }
+    });
+    return newTarget;
+  }
 
 
 export const getSightLineInfo = (creature) => {
@@ -189,6 +205,26 @@ const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
 }
 
 // predator/prey logic
+export const getFoodTargetType = (food) => {
+    let plantCount = 0;
+    let preyCount = 0;
+
+    food.plants.forEach(p => {
+        plantCount++;
+    });
+    food.prey.forEach(p => {
+        preyCount++;
+    });
+    
+    if (plantCount > 0 && preyCount > 0) {
+        return FoodType.BOTH;
+    } else if (plantCount > 0) {
+        return FoodType.PLANT;
+    } else {
+        return FoodType.PREY;
+    }
+}
+
 export const getListOfPredators = (preyType, creatures) => {
     let predators = [];
     creatures.forEach(c => {

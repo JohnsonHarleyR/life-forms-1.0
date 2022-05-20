@@ -66,7 +66,8 @@ export const ActionType = {
 }
 
 export const NeedType = {
-    FOOD: "FOOD",
+    FOOD_FOR_SELF: "FOOD_FOR_SELF",
+    FOOD_FOR_FAMILY: "FOOD_FOR_FAMILY",
     SHELTER: "SHELTER",
     SLEEP: "SLEEP",
     MATE: "MATE",
@@ -81,6 +82,11 @@ export const SleepProps = {
 export const AddOrSubtract = {
     ADD: "ADD",
     SUBTRACT: "SUBTRACT"
+}
+
+export const InventoryLocation = {
+    CREATURE: "CREATURE",
+    SHELTER: "SHELTER"
 }
 
 export const CreatureType = {

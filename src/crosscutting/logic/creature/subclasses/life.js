@@ -132,12 +132,12 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
     }
 
     determineElderColor = (def) => {
-        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .5);
+        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .2);
         return c;
     }
 
     determineDeceasedColor = (def) => {
-        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .9);
+        let c = blendColors(def, CreatureDefaults.DEATH_COLOR, .6);
         return c;
     }
 

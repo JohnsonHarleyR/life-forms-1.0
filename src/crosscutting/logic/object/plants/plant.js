@@ -7,5 +7,6 @@ export default class Plant extends NewObject {
         this.foodType = FoodType.PLANT;
         this.growInterval = growInterval;
         this.energy = energy;
+        this.isEaten = false;
     }
 }

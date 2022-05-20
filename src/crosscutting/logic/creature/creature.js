@@ -14,7 +14,8 @@ import CreatureMovement from "./subclasses/movement";
 import CreatureMating from "./subclasses/mating";
 import { 
     determineSightDirection,
-    determineSightCoordinates
+    determineSightCoordinates,
+    getFoodTargetType
 } from "./creatureLogic";
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 
@@ -33,12 +34,13 @@ export default class Creature {
         this.gender = gender;
         this.life = new CreatureLife(this, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder);
         this.energy = energy;
+        this.isEaten = false;
         this.size = this.life.determineSize();
         this.width = this.size; // Necessary?
         this.height = this.size; // Necessary?
         this.color = this.life.determineColor();
         this.foodType = FoodType.PREY; // this will always be prey - it helps a predator determine if it's food or not - this is included in plants too
-
+        this.foodTargetType = getFoodTargetType(food);
 
         this.safety = new CreatureSafety(this, null, false); // shelter and isBeingChased
         this.family = {

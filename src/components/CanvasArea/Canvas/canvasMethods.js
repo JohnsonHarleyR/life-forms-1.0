@@ -95,16 +95,26 @@ export const updateShelters = (creatures, setShelters) => {
     setShelters(shelters);
 }
 
+export const updatePlants = (plants, setPlants) => {
+    let newPlants = [];
+    plants.forEach(p => {
+        if (!p.isEaten) {
+            newPlants.push(p);
+        }
+    });
+    setPlants(newPlants);
+}
+
 export const updateCreatures = (creatures, setCreatures) => {
     let newCreatures = [];
     let creatureNames = [];
     creatures.forEach(c => {
-        if (!creatureNames.includes(c.id)) {
+        if (!c.isEaten && !creatureNames.includes(c.id)) {
             newCreatures.push(c);
             creatureNames.push(c.id);
         }
         c.family.children.forEach(ch => {
-            if (!isInArray(ch.id, creatureNames)) {
+            if (!ch.isEaten && !isInArray(ch.id, creatureNames)) {
                 newCreatures.push(ch);
                 creatureNames.push(ch.id);
             }
