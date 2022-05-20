@@ -1,8 +1,10 @@
 import { LifeStage, Gender, CreatureDefaults } from "../../../constants/creatureConstants";
-import { millisecondsToMinutes, blendColors, roundToPlace } from "../../universalLogic";
+import { millisecondsToMinutes, blendColors, roundToPlace, calculateMsPerYear } from "../../universalLogic";
 
 export default class CreatureLife { // TODO - make the creature grow up - and perform actions if they do
-    constructor(creature, lifeSpanRange, initialStage, fractionOfLifeAsChild, fractionOfLifeAsElder) {
+    constructor(creature, lifeSpanRange, maxYears, initialStage, fractionOfLifeAsChild, fractionOfLifeAsElder) {
+        this.lifeSpanRange = lifeSpanRange;
+        this.maxYears = maxYears;
         this.lifeSpan = this.determineLifeSpan(lifeSpanRange);
         this.stageRanges = { // each one has a start and end property - elder ends with null
             child: {stage: LifeStage.CHILD, range: this.determineStageRange(LifeStage.CHILD, this.lifeSpan, fractionOfLifeAsChild, fractionOfLifeAsElder)},
@@ -15,6 +17,8 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
         this.age = this.determineInitialAge(initialStage);
         this.lifeStage = initialStage;
         this.birthTime = Date.now() - this.age;
+
+        this.msPerYear = calculateMsPerYear(lifeSpanRange.high, maxYears);
 
         // test
         this.intervals = 0;

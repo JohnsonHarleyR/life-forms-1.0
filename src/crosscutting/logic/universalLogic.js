@@ -3,6 +3,10 @@ import { Corner, Side } from "../constants/objectConstants";
 import { Direction } from "../constants/creatureConstants";
 
 // time and rounding methods
+export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
+    return maxLifeSpan / maxYears;
+}
+
 export const minutesToMilliseconds = (minutes) => {
     let minuteMilliseconds = Math.round(1000 * 60 * minutes);
     return minuteMilliseconds;

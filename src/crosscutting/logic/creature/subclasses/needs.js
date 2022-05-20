@@ -1,14 +1,27 @@
 import { LifeStage, ActionType, AmountNeeded } from "../../../constants/creatureConstants";
 import { roundToPlace } from "../../universalLogic";
 import { doesPotentialMateExist } from "../creatureLogic";
+import { 
+    getAmountNeededDecimal,
+    calculateAmountLostPerMs,
+    calculateNewAmount
+} from "../../needLogic";
 
 export default class CreatureNeeds {
-    constructor(creature, foodNeeded, sleepNeeded, matingNeeded) {
+    constructor(creature, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded) {
         this.creature = creature;
 
-        this.maxFood = this.determineMaxAmount(foodNeeded); // min: 25, avg: 50, max: 75
-        this.maxSleep = this.determineMaxAmount(sleepNeeded);
-        this.maxMating = this.determineMaxAmount(matingNeeded);
+        this.maxFood = maxFood;
+        this.maxSleep = maxSleep;
+        this.maxMating = maxMating;
+
+        this.foodDecayRate = getAmountNeededDecimal(foodNeeded);
+        this.sleepDecayRate = getAmountNeededDecimal(sleepNeeded);
+        this.matingDecayRate = getAmountNeededDecimal(matingNeeded);
+
+        this.foodLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxFood, this.foodDecayRate);
+        this.sleepLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxSleep, this.sleepDecayRate);
+        this.matingLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxMating, this.matingDecayRate);
 
         this.foodLevel = {
             points: this.maxFood / 2,
@@ -36,12 +49,16 @@ export default class CreatureNeeds {
         //let timeLapsed = newUpdate - this.lastUpdate;
 
         // TODO determine how much the points have decayed
-        let foodPoints = this.foodLevel.points; // TODO change
-        let sleepPoints = this.sleepLevel.points;
-        let matingPoints = this.matingLevel.points;
+        let timeLapsed = newUpdate - this.lastUpdate;
+
+        let foodPoints = calculateNewAmount(this.foodLevel.points, this.foodLostPerMs, timeLapsed); // TODO change
+        let sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepLostPerMs, timeLapsed);
+        let matingPoints = calculateNewAmount(this.matingLevel.points, this.matingLostPerMs, timeLapsed);
 
         // now update need levels
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
+
+        //this.displayCreatureNeedLevels();
 
         // make sure creature is still alive - DONE?
         
@@ -56,6 +73,11 @@ export default class CreatureNeeds {
 
         // set lastUpdate after all this
         this.lastUpdate = newUpdate;
+    }
+
+    displayCreatureNeedLevels = () => {
+        console.log(`Need levels for creature ${this.creature.id}: \nFood: ${this.foodLevel.percent} ` +
+        `\nSleep: ${this.sleepLevel.percent} \nMating: ${this.matingLevel.percent}`);
     }
 
 
@@ -393,31 +415,19 @@ export default class CreatureNeeds {
 
     updateNeedLevels = (foodPoints, sleepPoints, matingPoints) => {
         this.foodLevel.points = foodPoints;
-        this.foodLevel.percent = this.determineNeedPercent(foodPoints);
+        this.foodLevel.percent = this.determineNeedPercent(foodPoints, this.maxFood);
 
         this.sleepLevel.points = sleepPoints;
-        this.sleepLevel.percent = this.determineNeedPercent(sleepPoints);
+        this.sleepLevel.percent = this.determineNeedPercent(sleepPoints, this.maxSleep);
 
         this.matingLevel.points = matingPoints;
-        this.matingLevel.percent = this.determineNeedPercent(matingPoints);
+        this.matingLevel.percent = this.determineNeedPercent(matingPoints, this.maxMating);
     }
 
     determineNeedPercent = (level, maxLevel) => {
         let divided = level / maxLevel;
         let percent = divided * 100;
         return (roundToPlace(percent, 2));
-    }
-
-    determineMaxAmount = (amountNeeded) => {
-        switch(amountNeeded) {
-            case AmountNeeded.MIN:
-                return 25;
-            default:
-            case AmountNeeded.AVG:
-                return 50;
-            case AmountNeeded.MAX:
-                return 75;
-        }
     }
 
     
