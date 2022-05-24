@@ -1,6 +1,6 @@
 import { CanvasInfo, Axis } from "../constants/canvasConstants";
 import { Corner, Side } from "../constants/objectConstants";
-import { Direction } from "../constants/creatureConstants";
+import { Direction, CreatureDefaults } from "../constants/creatureConstants";
 
 // time and rounding methods
 export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
@@ -95,20 +95,45 @@ export const testFindArrayPatterns = () => {
 const displayFindArrayPatternsResult = (array, result) => {
     let str = `Array pattern:\n`;
     array.forEach(a => {
-        str += `${JSON.stringify(a)}\n`;
+        str += `${JSON.stringify(a)}, `;
     });
-    str += `\nResults:\n`;
+    str += `\n\nResults:\n`;
     result.forEach(r => {
-        str += `\tpattern: ${r.pattern}\n`;
+        str += `\tpattern: ${JSON.stringify(r.pattern)}\n`;
         str += `\ttimesOccured: ${r.timesOccured}\n`;
-        str += `\tstartIndexes: ${r.indexesOccured}\n\n`;
+        str += `\tstartIndexes: ${JSON.stringify(r.startIndexes)}\n\n`;
     });
     console.log(str);
 }
 
+export const displayPatternResult = (result) => {
+    let str = `no result`;
+    if (result !== null) {
+        str = `\tpattern:\n`;
+        str = addPatternToString(result.pattern);
+        str += `\ttimesOccured: ${result.timesOccured}\n`;
+        str += `\tstartIndexes: ${JSON.stringify(result.startIndexes)}\n\n`;
+    }
+    //let str = `\n\nResults:\n`;
+    console.log(str);
+}
+
+const addPatternToString = (pattern, str) => {
+    let index = 0;
+    pattern.forEach(p => {
+        let result = p;
+        str += `\t\t${index}:\n`;
+        str += `\t\t\tposition: ${JSON.stringify(result.position)}\n`;
+        str += `\t\t\tdirection: ${JSON.stringify(result.direction)}\n`;
+        str += `\t\t\tsideOfCollision: ${JSON.stringify(result.sideOfCollision)}\n`;
+        str += `\t\t\ttargetPosition: ${JSON.stringify(result.targetPosition)}\n`;
+        index++;
+    })
+    return str;
+}
+
 // this is a recursive method
 export const findArrayPatterns = (array, startingIndex = 0, patternsSoFar = []) => {
-
 
     for (let i = startingIndex; i < array.length; i++) {
         let potentialPattern = getPotentialPatternFromIndex(i, array);
@@ -130,6 +155,7 @@ export const findArrayPatterns = (array, startingIndex = 0, patternsSoFar = []) 
             return (findArrayPatterns( array, i + 1, patternsSoFar));
         }
     }
+    return patternsSoFar;
 }
 
 const isPatternAlreadyInPatternsSoFar = (pattern, array) => {
@@ -356,7 +382,7 @@ export const getRandomPositionInBounds = (xStart, xEnd, yStart, yEnd, padding) =
     return {x: x, y: y};
 }
 
-export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
+export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = CreatureDefaults.LARGEST_SIZE, excludeCreatureId = null, checkForPlants = true) => {
     let maxX = CanvasInfo.WIDTH - (info.width); // this prevents going over edge
     let maxY = CanvasInfo.HEIGHT - (info.height);
   
@@ -379,7 +405,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters,
-    largestCreatureSize = 0, excludeCreatureId = null, checkForPlants = true) => {
+    largestCreatureSize = CreatureDefaults.LARGEST_SIZE, excludeCreatureId = null, checkForPlants = true) => {
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 

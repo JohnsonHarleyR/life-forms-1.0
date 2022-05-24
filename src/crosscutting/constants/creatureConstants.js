@@ -22,7 +22,10 @@ export const MoveMode = {
 };
 
 export const CreatureDefaults = {
-    moveMode:  MoveMode.SEARCH,
+    MOVE_MODE:  MoveMode.THINK,
+    LARGEST_SIZE: 10,
+    MAX_MOVE_RECORDINGS: 50,
+    PATTERN_DETECTION_SIZE: 5,
     CHILD_MIN_FRACTION: .2,
     CHILD_MIN: 2.5,
     ELDER_SHRINK: .1,

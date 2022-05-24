@@ -116,6 +116,7 @@ export const putTargetInFoodInventory = (creature) => {
     if (creature.currentTarget !== null) {
         creature.inventory.food.push(creature.currentTarget);
         creature.currentTarget.isEaten = true;
+        creature.currentTarget = null;
     }
 }
 

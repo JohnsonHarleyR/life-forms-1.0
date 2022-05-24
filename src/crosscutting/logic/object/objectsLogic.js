@@ -266,10 +266,12 @@ export const determineCollisionSideByCollidingPoints = (creature, creaturePoints
 
 export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo) => {
   // determine the axis of the side - if it's x axis that's top or bottom, y is left or right
+  console.log(`creature: ${creature.gender} ${creature.type} ${creature.id}`);
   let axis = determineAxisBySide(objectSide);
 
   // attempt to grab travel direction based on target distance from each corner
   let direction = getDirectionByCornerDistancesToTarget(obj, objectSide, axis, creature.targetPosition);
+  console.log(`direction by corner distances to target: ${direction}`);
 
   // if it was null or anything attempt to grab direction from creature directions
   if (!direction) {
@@ -436,6 +438,8 @@ const getOppositeSide = (side) => {
       cornerToMoveToward = cornerB;
     }
     //console.log(`moving to corner: ${cornerToMoveToward}`);
+
+    // if corner to move to is null,
   
     // now use the gathered info to find the direction
     return determineDirectionByAxisAndCorner(axis, cornerToMoveToward);
@@ -518,9 +522,11 @@ const getOppositeSide = (side) => {
         }
         break;
       default:
+        console.log(`No direction could be determined because there was no valid corner passed in.`);
+        return null;
         break;
     }
-    return null;
+
   }
 
   const chooseDirectionByAxisDefault = (axis) => {

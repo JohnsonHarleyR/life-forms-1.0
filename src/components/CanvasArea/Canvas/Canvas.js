@@ -13,6 +13,7 @@ import {
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 import { Plants } from '../../../crosscutting/constants/plantConstants';
 import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogic';
+import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/creatureConstants';
 
 const Canvas = () => {
     
@@ -37,7 +38,7 @@ const Canvas = () => {
         //setInitialTargetRefValues();
 
         // test area
-        testFindArrayPatterns();
+        //testFindArrayPatterns();
     }, []);
 
     useEffect(() => {
@@ -72,7 +73,7 @@ const Canvas = () => {
 
     useEffect(() => {
         if (intervals) {
-            generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, largestCreatureSize);
+            generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);
 

@@ -4,10 +4,11 @@ import {
     getStartAndEndPoints,
     isAnyCollision,
     checkAnyArrayCollision,
-    getRandomIntInRange
+    getRandomIntInRange,
+    findArrayPatterns
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
-    CreatureType, Bleep, Boop } from "../../constants/creatureConstants";
+    CreatureType, Bleep, Boop, CreatureDefaults } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
 import { FoodType } from "../../constants/objectConstants";
 
@@ -41,13 +42,44 @@ export const getSightLineInfo = (creature) => {
 
 export const getRandomCreatureStartPosition = (info, creatures, objects, plants, shelters) => {
     let passInfo = {width: info.size, height: info.size};
-    let result = getRandomStartPosition(passInfo, creatures, objects, plants, shelters);
+    let result = getRandomStartPosition(passInfo, creatures, objects, plants, shelters, CreatureDefaults.LARGEST_SIZE);
     return result;
 }
 
 const setCreatureDirectionByTargetPosition = (creature) => {
     let dif = getPositionDifference(creature.position, creature.targetPosition);
     creature.movement.setDirection(dif.xDifference, dif.yDifference);
+}
+
+export const addMovementRecord = (recordArray, newRecord) => {
+    let copy = [...recordArray];
+    if (copy.length < CreatureDefaults.MAX_MOVE_RECORDINGS) {
+        copy.push(newRecord);
+        return copy;
+    }
+
+    copy.splice(0, 1);
+    copy.push(newRecord);
+    return copy;
+}
+
+export const checkForMovementPattern = (records) => {
+    let patternResults = findArrayPatterns(records);
+    // detect largest pattern
+    let largest = getResultWithLargestPattern(patternResults);
+    return largest;
+}
+
+const getResultWithLargestPattern = (patternResults) => {
+    let largestLength = 0;
+    let largest = null;
+    patternResults.forEach(r => {
+        if (r.pattern.length > largestLength) {
+            largestLength = r.pattern.length;
+            largest = r;
+        }
+    });
+    return largest;
 }
 
 // creature Corners
@@ -364,7 +396,7 @@ export const getRandomShelterPosition = (creature, creatures, objects, shelters)
     // don't worry about plants
     let position = null;
     do {
-        position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, 0, null, false);
+        position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, CreatureDefaults.LARGEST_SIZE, null, false);
     } while (!canSetShelterInPosition(position, creature, creatures, objects, shelters));
 
     return position;
