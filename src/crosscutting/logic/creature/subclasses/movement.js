@@ -1,5 +1,5 @@
 import { LifeStage, ActionType, NeedType } from "../../../constants/creatureConstants";
-import { Direction } from "../../../constants/creatureConstants";
+import { Direction, CreatureDefaults } from "../../../constants/creatureConstants";
 import { determineSightCoordinates,
     getRandomShelterPosition,
     determineSightDirection,
@@ -7,13 +7,15 @@ import { determineSightCoordinates,
     getPositionInNewDirection,
     checkSightAreaForItemInArray,
     canSetShelterInPosition,
-    searchAreaForMate} from "../creatureLogic";
+    searchAreaForMate,
+  addMovementRecord,
+  checkForMovementPattern} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
-    getRandomStartPosition, addItemToArray } from "../../universalLogic";
+    getRandomStartPosition, addItemToArray, displayPatternResult } from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
@@ -46,6 +48,8 @@ export default class CreatureMovement {
         this.previousSide = null;
         this.newDirection = null;
         this.previousDirection = null;
+
+        this.movementRecords = [];
     }
 
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
@@ -83,6 +87,30 @@ export default class CreatureMovement {
         this.sideOfCollision = null;
         this.previousSide = null;
         this.newDirection = null;
+    }
+
+    testWithMovementPatterns = () => {
+      this.recordMovement();
+      this.detectPattern(); 
+    }
+
+    recordMovement = () => {
+      let newRecord = {
+        position: {...this.creature.position},
+        direction: {...this.direction},
+        sideOfCollision: this.sideOfCollision,
+        targetPosition: {...this.creature.targetPosition}
+      };
+      this.movementRecords = addMovementRecord(this.movementRecords, newRecord);
+    }
+
+    detectPattern = () => {
+      let result = checkForMovementPattern(this.movementRecords);
+      if (result && result.pattern.length >= CreatureDefaults.PATTERN_DETECTION_SIZE) {
+        console.log(`Movement pattern detected for ${this.creature.type} ${this.creature.id}:\n`);
+        displayPatternResult(result);
+      }
+
     }
 
     move = (objects, plants, creatures, shelters, canvasInfo, targetPosition = null) => {
@@ -280,19 +308,20 @@ export default class CreatureMovement {
     searchForFoodForSelf = (plants, creatures, objects, shelters, canvasInfo) => {
       // first determine if creature has food in shelter or personal inventory
       if (creatureHasFoodInShelter(this.creature)) {
-        //console.log(`creature ${this.creature.id} has food in shelter`);
+        console.log(`creature ${this.creature.type} ${this.creature.id} has food in shelter`);
         if (this.creature.safety.shelter.isInsideShelter(this.creature)) { // if inside shelter, eat from shelter inventory
           //console.log(`creature ${this.creature.id} is inside shelter`);
           eatFoodFromShelter(this.creature);
           this.creature.currentTarget = null;
           return this.creature.position;
         } else { // otherwise move to the creature's shelter to eat
-          //console.log(`creature ${this.creature.id} is moving to shelter`);
-          return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
+          let result = this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
+          console.log(`creature ${this.creature.id} is moving to shelter with result: ${JSON.stringify(result)}`);
+          return result;
         }
 
       } else if (creatureHasFoodInInventory(this.creature)) {
-        //console.log(`creature ${this.creature.id} has food in inventory`);
+        console.log(`creature ${this.creature.type} ${this.creature.id} has food in inventory`);
         eatFoodFromInventory(this.creature);
         this.creature.currentTarget = null;
         return this.creature.position;
@@ -308,18 +337,22 @@ export default class CreatureMovement {
     }
 
     searchForFoodForFamily = (plants, creatures, objects, shelters, canvasInfo) => {
+      console.log(`${this.creature.gender} ${this.creature.type} ${this.creature.id} is finding food for their family`);
       // if shelter and if the amount of food in the shelter inventory is greater than the amount to gather at once, let the creature get food for themselves
       if (this.creature.safety.shelter && this.creature.safety.shelter.inventory.food.length > this.creature.inventory.foodToGatherAtOnce) {
+        console.log(`creature has shelter and the shelter has enough food - searching for food for self`);
         return this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
       } // otherwise, if shelter and if the amount of food in their own inventory is greater than or equal to the amount to gather at once, take that food to shelter inventory
       else if (this.creature.safety.shelter && this.creature.inventory.food.length >= this.creature.inventory.foodToGatherAtOnce) {
         // see if creature is inside shelter - if they are, put creature food into shelter inventory
+        console.log(`creature has shelter and is taking inventory food to shelter`);
         if (this.creature.safety.shelter.isInsideShelter(this.creature)) {
           addFoodToShelter(this.creature);
           return this.creature.position;
 
         }  // if they are not, head for the shelter!
         else {
+          console.log(`creature is moving to shelter`);
           this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
           return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
         }
@@ -327,6 +360,7 @@ export default class CreatureMovement {
 
       } // otherwise, search for food
       else {
+        console.log(`creature is going to search for food`);
         return this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
       }
 
@@ -439,7 +473,8 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      
+      this.testWithMovementPatterns();
+
       this.previousDirection = this.direction !== null ? {...this.direction} : null;
       this.previousSide = this.sideOfCollision;
 
@@ -448,6 +483,7 @@ export default class CreatureMovement {
       let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
       if (result.success) {
         this.sideOfCollision = null;
+        console.log(`no collision for ${this.creature.type} ${this.creature.id}`);
           newPosition = result.forPosition;
           //this.finishedFirstDirection = false;
           // // reset avoid object variables if they need to be reset
@@ -458,7 +494,7 @@ export default class CreatureMovement {
           }
     
         } else {
-          //console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
+          console.log(`object collision at point ${JSON.stringify(result.forPosition)} for ${this.creature.type} ${this.creature.id}. Moving around object.`);
           this.objectCollided = result.objectCollided;
           newPosition = this.moveAroundObject(
             result.objectCollided,
@@ -477,7 +513,7 @@ export default class CreatureMovement {
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
       //console.log(`creature ${this.creature.id} is in position, targetting new position`);
       this.resetMovementProperties();
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, this.creature.id, false);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, this.creature.id, CreatureDefaults.LARGEST_SIZE);
       //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
       this.creature.targetPosition = newTargetPosition;
       //this.logMovementProperties();
@@ -501,13 +537,30 @@ export default class CreatureMovement {
       return newPosition;
     }
 
+    setDirectionToNewDirection = () => {
+      switch (this.newDirection) {
+        case Direction.WEST:
+        case Direction.EAST:
+          this.direction.x = this.newDirection;
+          this.direction.y = null;
+          break;
+        case Direction.NORTH:
+        case Direction.SOUTH:
+          this.direction.y = this.newDirection;
+          this.direction.x = null;
+          break;
+        default:
+          break;
+      }
+    }
+
     moveTowardPosition = (endPosition, objects) => {
         let newPosition = { x: this.creature.position.x, y: this.creature.position.y };
 
         let dif = getPositionDifference(this.creature.position, endPosition);
         this.setDirection(dif.xDifference, dif.yDifference);
         console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
-          `${this.creature.position}`);
+          `${JSON.stringify(this.creature.position)}`);
     
         // if a direction is null, that means it's not going in any direction
         // so set the new position to be the same as the end position
@@ -594,12 +647,12 @@ export default class CreatureMovement {
       //this.previousDirection = {...this.direction};
 
         this.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
-        //this.direction.x = xDifference === 0 ? Direction.NONE : this.direction.x;
+        this.direction.x = xDifference === 0 ? null : this.direction.x;
         if (Math.abs(xDifference) <= this.speed) {
             this.direction.x = null;
         }
         this.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
-        //this.direction.y = yDifference === 0 ? Direction.NONE : this.direction.y;
+        this.direction.y = yDifference === 0 ? null : this.direction.y;
         if (Math.abs(yDifference) <= this.speed) {
             this.direction.y = null;
         }
