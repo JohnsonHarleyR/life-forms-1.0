@@ -43,6 +43,7 @@ export default class CreatureNeeds {
 
         this.priority = this.determinePriority();
         this.previousPriority = null;
+        this.priorityComplete = false;
 
         this.lastUpdate = Date.now();
 
@@ -75,7 +76,7 @@ export default class CreatureNeeds {
         // now update need levels
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
 
-        this.displayCreatureNeedLevels();
+        //this.displayCreatureNeedLevels();
 
         // make sure creature is still alive - DONE?
         
@@ -93,6 +94,7 @@ export default class CreatureNeeds {
         // set lastUpdate after all this
         this.lastUpdate = newUpdate;
     }
+
 
     displayCreatureNeedLevels = () => {
         console.log(`Need levels for creature ${this.creature.id}: \nFood: ${this.foodLevel.percent} ` +
@@ -128,6 +130,13 @@ export default class CreatureNeeds {
         }
         //console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
         return newPriority;
+    }
+
+    
+    completePriority = () => {
+        this.priorityComplete = false;
+        this.previousPriority = this.priority;
+        this.isSleeping = false;
     }
 
     getPriorityOrder = () => {

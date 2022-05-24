@@ -77,6 +77,159 @@ export const removeItemFromArray = (itemId, array, setFunction) => {
     return didFind;
 }
 
+// pattern finding
+export const testFindArrayPatterns = () => {
+    console.log(`testing findArrayPatterns`);
+    let cases = [
+        [5, 2, 1, 3, 5, 2, 1, 3],
+        [5, 2, 1, 3, 5, 2, 1, 4, 5, 2, 1, 3],
+        [5, 2, 6, 8, 5, 1, 5, 8, 8],
+        [{x: 10, y: 10}, {x: 10, y: 15}, {x: 12, y: 10}, {x: 10, y: 10}, {x: 10, y: 15}, {x: 12, y: 10}, {x: 10, y: 10}, {x: 10, y: 15}, {x: 12, y: 10}]
+    ];
+    cases.forEach(c => {
+        let result = findArrayPatterns(c);
+        displayFindArrayPatternsResult(c, result);
+    })
+}
+
+const displayFindArrayPatternsResult = (array, result) => {
+    let str = `Array pattern:\n`;
+    array.forEach(a => {
+        str += `${JSON.stringify(a)}\n`;
+    });
+    str += `\nResults:\n`;
+    result.forEach(r => {
+        str += `\tpattern: ${r.pattern}\n`;
+        str += `\ttimesOccured: ${r.timesOccured}\n`;
+        str += `\tstartIndexes: ${r.indexesOccured}\n\n`;
+    });
+    console.log(str);
+}
+
+// this is a recursive method
+export const findArrayPatterns = (array, startingIndex = 0, patternsSoFar = []) => {
+
+
+    for (let i = startingIndex; i < array.length; i++) {
+        let potentialPattern = getPotentialPatternFromIndex(i, array);
+        if (potentialPattern.length > 1 && !isPatternAlreadyInPatternsSoFar(potentialPattern, patternsSoFar)) {
+            let isPatternResult = getIsActualPatternResult(potentialPattern, array);
+            if (isPatternResult.isPattern) {
+                patternsSoFar.push({
+                    pattern: potentialPattern,
+                    timesOccured: isPatternResult.timesOccured,
+                    startIndexes: isPatternResult.startIndexes
+                });
+            }
+        }
+
+        // if it's the end of the array, return patterns so far - otherwise use recursion
+        if (i === array.length - 1) {
+            return patternsSoFar;
+        } else {
+            return (findArrayPatterns( array, i + 1, patternsSoFar));
+        }
+    }
+}
+
+const isPatternAlreadyInPatternsSoFar = (pattern, array) => {
+    let result = false;
+    array.forEach(a => {
+        if (isSamePattern(pattern, a.pattern)) {
+            result = true;
+        }
+    });
+    return result;
+}
+
+const isSamePattern = (pattern1, pattern2) => {
+    if (pattern1.length !== pattern2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < pattern1.length; i++) {
+        if (!isMatchingItem(pattern1[i], pattern2[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+const getIsActualPatternResult = (pattern, array) => {
+    let possibleStartIndexes = getItemIndexesInArray(pattern[0], array);
+    let startIndexes = getStartingIndexesWithPattern(possibleStartIndexes, pattern, array);
+    let occurances = startIndexes.length;
+    let isPattern = occurances >= 2 ? true : false;
+    return {
+        isPattern: isPattern,
+        timesOccured: occurances,
+        startIndexes: startIndexes
+    }
+}
+
+const getPotentialPatternFromIndex = (startIndex, array) => {
+    let pattern = [];
+    let itemToCompare = array[startIndex];
+
+    for (let i = startIndex; i < array.length; i++) {
+        if (i === startIndex || !isMatchingItem(array[i], itemToCompare)) {
+            pattern.push(array[i]);
+        } else if (i !== startIndex) {
+            break;
+        }
+    }
+    return pattern;
+}
+
+const isMatchingItem = (item1, item2) => {
+    let json1 = JSON.stringify(item1);
+    let json2 = JSON.stringify(item2);
+    if (json1 === json2) {
+        return true;
+    }
+    return false;
+}
+
+const getStartingIndexesWithPattern = (startIndexes, patternArray, array) => {
+    let indexesWithPattern = [];
+    startIndexes.forEach(i => {
+        let doesMatch = doesMatchPatternAtIndex(i, patternArray, array);
+        if (doesMatch) {
+            indexesWithPattern.push(i);
+        }
+    });
+    return indexesWithPattern;
+}
+
+const doesMatchPatternAtIndex = (startIndex, patternArray, array) => {
+    // first get the relevent items in the array to check a match
+    let compareArray = [];
+    for (let i = startIndex; i < startIndex + patternArray.length; i++) {
+        compareArray.push(array[i]);
+    }
+
+    // now see if this section matches
+    let doesMatch = true;
+    for (let i = 0; i < patternArray.length; i++) {
+        if (!isMatchingItem(patternArray[i], compareArray[i])) {
+            doesMatch = false;
+            break;
+        }
+    }
+    return doesMatch;
+}
+
+const getItemIndexesInArray = (item, array) => {
+    let indexes = [];
+    for (let i = 0; i < array.length; i++) {
+        if (isMatchingItem(array[i], item)) {
+            indexes.push(i);
+        }
+    }
+    return indexes;
+}
+
 
 // position and collision methods
 

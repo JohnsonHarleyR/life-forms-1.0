@@ -45,6 +45,7 @@ export default class CreatureMovement {
         this.sideOfCollision = null;
         this.previousSide = null;
         this.newDirection = null;
+        this.previousDirection = null;
     }
 
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
@@ -438,30 +439,35 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-        let newPosition = this.creature.position;
-
-        let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
-        if (result.success) {
-            newPosition = result.forPosition;
-            //this.finishedFirstDirection = false;
-            // // reset avoid object variables if they need to be reset
-            if (this.newDirection) {
-              //console.log(`Going in new direction around object`);
-              this.newDirection = null;
-              this.previousSide = null;
-            }
       
-          } else {
-            //console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
-            this.objectCollided = result.objectCollided;
-            newPosition = this.moveAroundObject(
-              result.objectCollided,
-              result.collisionSide,
-              canvasInfo
-            );
-          }
+      this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      this.previousSide = this.sideOfCollision;
 
-        return newPosition;
+      let newPosition = this.creature.position;
+
+      let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
+      if (result.success) {
+        this.sideOfCollision = null;
+          newPosition = result.forPosition;
+          //this.finishedFirstDirection = false;
+          // // reset avoid object variables if they need to be reset
+          if (this.newDirection) {
+            //console.log(`Going in new direction around object`);
+            this.newDirection = null;
+            this.previousSide = null;
+          }
+    
+        } else {
+          //console.log(`object collision at point ${JSON.stringify(result.forPosition)}. Moving around object.`);
+          this.objectCollided = result.objectCollided;
+          newPosition = this.moveAroundObject(
+            result.objectCollided,
+            result.collisionSide,
+            canvasInfo
+          );
+        }
+
+      return newPosition;
     }
 
     moveToRandomPosition = (objects, creatures, shelters, canvasInfo) => {
@@ -500,6 +506,8 @@ export default class CreatureMovement {
 
         let dif = getPositionDifference(this.creature.position, endPosition);
         this.setDirection(dif.xDifference, dif.yDifference);
+        console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
+          `${this.creature.position}`);
     
         // if a direction is null, that means it's not going in any direction
         // so set the new position to be the same as the end position
@@ -566,6 +574,8 @@ export default class CreatureMovement {
         // TODO write logic in case creature cannot move diagonally
         // and can only move up or down, left or right
         let collisionResult = checkAllCreatureObjectCollisions(this.creature, newPosition, objects);
+
+        //
     
         //TODO write logic to also avoid going over other creature's shelters - move around them
 
@@ -581,11 +591,15 @@ export default class CreatureMovement {
     }
 
     setDirection = (xDifference, yDifference) => {
+      //this.previousDirection = {...this.direction};
+
         this.direction.x = xDifference > 0 ? Direction.EAST : Direction.WEST;
+        //this.direction.x = xDifference === 0 ? Direction.NONE : this.direction.x;
         if (Math.abs(xDifference) <= this.speed) {
             this.direction.x = null;
         }
         this.direction.y = yDifference > 0 ? Direction.SOUTH : Direction.NORTH;
+        //this.direction.y = yDifference === 0 ? Direction.NONE : this.direction.y;
         if (Math.abs(yDifference) <= this.speed) {
             this.direction.y = null;
         }

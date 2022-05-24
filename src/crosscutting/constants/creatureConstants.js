@@ -5,7 +5,8 @@ export const Direction = {
     NORTH: "NORTH",
     SOUTH: "SOUTH",
     EAST: "EAST",
-    WEST: "WEST"
+    WEST: "WEST",
+    NONE: "NONE"
 };
 
 export const MoveMode = {

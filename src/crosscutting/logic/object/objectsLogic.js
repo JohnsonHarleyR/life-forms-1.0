@@ -75,7 +75,7 @@ export const checkAllCreatureObjectCollisions = (creature, newPosition, objects)
         let objStartAndEndPositions = getObjectStartAndEndPoints(obj);
 
         // now determine collision side by the above info
-        endResult.collisionSide = determineCollisionSideByCollidingPoints(creaturePoints, corners, sides, objStartAndEndPositions);
+        endResult.collisionSide = determineCollisionSideByCollidingPoints(creature, creaturePoints, corners, sides, objStartAndEndPositions);
     }
 
     return endResult;
@@ -154,7 +154,7 @@ export const isCreatureObjectCollision = (creature, newPosition, obj) => {
             yStart: obj.yStart,
             yEnd: obj.yEnd
     };
-    collisionSide = determineCollisionSideByCollidingPoints(creaturePoints, corners, cornerSides, objPositions);
+    collisionSide = determineCollisionSideByCollidingPoints(creature, creaturePoints, corners, cornerSides, objPositions);
     if (!collisionSide) {
         console.log(`Phantom collision object: ${JSON.stringify(objPositions)}`);
         result = false;
@@ -199,7 +199,7 @@ const getMidCoordsBySide = (points, side) => {
 
 
 // determine which side of an object a creature/other collided with
-export const determineCollisionSideByCollidingPoints = (creaturePoints, corners, sides, objPositions) => {
+export const determineCollisionSideByCollidingPoints = (creature, creaturePoints, corners, sides, objPositions) => {
 
 
   let initialSide = null;
@@ -240,9 +240,14 @@ export const determineCollisionSideByCollidingPoints = (creaturePoints, corners,
     }
 
     // if there's still no initial side and cornerSides is not empty,
-    // that means it might be a tie so just return the first one?
+    // that means it might be a tie so - check to see if there is a previous side, as this
+    // would likely be the same one - otherwise, just return the opposite of the first side?
     if (cornerSides.length > 0) {
       console.log(`Tie for collision side - choosing side ${cornerSides[0]}`);
+      if (creature.movement.previousSide) {
+        console.log(`Returning the previous side: ${creature.movement.previousSide}`);
+        return creature.movement.previousSide;
+      }
       //initialSide = cornerSides[0];
       let closest = getSideClosestToOppositeOnObject(cornerSides, creaturePoints, objPositions);
       console.log(`closest: ${closest}`);
@@ -343,7 +348,7 @@ const getOppositeSide = (side) => {
       case Side.RIGHT:
         return Side.LEFT;
       default:
-        throw 'No opposite side could be determined.';
+        throw 'No opposite side could be determined in getOppositeSide. (objectsLogic.js)';
     }
   }
   

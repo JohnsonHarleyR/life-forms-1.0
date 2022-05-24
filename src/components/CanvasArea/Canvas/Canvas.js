@@ -12,6 +12,7 @@ import {
 } from './canvasMethods';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 import { Plants } from '../../../crosscutting/constants/plantConstants';
+import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogic';
 
 const Canvas = () => {
     
@@ -34,6 +35,9 @@ const Canvas = () => {
         setCreatures(newCreatures);
         renderCanvas(canvasRef, newCreatures, plants, objs, shelters);
         //setInitialTargetRefValues();
+
+        // test area
+        testFindArrayPatterns();
     }, []);
 
     useEffect(() => {
