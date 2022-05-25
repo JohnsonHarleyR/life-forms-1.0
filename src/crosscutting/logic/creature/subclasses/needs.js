@@ -6,7 +6,8 @@ import {
     calculateAmountLostPerMs,
     calculateNewAmount,
     calculateSleepRecoveryPerMs,
-    determineMaxFood
+    determineMaxFood,
+    getTotalFoodPointsNeededForFamily
 } from "./logic/needLogic";
 
 export default class CreatureNeeds {
@@ -42,7 +43,10 @@ export default class CreatureNeeds {
 
         this.priority = this.determinePriority();
         this.previousPriority = null;
-        this.priorityComplete = false;
+        this.priorityComplete = true;
+        this.startNewAction = true;
+
+        this.foodPercentGoal = null;
 
         this.lastUpdate = Date.now();
 
@@ -82,15 +86,19 @@ export default class CreatureNeeds {
         // make sure creature is still alive - DONE?
         
         // set previous priority before changing the priority
-        this.previousPriority = this.priority;
+        if (this.isPriorityComplete(this.priority, creatures)) {
+            console.log(`priority complete for ${this.creature.gender} ${this.creature.id} ${this.creature.type}: ${this.priority}`);
+            this.previousPriority = this.priority;
+            this.priorityComplete = true;
+        }
 
         // set the priority based on new levels
         this.priority = this.determinePriority(creatures);
-        console.log(`priority for ${this.creature.id}: ${this.priority}`);
+        console.log(`priority for ${this.creature.gender} ${this.creature.id} ${this.creature.type}: ${this.priority}`);
 
-        this.priorityComplete = false;
+        //this.priorityComplete = false;
         // turn sleeping back off
-        this.isSleeping = false;
+        //this.isSleeping = false;
 
         // set lastUpdate after all this
         this.lastUpdate = newUpdate;
@@ -139,14 +147,80 @@ export default class CreatureNeeds {
     }
 
     
-    completePriority = () => {
+    prepareForNextPriority = () => {
         this.priorityComplete = false;
         this.previousPriority = this.priority;
         this.isSleeping = false;
+        this.startNewAction = true;
+    }
+
+    isPriorityComplete = (priority, creatures) => {
+        switch (priority) {
+            case ActionType.DIE:
+                if (this.creature.life.LifeStage === LifeStage.DECEASED) {
+                    return true;
+                }
+                break;
+            case ActionType.HAVE_CHILD:
+                if (this.creature.mating.offspringCount === null) {
+                    return true;
+                }
+                break;
+            case ActionType.SLEEP_IN_SPOT:
+                if (this.sleepLevel.percent >= 20) {
+                    return true;
+                }
+                break;
+            case ActionType.LEAVE_SHELTER:
+                if (!this.creature.safety.shelter.isInsideShelter(this.creature)) {
+                    return true;
+                }
+                break;
+            case ActionType.FIND_SAFETY:
+                if ((!this.creature.safety.isBeingChased && this.creature.safety.predatorDetected === null)
+                || this.creature.safety.shelter.isInsideShelter(this.creature)) {
+                    return true;
+                }
+                break;
+            case ActionType.FIND_MATE:
+                if (this.creature.family.mate !== null || !doesPotentialMateExist(this.creature, creatures)) {
+                    return true;
+                }
+                break;
+            case ActionType.FEED_FAMILY:
+                if (this.foodPercentGoal === null || this.determineFamilyFoodPercent() >= this.foodPercentGoal) {
+                    this.foodPercentGoal = null;
+                    return true;
+                }
+                break;
+            case ActionType.SLEEP_IN_SHELTER:
+                if (this.creature.safety.shelter !== null && this.creature.safety.shelter.isInsideShelter(this.creature) && this.sleepLevel.percent > 95) {
+                    return true;
+                }
+                break;
+            case ActionType.CREATE_SHELTER:
+                if (this.creature.safety.shelter !== null) {
+                    return true;
+                }
+                break;
+            case ActionType.NONE:
+                return true;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     getPriorityOrder = () => {
         
+        // first check if priority is complete - if it's not then get from the shortened list to continue the priority
+        if (!this.priorityComplete) {
+            return this.getShortenedPriorityOrder();
+        }
+
+        // if it is complete, set priorityComplete back to false and determine a new priority
+        this.prepareForNextPriority();
 
         // special priorities for  child and deceased
         if (this.creature.life.lifeStage === LifeStage.CHILD) {
@@ -263,9 +337,22 @@ export default class CreatureNeeds {
                 priority: ActionType.SLEEP_IN_SHELTER
             },
             {
+                meetsCondition: (creatures) => {
+                    if((this.creature.family.mate === null || 
+                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
+                        && doesPotentialMateExist(this.creature, creatures)) {
+                            return true;
+                        }
+                        return false;
+                },
+                priority: ActionType.FIND_MATE
+            },
+            {
                 meetsCondition: () => {
+                    let familyFoodPercent = this.determineFamilyFoodPercent();
                     if (this.foodLevel.percent <= 20 || 
-                        this.determineFamilyFoodPercentAverage() <= 20) {
+                        familyFoodPercent <= 20) {
+                            this.foodPercentGoal = 60;
                             return true;
                         }
                         return false;
@@ -284,23 +371,13 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 60 || 
-                        this.determineFamilyFoodPercentAverage() <= 60) {
+                        this.determineFamilyFoodPercent() <= 60) {
+                            this.foodPercentGoal = 80;
                             return true;
                         }
                         return false;
                 },
                 priority: ActionType.FEED_FAMILY
-            },
-            {
-                meetsCondition: (creatures) => {
-                    if((this.creature.family.mate === null || 
-                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
-                        && doesPotentialMateExist(this.creature, creatures)) {
-                            return true;
-                        }
-                        return false;
-                },
-                priority: ActionType.FIND_MATE
             },
             {
                 meetsCondition: () => { // if sleep is less than 10%
@@ -323,7 +400,8 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 80 || 
-                        this.determineFamilyFoodPercentAverage() <= 80) {
+                        this.determineFamilyFoodPercent() <= 80) {
+                            this.foodPercentGoal = 99;
                             return true;
                         }
                         return false;
@@ -342,7 +420,8 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 90 || 
-                        this.determineFamilyFoodPercentAverage() <= 90) {
+                        this.determineFamilyFoodPercent() <= 90) {
+                            this.foodPercentGoal = 99;
                             return true;
                         }
                         return false;
@@ -448,6 +527,71 @@ export default class CreatureNeeds {
         ]
     }
 
+    getShortenedPriorityOrder = () => {
+        let skipToEnd = false;
+        return [
+            {
+                // TODO write if statement for if creature is eaten
+                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
+                    if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.NONE
+            },
+            {
+                // TODO write if statement for if creature is eaten
+                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
+                    if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
+                        || this.foodLevel.percent <= 0) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.DIE
+            },
+            {
+                meetsCondition: () => { // if sleep is less than 5%, they are going to sleep no matter what...
+                    if (this.sleepLevel.percent < 5 && this.priority !== ActionType.SLEEP_IN_SPOT) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.SLEEP_IN_SPOT
+            },
+            {
+                meetsCondition: () => { // food less than 20%;
+                    if (this.foodLevel.percent < 20 && 
+                        this.creature.safety.shelter !== null && 
+                        this.creature.safety.shelter.inventory.food.length > 0 && 
+                        this.priority !== ActionType.FEED_SELF) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FEED_SELF
+            },
+            {
+                meetsCondition: () => { // TODO also search for threat
+                    if (this.creature.safety.isBeingChased || this.creature.safety.predatorDetected !== null && 
+                        this.priority !== ActionType.FIND_SAFETY) {
+                        return  true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
+            },
+            {
+                meetsCondition: () => {
+                    // if it gets to this point
+                    return true;
+                },
+                priority: this.priority
+            }
+        ]
+    }
+
     updateNeedLevels = (foodPoints, sleepPoints, matingPoints) => {
         this.foodLevel.points = foodPoints > this.maxFood ? this.maxFood : foodPoints;
         this.foodLevel.percent = this.determineNeedPercent(foodPoints, this.maxFood);
@@ -465,32 +609,41 @@ export default class CreatureNeeds {
         return (roundToPlace(percent, 2));
     }
 
-    
-    determineFamilyFoodPercentAverage = () => {
-        let memberCount = 0;
-        let foodTotal = 0;
+    determineFamilyFoodPercent = () => {
+        let shelterFood = this.creature.safety.shelter ? this.creature.safety.shelter.totalFoodEnergy : 0;
+        let needTotal = getTotalFoodPointsNeededForFamily(this.creature);
 
-        // parents don't live with family (unless elder? For now they don't so don't worry about them--YET)
-        // ACTUALLY, just add all family members. If they live in that shelter, count them.
-        let members = [this.creature.family.mate];
-        this.creature.family.children.forEach(c => { // don't feel grown children
-            members.push(c);
-        });
-        members.push(this.creature.family.mother);
-        members.push(this.creature.family.father);
-
-        // loop through members
-        members.forEach(m => {
-            if (m !== null && m.life.lifeStage !== LifeStage.DECEASED && 
-                m.safety.shelter === this.creature.safety.shelter) {
-                    memberCount++;
-                    foodTotal += m.needs.foodLevel.percent;
-                }
-        })
-
-        // find the average and return
-        let average = foodTotal / memberCount;
-        return average;
+        let percent = (shelterFood / needTotal) * 100;
+        return percent;
 
     }
+
+    
+    // determineFamilyFoodPercentAverage = () => {
+    //     let memberCount = 0;
+    //     let foodTotal = 0;
+
+    //     // parents don't live with family (unless elder? For now they don't so don't worry about them--YET)
+    //     // ACTUALLY, just add all family members. If they live in that shelter, count them.
+    //     let members = [this.creature.family.mate];
+    //     this.creature.family.children.forEach(c => { // don't feel grown children
+    //         members.push(c);
+    //     });
+    //     members.push(this.creature.family.mother);
+    //     members.push(this.creature.family.father);
+
+    //     // loop through members
+    //     members.forEach(m => {
+    //         if (m !== null && m.life.lifeStage !== LifeStage.DECEASED && 
+    //             m.safety.shelter === this.creature.safety.shelter) {
+    //                 memberCount++;
+    //                 foodTotal += m.needs.foodLevel.percent;
+    //             }
+    //     })
+
+    //     // find the average and return
+    //     let average = foodTotal / memberCount;
+    //     return average;
+
+    // }
 }

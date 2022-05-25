@@ -64,6 +64,7 @@ export const ActionType = {
     SLEEP_IN_SPOT: "SLEEP_IN_SPOT",
     FIND_MATE: "FIND_MATE",
     MATE: "MATE",
+    PRODUCE_OFFSPRING: "PRODUCE_OFFSPRING",
     HAVE_CHILD: "HAVE_CHILD",
     DIE: "DIE",
     NONE: "NONE"
