@@ -31,6 +31,7 @@ import {
   putTargetInFoodInventory,
   addFoodToShelter
 } from "./logic/actionLogic";
+import { isFoodInInventoryEnoughForFamily, isFoodInShelterEnoughForFamily } from "./logic/needLogic";
 
 export default class CreatureMovement {
     constructor(creature, sightRadius, sightDistance, speed) {
@@ -349,11 +350,11 @@ export default class CreatureMovement {
     searchForFoodForFamily = (plants, creatures, objects, shelters, canvasInfo) => {
       console.log(`${this.creature.gender} ${this.creature.type} ${this.creature.id} is finding food for their family`);
       // if shelter and if the amount of food in the shelter inventory is greater than the amount to gather at once, let the creature get food for themselves
-      if (this.creature.safety.shelter && this.creature.safety.shelter.inventory.food.length > this.creature.inventory.foodToGatherAtOnce) {
+      if (this.creature.safety.shelter && isFoodInShelterEnoughForFamily(this.creature)) {
         console.log(`creature has shelter and the shelter has enough food - searching for food for self`);
         return this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
       } // otherwise, if shelter and if the amount of food in their own inventory is greater than or equal to the amount to gather at once, take that food to shelter inventory
-      else if (this.creature.safety.shelter && this.creature.inventory.food.length >= this.creature.inventory.foodToGatherAtOnce) {
+      else if (this.creature.safety.shelter && isFoodInInventoryEnoughForFamily(this.creature)) {
         // see if creature is inside shelter - if they are, put creature food into shelter inventory
         console.log(`creature has shelter and is taking inventory food to shelter`);
         if (this.creature.safety.shelter.isInsideShelter(this.creature)) {
