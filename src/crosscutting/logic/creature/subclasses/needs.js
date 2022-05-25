@@ -5,26 +5,25 @@ import {
     getAmountNeededDecimal,
     calculateAmountLostPerMs,
     calculateNewAmount,
-    calculateSleepRecoveryPerMs
+    calculateSleepRecoveryPerMs,
+    determineMaxFood
 } from "./logic/needLogic";
 
 export default class CreatureNeeds {
-    constructor(creature, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded) {
+    constructor(creature, foodNeeded, sleepNeeded, matingNeeded) {
         this.creature = creature;
 
-        this.maxFood = maxFood;
-        this.maxSleep = maxSleep;
-        this.maxMating = maxMating;
+        this.foodQuotient = foodNeeded;
 
-        this.foodDecayRate = getAmountNeededDecimal(foodNeeded);
-        this.sleepDecayRate = getAmountNeededDecimal(sleepNeeded);
-        this.matingDecayRate = getAmountNeededDecimal(matingNeeded);
+        this.maxFood = determineMaxFood(creature, foodNeeded);
+        this.maxSleep = sleepNeeded;
+        this.maxMating = matingNeeded;
 
-        this.foodLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxFood, this.foodDecayRate);
-        this.sleepLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxSleep, this.sleepDecayRate);
-        this.matingLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxMating, this.matingDecayRate);
+        this.foodLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxFood);
+        this.sleepLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxSleep);
+        this.matingLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxMating);
 
-        this.sleepPerMs = calculateSleepRecoveryPerMs(maxSleep, this.creature.life.msPerYear);
+        this.sleepPerMs = calculateSleepRecoveryPerMs(this.maxSleep, this.creature.life.msPerYear);
         this.isSleeping = false;
 
         this.foodLevel = {
@@ -56,13 +55,15 @@ export default class CreatureNeeds {
         // TODO determine how much the points have decayed
         let timeLapsed = newUpdate - this.lastUpdate;
 
-        let foodPoints = this.foodLevel.points;
-        let sleepPoints = this.sleepLevel.points;
-        let matingPoints = this.matingLevel.points;
+        this.updateFoodRates(); // this can change after the creature is no longer a child
 
-        // let foodPoints = calculateNewAmount(this.foodLevel.points, this.foodLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT); // TODO change
-        // let sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
-        // let matingPoints = calculateNewAmount(this.matingLevel.points, this.matingLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
+        // let foodPoints = this.foodLevel.points;
+        // let sleepPoints = this.sleepLevel.points;
+        // let matingPoints = this.matingLevel.points;
+
+        let foodPoints = calculateNewAmount(this.foodLevel.points, this.foodLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT); // TODO change
+        let sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
+        let matingPoints = calculateNewAmount(this.matingLevel.points, this.matingLostPerMs, timeLapsed, AddOrSubtract.SUBTRACT);
 
         // double check sleep - if the creature is sleeping then recalculate sleep amount
         if (this.isSleeping) {
@@ -76,7 +77,7 @@ export default class CreatureNeeds {
         // now update need levels
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
 
-        //this.displayCreatureNeedLevels();
+        this.displayCreatureNeedLevels();
 
         // make sure creature is still alive - DONE?
         
@@ -99,6 +100,11 @@ export default class CreatureNeeds {
     displayCreatureNeedLevels = () => {
         console.log(`Need levels for creature ${this.creature.id}: \nFood: ${this.foodLevel.percent} ` +
         `\nSleep: ${this.sleepLevel.percent} \nMating: ${this.matingLevel.percent}`);
+    }
+
+    updateFoodRates = () => {
+        this.maxFood = determineMaxFood(this.creature, this.foodQuotient);
+        this.foodLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxFood);
     }
 
 
@@ -443,7 +449,7 @@ export default class CreatureNeeds {
     }
 
     updateNeedLevels = (foodPoints, sleepPoints, matingPoints) => {
-        this.foodLevel.points = foodPoints;
+        this.foodLevel.points = foodPoints > this.maxFood ? this.maxFood : foodPoints;
         this.foodLevel.percent = this.determineNeedPercent(foodPoints, this.maxFood);
 
         this.sleepLevel.points = sleepPoints;

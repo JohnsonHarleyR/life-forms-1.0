@@ -371,20 +371,20 @@ export default class CreatureMovement {
       let newPosition = this.creature.position;
       // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
       if (this.creature.currentTarget !== null) {
-        //console.log(`creature ${this.creature.id} has food target, moving toward target`);
+        console.log(`creature ${this.creature.id} has food target, moving toward target`);
         newPosition = this.moveToPoint(this.creature.currentTarget.position, objects, creatures, shelters, canvasInfo);
         if (isInPosition(newPosition, this.creature.currentTarget.position)) {
-          //console.log(`creature ${this.creature.id} has captured food target`);
+          console.log(`creature ${this.creature.id} has captured food target`);
           putTargetInFoodInventory(this.creature);
         }
 
          // if there is no current target, search for a target. If one is found, set that to new target and move toward it
       } else {
-        //console.log(`creature ${this.creature.id} searching for food in area`);
+        console.log(`creature ${this.creature.id} searching for food in area`);
         let newTarget = findFoodTargetInArea(this.creature, plants, creatures, canvasInfo);
         if (newTarget !== null) {
           this.creature.currentTarget = newTarget;
-          //console.log(`creature ${this.creature.id} has new food target found`);
+          console.log(`creature ${this.creature.id} has new food target found`);
           this.creature.targetPosition = newTarget.position;
           newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
         // if there is no target, move to random position
@@ -483,7 +483,7 @@ export default class CreatureMovement {
       let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
       if (result.success) {
         this.sideOfCollision = null;
-        console.log(`no collision for ${this.creature.type} ${this.creature.id}`);
+        //console.log(`no collision for ${this.creature.type} ${this.creature.id}`);
           newPosition = result.forPosition;
           //this.finishedFirstDirection = false;
           // // reset avoid object variables if they need to be reset
@@ -494,7 +494,7 @@ export default class CreatureMovement {
           }
     
         } else {
-          console.log(`object collision at point ${JSON.stringify(result.forPosition)} for ${this.creature.type} ${this.creature.id}. Moving around object.`);
+          //console.log(`object collision at point ${JSON.stringify(result.forPosition)} for ${this.creature.type} ${this.creature.id}. Moving around object.`);
           this.objectCollided = result.objectCollided;
           newPosition = this.moveAroundObject(
             result.objectCollided,
@@ -559,8 +559,8 @@ export default class CreatureMovement {
 
         let dif = getPositionDifference(this.creature.position, endPosition);
         this.setDirection(dif.xDifference, dif.yDifference);
-        console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
-          `${JSON.stringify(this.creature.position)}`);
+        //console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
+          //`${JSON.stringify(this.creature.position)}`);
     
         // if a direction is null, that means it's not going in any direction
         // so set the new position to be the same as the end position

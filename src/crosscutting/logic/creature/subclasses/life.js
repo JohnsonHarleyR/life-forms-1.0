@@ -1,10 +1,10 @@
-import { LifeStage, Gender, CreatureDefaults } from "../../../constants/creatureConstants";
+import { LifeStage, Gender, CreatureDefaults, TimeProps } from "../../../constants/creatureConstants";
 import { millisecondsToMinutes, blendColors, roundToPlace, calculateMsPerYear } from "../../universalLogic";
 
 export default class CreatureLife { // TODO - make the creature grow up - and perform actions if they do
-    constructor(creature, lifeSpanRange, maxYears, initialStage, fractionOfLifeAsChild, fractionOfLifeAsElder) {
+    constructor(creature, lifeSpanRange, initialStage, fractionOfLifeAsChild, fractionOfLifeAsElder) {
         this.lifeSpanRange = lifeSpanRange;
-        this.maxYears = maxYears;
+        this.maxYears = lifeSpanRange.high;
         this.lifeSpan = this.determineLifeSpan(lifeSpanRange);
         this.stageRanges = { // each one has a start and end property - elder ends with null
             child: {stage: LifeStage.CHILD, range: this.determineStageRange(LifeStage.CHILD, this.lifeSpan, fractionOfLifeAsChild, fractionOfLifeAsElder)},
@@ -18,7 +18,8 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
         this.lifeStage = initialStage;
         this.birthTime = Date.now() - this.age;
 
-        this.msPerYear = calculateMsPerYear(lifeSpanRange.high, maxYears);
+        this.msPerYear = TimeProps.MS_PER_DAY; // it's like the sims where a day is one year but it still functions like one day with the same number of hours
+        this.msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
 
         // test
         this.intervals = 0;
@@ -252,9 +253,11 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
     }
 
     determineLifeSpan = (range) => {
-        let difference = range.high - range.low;
+        let maxMs = range.high * TimeProps.MS_PER_DAY;
+        let minMs = range.low * TimeProps.MS_PER_DAY;
+        let difference = maxMs - minMs;
         let random = Math.floor(Math.random() * difference);
-        let result = random + range.low;
+        let result = random + minMs;
         return result;
     }
 

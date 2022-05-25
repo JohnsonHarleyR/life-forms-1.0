@@ -20,8 +20,8 @@ import {
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 
 export default class Creature {
-    constructor({id, size, color, gender, type, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
-        food, energy, sightRadius, sightDistance, position, speed, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded,
+    constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
+        food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
         genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring,
         mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
         this.showLines = true;
@@ -33,7 +33,7 @@ export default class Creature {
         this.adultEnergy = energy;
         this.adultColor = color;
         this.gender = gender;
-        this.life = new CreatureLife(this, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder);
+        this.life = new CreatureLife(this, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder);
         this.energy = this.life.determineEnergy();
         this.isEaten = false;
         this.size = this.life.determineSize();
@@ -59,7 +59,7 @@ export default class Creature {
             foodToGatherAtOnce: foodToGatherAtOnce
         };
 
-        this.needs = new CreatureNeeds(this, maxFood, maxSleep, maxMating, foodNeeded, sleepNeeded, matingNeeded);
+        this.needs = new CreatureNeeds(this, foodNeeded, sleepNeeded, matingNeeded);
 
         this.targetType = FoodType.BOTH;
         this.currentTarget = null;

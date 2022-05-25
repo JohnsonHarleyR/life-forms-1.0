@@ -18,9 +18,14 @@ export const calculateAmountLostPerYear = (maxAmount, decayRate) => {
     return amountLostPerYear;
 }
 
-export const calculateAmountLostPerMs = (msPerYear, maxAmount, decayRate) => {
-    let amountLostPerYear = calculateAmountLostPerYear(maxAmount, decayRate);
-    let amountLostPerMs = amountLostPerYear / msPerYear;
+// export const calculateAmountLostPerMs = (msPerYear, maxAmount, decayRate) => {
+//     let amountLostPerYear = calculateAmountLostPerYear(maxAmount, decayRate);
+//     let amountLostPerMs = amountLostPerYear / msPerYear;
+//     return amountLostPerMs;
+// }
+
+export const calculateAmountLostPerMs = (msPerDay, amountNeededPerDay) => {
+    let amountLostPerMs = amountNeededPerDay / msPerDay;
     return amountLostPerMs;
 }
 
@@ -43,20 +48,32 @@ export const calculateNewAmount = (currentAmount, amountLostPerMs, msPassed, add
     return newAmount;
 }
 
+// food
+export const determineMaxFood = (creature, foodQuotient) => {
+    let result = creature.energy * foodQuotient;
+    return result;
+}
+
 // sleep
-export const calculateSleepRecoveryPerMs = (maxSleep, msPerYear) => {
-    let msForMaxRecovery = calculateMsForMaxSleepRecovery(msPerYear);
-    let sleepPerMs = maxSleep / msForMaxRecovery;
+export const calculateSleepRecoveryPerMs = (msPerHour) => { // divide ms per hour
+    let hour = 1;
+    let sleepPerMs = hour / msPerHour;
     return sleepPerMs;
 }
 
-const calculateMsForMaxSleepRecovery = (msPerYear) => {
-    let recoveryRate = calculateFullSleepRecoveryRate();
-    let msForMaxRecover = msPerYear * recoveryRate;
-    return msForMaxRecover;
-}
+// export const calculateSleepRecoveryPerMs = (maxSleep, msPerYear) => {
+//     let msForMaxRecovery = calculateMsForMaxSleepRecovery(msPerYear);
+//     let sleepPerMs = maxSleep / msForMaxRecovery;
+//     return sleepPerMs;
+// }
 
-const calculateFullSleepRecoveryRate = () => {
-    let rate = SleepProps.HOURS_FOR_FULL_RESTORE / SleepProps.HOURS_PER_YEAR;
-    return rate;
-}
+// const calculateMsForMaxSleepRecovery = (msPerYear) => {
+//     let recoveryRate = calculateFullSleepRecoveryRate();
+//     let msForMaxRecover = msPerYear * recoveryRate;
+//     return msForMaxRecover;
+// }
+
+// const calculateFullSleepRecoveryRate = () => {
+//     let rate = SleepProps.HOURS_FOR_FULL_RESTORE / SleepProps.HOURS_PER_YEAR;
+//     return rate;
+// }
