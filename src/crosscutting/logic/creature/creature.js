@@ -30,10 +30,11 @@ export default class Creature {
         this.id = id;
         this.type = type;
         this.adultSize = size;
+        this.adultEnergy = energy;
         this.adultColor = color;
         this.gender = gender;
         this.life = new CreatureLife(this, lifeSpanRange, maxYears, lifeStage, fractionAsChild, fractionAsElder);
-        this.energy = energy;
+        this.energy = this.life.determineEnergy();
         this.isEaten = false;
         this.size = this.life.determineSize();
         this.width = this.size; // Necessary?
