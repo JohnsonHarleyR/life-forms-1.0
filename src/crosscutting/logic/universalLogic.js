@@ -405,7 +405,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters,
-    largestCreatureSize = CreatureDefaults.LARGEST_SIZE, excludeCreatureId = null, checkForPlants = true) => {
+    largestCreatureSize = CanvasInfo.OBJECT_PADDING, excludeCreatureId = null, checkForPlants = true) => {
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 

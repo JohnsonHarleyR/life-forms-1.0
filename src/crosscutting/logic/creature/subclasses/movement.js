@@ -389,7 +389,7 @@ export default class CreatureMovement {
           newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
         // if there is no target, move to random position
         } else {
-          //console.log(`creature ${this.creature.id} sees no food, moving toward random position`);
+          console.log(`creature ${this.creature.id} sees no food, moving toward random position`);
           newPosition = this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
         }
         
@@ -513,7 +513,7 @@ export default class CreatureMovement {
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
       //console.log(`creature ${this.creature.id} is in position, targetting new position`);
       this.resetMovementProperties();
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, 0, this.creature.id, CreatureDefaults.LARGEST_SIZE);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE, this.creature.id, CreatureDefaults.LARGEST_SIZE);
       //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
       this.creature.targetPosition = newTargetPosition;
       //this.logMovementProperties();

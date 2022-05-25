@@ -9,8 +9,8 @@ import {
   determineAxisBySide,
 getCornerPositionFromStartAndEndPoints } from "../universalLogic";
 import { Side, Corner } from "../../constants/objectConstants";
-import { Direction } from "../../constants/creatureConstants";
-import { Axis } from "../../constants/canvasConstants";
+import { CreatureDefaults, Direction } from "../../constants/creatureConstants";
+import { Axis, CanvasInfo } from "../../constants/canvasConstants";
 
 export const checkCreatureObjectCollision = (creationInfo, newPosition, objects) => {
     let creationPoints = getStartAndEndPoints(creationInfo.position, creationInfo.width, creationInfo.height);
@@ -32,7 +32,7 @@ export const checkAllCreatureObjectCollisions = (creature, newPosition, objects)
     // smallerId: id of the smaller object colliding
     //pointsOfCollision: points on the creature where there is a collision
     //collidedWith: object collided with
-    let result = checkAnyArrayCollision(creaturePoints, objects, 3, creature.id);
+    let result = checkAnyArrayCollision(creaturePoints, objects, CanvasInfo.OBJECT_PADDING, creature.id);
     // for (let i = 0; i < objects.length; i++) {
     //     let obj = objects[i];
     //     let result = isCreatureObjectCollision(creature, newPosition, obj);

@@ -405,7 +405,7 @@ export const getRandomShelterPosition = (creature, creatures, objects, shelters)
 export const canSetShelterInPosition = (position, creature, creatures, objects, shelters) => {
     let shelterSize = creature.adultSize * ShelterLine.MULTIPLIER;
     let creationInfo = {id: null, position: position, width: shelterSize, height: shelterSize};
-    let collisionResult = isAnyCollision(creationInfo, creatures, objects, [], shelters, 0, creature.id, false);
+    let collisionResult = isAnyCollision(creationInfo, creatures, objects, [], shelters, CanvasInfo.OBJECT_PADDING, creature.id, false);
 
     // if the result is still false, also loop through creatures - if they are setting up shelter, check their target position
     if (!collisionResult) {
@@ -420,7 +420,7 @@ export const canSetShelterInPosition = (position, creature, creatures, objects, 
         });
         if (futureShelters.length > 0) {
             let creationPoints = getStartAndEndPoints(null, creationInfo.position, creationInfo.width, creationInfo.height);
-            collisionResult = checkAnyArrayCollision(creationPoints, futureShelters, 2).isCollision;
+            collisionResult = checkAnyArrayCollision(creationPoints, futureShelters, CanvasInfo.OBJECT_PADDING).isCollision;
         }
     }
 
