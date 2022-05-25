@@ -55,16 +55,23 @@ export default class CreatureMovement {
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
         
         // if previous priority is different than new priority, set mode to think mode
-        if (this.creature.needs.previousPriority === null || 
-            this.creature.needs.previousPriority !== this.creature.needs.priority || 
-            this.creature.needs.prioriityComplete) {
-              console.log(`Creature ${this.creature.id} about to think`);
+        // if (this.creature.needs.previousPriority === null || 
+        //     this.creature.needs.previousPriority !== this.creature.needs.priority || 
+        //     this.creature.needs.priorityComplete) {
+        //       console.log(`Creature ${this.creature.id} about to think`);
+        //         this.moveMode = MoveMode.THINK;
+        //         this.resetMovementProperties(); // keey?
+        //       if (this.creature.needs.prioriityComplete) {
+        //         console.log('priority complete');
+        //         this.creature.needs.priorityComplete = false;
+        //       }
+        // }
+
+        if (this.creature.needs.startNewAction === true) {
+          this.creature.needs.startNewAction = false;
+          console.log(`Creature ${this.creature.id} about to think`);
                 this.moveMode = MoveMode.THINK;
                 this.resetMovementProperties(); // keey?
-              if (this.creature.needs.prioriityComplete) {
-                console.log('priority complete');
-                this.creature.needs.priorityComplete = false;
-              }
         }
 
         // if creature is thinking, determine move mode based on priority
@@ -87,6 +94,7 @@ export default class CreatureMovement {
         this.sideOfCollision = null;
         this.previousSide = null;
         this.newDirection = null;
+        this.previousDirection = null;
     }
 
     testWithMovementPatterns = () => {
@@ -183,16 +191,18 @@ export default class CreatureMovement {
               this.creature.targetType = NeedType.SLEEP;
               this.moveMode = MoveMode.STAND_STILL;
             case ActionType.CREATE_SHELTER:
+              this.creature.targetType = NeedType.SHELTER;
+              this.moveMode = MoveMode.SEARCH;
                 // if the creature's shelter is not null anymore,
                 // set their priority to complete
-                if (this.creature.safety.shelter !== null) {
-                    this.creature.needs.priorityComplete = true;
-                    //this.resetMovementProperties();
-                    this.moveMode = MoveMode.STAND_STILL;
-                } else {
-                    this.creature.targetType = NeedType.SHELTER;
-                    this.moveMode = MoveMode.SEARCH;
-                }
+                // if (this.creature.safety.shelter !== null) {
+                //     this.creature.needs.priorityComplete = true;
+                //     //this.resetMovementProperties();
+                //     this.moveMode = MoveMode.STAND_STILL;
+                // } else {
+                //     this.creature.targetType = NeedType.SHELTER;
+                //     this.moveMode = MoveMode.SEARCH;
+                // }
                 break;
             case ActionType.FIND_MATE:
               this.creature.targetType = NeedType.MATE;
@@ -460,10 +470,11 @@ export default class CreatureMovement {
             this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
             return this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
           } else {
-            let shelterId = `sh${shelters.length}`;
+            let shelterId = `sh-${this.creature.id}`;
             let newShelter = new Shelter(shelterId, this.creature.position, this.creature.color, this.creature.size);
+            //this.creature.safety.shelter = newShelter;
             newShelter.addMemberToShelter(this.creature);
-            addItemToArray(newShelter, shelters, this.creature.setShelters);
+            //addItemToArray(newShelter, shelters, this.creature.setShelters);
           }
 
         }

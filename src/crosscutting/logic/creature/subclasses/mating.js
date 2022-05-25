@@ -46,6 +46,7 @@ export default class CreatureMating {
         this.isMating = false;
         this.creature.needs.matingLevel.points = this.creature.needs.maxMating;
         this.creature.needs.updateNeeds();
+        this.creature.needs.priorityComplete = true;
     }
 
     haveChild = (creatures) => {
