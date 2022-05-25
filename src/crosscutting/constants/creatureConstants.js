@@ -83,6 +83,11 @@ export const SleepProps = {
     HOURS_FOR_FULL_RESTORE: 8
 }
 
+export const TimeProps = {
+    HOURS_PER_DAY: 24,
+    MS_PER_DAY: minutesToMilliseconds(2)
+}
+
 export const AddOrSubtract = {
     ADD: "ADD",
     SUBTRACT: "SUBTRACT"
@@ -111,19 +116,15 @@ export const Boop = {
     sightDistance: 60,
     speed: 5,
     lifeSpanRange: {
-        low: minutesToMilliseconds(10),
-        high: minutesToMilliseconds(15)
+        low: 70,
+        high: 100
     },
-    maxYears: 100,
     fractionAsChild: .1,
     fractionAsElder: .15,
     foodToGatherAtOnce: 5,
-    maxFood: 100,
-    maxSleep: 100,
-    maxMating: 100,
-    sleepNeeded: AmountNeeded.AVG,
-    foodNeeded: AmountNeeded.AVG,
-    matingNeeded: AmountNeeded.AVG,
+    sleepNeeded: 8,
+    foodNeeded: 3,
+    matingNeeded: 10,
     genderOfProvider: Gender.FEMALE,
     genderOfCaregiver: Gender.MALE,
     genderOfShelterMaker: Gender.FEMALE,
@@ -145,19 +146,15 @@ export const Bleep = {
     sightDistance: 60,
     speed: 5,
     lifeSpanRange: {
-        low: minutesToMilliseconds(5),
-        high: minutesToMilliseconds(7)
+        low: 15,
+        high: 20
     },
-    maxYears: 20,
     fractionAsChild: .1,
     fractionAsElder: .15,
     foodToGatherAtOnce: 5,
-    maxFood: 50,
-    maxSleep: 50,
-    maxMating: 50,
-    sleepNeeded: AmountNeeded.MAX,
-    foodNeeded: AmountNeeded.MIN,
-    matingNeeded: AmountNeeded.MAX,
+    sleepNeeded: 6,
+    foodNeeded: 2,
+    matingNeeded: 10,
     genderOfProvider: Gender.MALE,
     genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,
