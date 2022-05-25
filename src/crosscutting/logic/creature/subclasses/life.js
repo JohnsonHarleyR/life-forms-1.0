@@ -36,6 +36,7 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
         this.creature.color = this.determineColor();
         let newSize = this.determineSize();
         this.updateSize(newSize);
+        this.creature.energy = this.determineEnergy();
 
         // test
         // this.intervals++;
@@ -87,6 +88,18 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
             default:
             case LifeStage.DECEASED: // TODO do we want it to disappear or what? Consider changing colors with different stages slightly?
                 return null;
+        }
+    }
+    determineEnergy = () => {
+        switch (this.lifeStage) {
+            case LifeStage.CHILD:
+                return this.determineChildEnergy();
+            default:
+            case LifeStage.ADULT:
+            case LifeStage.ELDER:
+                return this.creature.adultEnergy;
+            case LifeStage.DECEASED: // keep it the same as what it was before death
+            return this.creature.energy;
         }
     }
 
@@ -166,6 +179,11 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
 
         // round and return
         return roundToPlace(newSize, 1);
+    }
+
+    determineChildEnergy = () => {
+        let energy = Math.round(this.creature.adultEnergy * ( 3 / 4));
+        return energy;
     }
 
     determineAgeToStartGrowing = () => {
