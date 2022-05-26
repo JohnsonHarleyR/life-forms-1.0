@@ -2,6 +2,7 @@ import { isPotentialMate, getRandomGender, getCreatureInfoByType } from "../crea
 import { LifeStage, Gender } from "../../../constants/creatureConstants";
 import { getRandomIntInRange, getRandomPositionInBounds, addItemToArray } from "../../universalLogic";
 import Creature from "../creature";
+import { getRandomShelterPosition } from "../creatureLogic";
 export default class CreatureMating {
     constructor(creature, genderOfProvider, genderOfCaregiver, genderOfShelterMaker,
         pregnancyTerm, minOffspring, maxOffspring) {
@@ -46,7 +47,7 @@ export default class CreatureMating {
         this.isMating = false;
         this.creature.needs.matingLevel.points = this.creature.needs.maxMating;
         this.creature.needs.updateNeeds();
-        this.creature.needs.priorityComplete = true;
+        //this.creature.needs.priorityComplete = true;
     }
 
     haveChild = (creatures) => {
@@ -56,6 +57,10 @@ export default class CreatureMating {
             this.creature.family.children.push(newChild);
             if (this.creature.family.mate) {
                 this.creature.family.mate.family.children.push(newChild);
+            }
+            // update shelter too
+            if (this.creature.safety.shelter) {
+                this.creature.safety.shelter.addMemberToShelter(newChild);
             }
             // let creaturesCopy = [...creatures];
             // creaturesCopy.push(newChild);
@@ -101,8 +106,9 @@ export default class CreatureMating {
                 break;
         }
 
-        let newChild = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
+        let newChild = new Creature({id: `c${index}-${this.creature.id}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
         mother: mother, father: father, targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
+        newChild.safety.shelter = this.creature.safety.shelter;
         return newChild;
     }
 
