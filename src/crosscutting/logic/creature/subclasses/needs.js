@@ -1,5 +1,5 @@
 import { LifeStage, ActionType, AmountNeeded, AddOrSubtract } from "../../../constants/creatureConstants";
-import { roundToPlace } from "../../universalLogic";
+import { roundToPlace, getCreatureIdentityString } from "../../universalLogic";
 import { doesPotentialMateExist } from "../creatureLogic";
 import { 
     getAmountNeededDecimal,
@@ -44,7 +44,7 @@ export default class CreatureNeeds {
         this.priority = this.determinePriority();
         this.previousPriority = null;
         this.priorityComplete = true;
-        this.startNewAction = true;
+        this.startNewAction = false;
 
         this.foodPercentGoal = null;
 
@@ -81,20 +81,20 @@ export default class CreatureNeeds {
         // now update need levels
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
 
-        this.displayCreatureNeedLevels();
+        //this.displayCreatureNeedLevels();
 
         // make sure creature is still alive - DONE?
         
         // set previous priority before changing the priority
         if (this.isPriorityComplete(this.priority, creatures)) {
-            console.log(`priority complete for ${this.creature.gender} ${this.creature.id} ${this.creature.type}: ${this.priority}`);
+            console.log(`priority complete for ${getCreatureIdentityString(this.creature)}`);
             this.previousPriority = this.priority;
             this.priorityComplete = true;
         }
 
         // set the priority based on new levels
         this.priority = this.determinePriority(creatures);
-        console.log(`priority for ${this.creature.gender} ${this.creature.id} ${this.creature.type}: ${this.priority}`);
+        //console.log(`priority for ${getCreatureIdentityString(this.creature)}`);
 
         //this.priorityComplete = false;
         // turn sleeping back off
@@ -129,6 +129,15 @@ export default class CreatureNeeds {
             }
         }
 
+        if (this.creature.life.lifeStage === LifeStage.CHILD) {
+            console.log(`priority for CHILD ${getCreatureIdentityString(this.creature)}: ${newPriority}`);
+            if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter !== null) {
+                console.log(`Shelter number: ${this.creature.safety.shelter.id}`);
+            } else if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter === null) {
+                console.log(`No shelter for creature`);
+            }
+        }
+
         // only set the new priority is priority is complete OR new priority is about death, falling asleep, running away
         if (!this.priorityComplete && (this.priority === ActionType.DIE ||
             (this.priority === ActionType.FEED_SELF && this.foodLevel.percent <= 15) || 
@@ -139,9 +148,12 @@ export default class CreatureNeeds {
         // What as I doing with the above part again?
 
         // if the priority is complete or the priority does not equal previous, set priorityComplete to false;
-        if (this.priorityComplete || newPriority !== this.priority) {
+        if (this.priorityComplete) {
             this.priorityComplete = false;
         }
+        // if (this.priorityComplete || newPriority !== this.priority) {
+        //     this.priorityComplete = false;
+        // }
         //console.log(`Creature ${this.creature.id} priority: ${newPriority}`);
         return newPriority;
     }
@@ -158,6 +170,12 @@ export default class CreatureNeeds {
         switch (priority) {
             case ActionType.DIE:
                 if (this.creature.life.LifeStage === LifeStage.DECEASED) {
+                    return true;
+                }
+                break;
+            case ActionType.MATE:
+                if (this.creature.safety.shelter && this.creature.safety.shelter.isInsideShelter(this.creature)
+                && this.creature.mating.isMating === false) {
                     return true;
                 }
                 break;
@@ -195,6 +213,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.SLEEP_IN_SHELTER:
                 if (this.creature.safety.shelter !== null && this.creature.safety.shelter.isInsideShelter(this.creature) && this.sleepLevel.percent > 95) {
+                    console.log(`sleep in shelter complete for ${this.creature.id}`);
                     return true;
                 }
                 break;
@@ -224,6 +243,7 @@ export default class CreatureNeeds {
 
         // special priorities for  child and deceased
         if (this.creature.life.lifeStage === LifeStage.CHILD) {
+            console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
             return this.getChildPriorityOrder();
         } else if (this.creature.life.lifeStage === LifeStage.DECEASED) {
             return [
@@ -510,7 +530,7 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if (this.sleepLevel.percent < 100) {
+                    if (this.sleepLevel.percent < 95) {
                         return true;
                     }
                     return false;
@@ -528,7 +548,6 @@ export default class CreatureNeeds {
     }
 
     getShortenedPriorityOrder = () => {
-        let skipToEnd = false;
         return [
             {
                 // TODO write if statement for if creature is eaten

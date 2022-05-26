@@ -2,6 +2,12 @@ import { CanvasInfo, Axis } from "../constants/canvasConstants";
 import { Corner, Side } from "../constants/objectConstants";
 import { Direction, CreatureDefaults } from "../constants/creatureConstants";
 
+// display methods
+export const getCreatureIdentityString = (creature) => {
+    let str = `${creature.gender} ${creature.type} ${creature.id}`;
+    return str;
+}
+
 // time and rounding methods
 export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
     return maxLifeSpan / maxYears;

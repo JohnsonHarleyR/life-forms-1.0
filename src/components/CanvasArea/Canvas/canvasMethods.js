@@ -120,7 +120,7 @@ export const updateCreatures = (creatures, setCreatures) => {
             }
         })
     });
-    console.log(`number of creatures: ${newCreatures.length}`);
+    //console.log(`number of creatures: ${newCreatures.length}`);
     setCreatures(newCreatures);
 }
 

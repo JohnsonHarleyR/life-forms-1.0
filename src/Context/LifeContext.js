@@ -22,7 +22,7 @@ const LifeProvider = ({children}) => {
                 }
             });
             setLargestCreatureSize(largest);
-            showListOfCreatures();
+            //showListOfCreatures();
         }
     }, [creatures]);
 

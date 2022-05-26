@@ -15,7 +15,8 @@ import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
-    getRandomStartPosition, addItemToArray, displayPatternResult } from "../../universalLogic";
+    getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
+  getRandomPositionInBounds } from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
@@ -51,6 +52,8 @@ export default class CreatureMovement {
         this.previousDirection = null;
 
         this.movementRecords = [];
+
+        this.intervalCount = 0;
     }
 
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
@@ -96,6 +99,7 @@ export default class CreatureMovement {
         this.previousSide = null;
         this.newDirection = null;
         this.previousDirection = null;
+        this.intervalCount = 0;
     }
 
     testWithMovementPatterns = () => {
@@ -121,6 +125,121 @@ export default class CreatureMovement {
       }
 
     }
+
+    determineModeByPriority = () => {
+      switch(this.creature.needs.priority) {
+          default:
+          case ActionType.NONE:
+              //this.searchNeed = NeedType.NONE;
+              this.creature.targetType = NeedType.NONE;
+              this.resetMovementProperties();
+              this.moveMode = MoveMode.STAND_STILL;
+              break;
+          case ActionType.DIE:
+            this.creature.targetType = NeedType.NONE;
+            this.moveMode = MoveMode.STAND_STILL;
+            this.creature.safety.isBeingChased = false;
+            this.creature.safety.isBeingEaten = false;
+            break;
+          case ActionType.SLEEP_IN_SPOT:
+            this.creature.targetType = NeedType.SLEEP;
+            this.moveMode = MoveMode.STAND_STILL;
+            break;
+          case ActionType.SLEEP_IN_SHELTER:
+            this.creature.targetType = NeedType.SLEEP;
+            if (!this.creature.needs.isSleeping) {
+              this.moveMode = MoveMode.GO_TO_SHELTER;
+            } else {
+              this.moveMode = MoveMode.STAND_STILL;
+            }
+            break;
+          case ActionType.CREATE_SHELTER:
+            this.creature.targetType = NeedType.SHELTER;
+            this.moveMode = MoveMode.SEARCH;
+              // if the creature's shelter is not null anymore,
+              // set their priority to complete
+              // if (this.creature.safety.shelter !== null) {
+              //     this.creature.needs.priorityComplete = true;
+              //     //this.resetMovementProperties();
+              //     this.moveMode = MoveMode.STAND_STILL;
+              // } else {
+              //     this.creature.targetType = NeedType.SHELTER;
+              //     this.moveMode = MoveMode.SEARCH;
+              // }
+              break;
+          case ActionType.FIND_MATE:
+            this.creature.targetType = NeedType.MATE;
+            this.moveMode = MoveMode.SEARCH;
+            break;
+          case ActionType.FEED_SELF:
+            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_SELF`);
+              this.creature.targetType = NeedType.FOOD_FOR_SELF;
+              this.moveMode = MoveMode.SEARCH;
+              break;
+          case ActionType.FEED_FAMILY:
+            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY`);
+              this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
+              this.moveMode = MoveMode.SEARCH;
+              break;
+          case ActionType.MATE:
+            if (this.creature.safety.shelter) {
+              this.creature.targetType = NeedType.MATE;
+              let centerPosition = this.creature.safety.shelter.getCenterPosition();
+              if (isInPosition(this.creature.position, centerPosition) && 
+              isInPosition(this.creature.family.mate.position, centerPosition)) {
+                this.moveMode = MoveMode.COMPLETE_MATING;
+              } else {
+                this.moveMode = MoveMode.GO_TO_SHELTER;
+              }
+            } else {
+              console.log(`error: creature ${this.creature.id} has no shelter`);
+            }
+
+            break;
+          case ActionType.HAVE_CHILD:
+            console.log(`creature ${this.creature.id} HAVE_CHILD`);
+            this.moveMode = MoveMode.STAND_STILL;
+            break;
+
+      }
+  }
+
+  
+
+  getInitialTargetPosition = (objects, creatures, plants, shelters) => {
+    switch(this.creature.needs.priority) {
+        default:
+        case ActionType.NONE:
+            return this.creature.targetPosition; // temp
+        case ActionType.DIE:
+        case ActionType.SLEEP_IN_SPOT:
+          return this.creature.position;
+        case ActionType.SLEEP_IN_SHELTER:
+          console.log('getting random sleep position');
+          return this.getRandomPositionInsideShelter();
+        case ActionType.CREATE_SHELTER:
+            return getRandomShelterPosition(this.creature, creatures, objects, shelters);
+        case ActionType.FEED_SELF:
+        case ActionType.FEED_FAMILY:
+            return this.creature.position; // temp
+        case ActionType.MATE:
+          if (this.creature.safety.shelter) {
+            return this.creature.safety.shelter.getCenterPosition();
+          } else {
+            return this.creature.position;
+          }
+
+    }
+  }
+
+  doPause = (maxIntervals) => {
+    if (this.intervalCount >= maxIntervals) {
+      this.intervalCount = 0;
+      return false;
+    }
+    this.intervalCount++;
+    return true;
+  }
 
     move = (objects, plants, creatures, shelters, canvasInfo, targetPosition = null) => {
         //console.log(`${this.creature.id} start: ${JSON.stringify(this.creature.position)}`);
@@ -159,8 +278,10 @@ export default class CreatureMovement {
               newPosition = this.searchForTarget(plants, creatures, objects, shelters, canvasInfo);
               break;
             case MoveMode.GO_TO_SHELTER:
-              newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
-              if (newPosition.x === endPosition.x && newPosition.y === endPosition.y) {
+              newPosition = this.goToShelter(plants, creatures, objects, shelters, canvasInfo);
+              //newPosition = this.moveToPoint(endPosition, objects, creatures, shelters);
+              if (this.creature.targetType === NeedType.MATE && newPosition.x === endPosition.x && newPosition.y === endPosition.y && 
+                this.creature.family.mate && isInPosition(this.creature.family.mate.position, endPosition)) {
                 this.moveMode = MoveMode.THINK;
               }
               break;
@@ -176,95 +297,6 @@ export default class CreatureMovement {
         //console.log(`${this.creature.id} end: ${JSON.stringify(newPosition)}`);
     }
 
-    determineModeByPriority = () => {
-        switch(this.creature.needs.priority) {
-            default:
-            case ActionType.NONE:
-                //this.searchNeed = NeedType.NONE;
-                this.creature.targetType = NeedType.NONE;
-                this.resetMovementProperties();
-                this.moveMode = MoveMode.STAND_STILL;
-                break;
-            case ActionType.DIE:
-              this.creature.targetType = NeedType.NONE;
-              this.moveMode = MoveMode.STAND_STILL;
-              this.creature.safety.isBeingChased = false;
-              this.creature.safety.isBeingEaten = false;
-            case ActionType.SLEEP_IN_SPOT:
-              this.creature.targetType = NeedType.SLEEP;
-              this.moveMode = MoveMode.STAND_STILL;
-            case ActionType.CREATE_SHELTER:
-              this.creature.targetType = NeedType.SHELTER;
-              this.moveMode = MoveMode.SEARCH;
-                // if the creature's shelter is not null anymore,
-                // set their priority to complete
-                // if (this.creature.safety.shelter !== null) {
-                //     this.creature.needs.priorityComplete = true;
-                //     //this.resetMovementProperties();
-                //     this.moveMode = MoveMode.STAND_STILL;
-                // } else {
-                //     this.creature.targetType = NeedType.SHELTER;
-                //     this.moveMode = MoveMode.SEARCH;
-                // }
-                break;
-            case ActionType.FIND_MATE:
-              this.creature.targetType = NeedType.MATE;
-              this.moveMode = MoveMode.SEARCH;
-              break;
-            case ActionType.FEED_SELF:
-              console.log(`creature ${this.creature.id} determineModeByPriority: FEED_SELF`);
-                this.creature.targetType = NeedType.FOOD_FOR_SELF;
-                this.moveMode = MoveMode.SEARCH;
-                break;
-            case ActionType.FEED_FAMILY:
-              console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY`);
-                this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
-                this.moveMode = MoveMode.SEARCH;
-                break;
-            case ActionType.MATE:
-              if (this.creature.safety.shelter) {
-                this.creature.targetType = NeedType.MATE;
-                let centerPosition = this.creature.safety.shelter.getCenterPosition();
-                if (isInPosition(this.creature.position, centerPosition) && 
-                isInPosition(this.creature.family.mate.position, centerPosition)) {
-                  this.moveMode = MoveMode.COMPLETE_MATING;
-                } else {
-                  this.moveMode = MoveMode.GO_TO_SHELTER;
-                }
-              } else {
-                console.log(`error: creature ${this.creature.id} has no shelter`);
-              }
-
-              break;
-            case ActionType.HAVE_CHILD:
-              console.log(`creature ${this.creature.id} HAVE_CHILD`);
-              this.moveMode = MoveMode.STAND_STILL;
-
-        }
-    }
-
-    getInitialTargetPosition = (objects, creatures, plants, shelters) => {
-        switch(this.creature.needs.priority) {
-            default:
-            case ActionType.NONE:
-                return this.creature.targetPosition; // temp
-            case ActionType.DIE:
-            case ActionType.SLEEP_IN_SPOT:
-              return this.creature.position;
-            case ActionType.CREATE_SHELTER:
-                return getRandomShelterPosition(this.creature, creatures, objects, shelters);
-            case ActionType.FEED_SELF:
-            case ActionType.FEED_FAMILY:
-                return this.creature.position; // temp
-            case ActionType.MATE:
-              if (this.creature.safety.shelter) {
-                return this.creature.safety.shelter.getCenterPosition();
-              } else {
-                return this.creature.position;
-              }
-
-        }
-    }
 
     standStill = (creatures) => {
       //console.log(`creature ${this.creature.id} is standing still`);
@@ -277,6 +309,7 @@ export default class CreatureMovement {
           break;
         case ActionType.SLEEP_IN_SPOT:
           makeCreatureSleep(this.creature);
+          break;
         case ActionType.HAVE_CHILD:
           console.log(`having child`);
           this.creature.mating.haveChild(creatures);
@@ -319,6 +352,42 @@ export default class CreatureMovement {
       }
 
     searchForFoodForSelf = (plants, creatures, objects, shelters, canvasInfo) => {
+      // check first if creature is a child - if they are then do different steps
+      if (this.creature.lifeStage === LifeStage.CHILD) {
+        // if there's food, go eat the food
+        if (creatureHasFoodInShelter(this.creature)) {
+          this.creature.targetPosition = this.getShelterCornerPosition();
+          // if the creature is in the shelter corner, eat food
+          if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+            eatFoodFromShelter(this.creature);
+            this.creature.currentTarget = null;
+            return this.creature.position;
+          } // if not in the corner, move toward the corner
+           else {
+            return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+          }
+
+        } // if they don't have food in the shelter, move to random position waiting for food
+        else
+        {
+          let endPosition;
+          // check if they're already in the target position - if so getr random position in shelter
+          if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+            let doPause = this.doPause(5);
+            if (doPause) {
+              endPosition = this.creature.position;
+            } else {
+              endPosition = this.getRandomPositionInsideShelter();
+            }
+
+          } // if not, keep moving that way
+           else {
+            endPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+          }
+          return endPosition;
+        }
+      }
+
       // first determine if creature has food in shelter or personal inventory
       if (creatureHasFoodInShelter(this.creature)) {
         //console.log(`creature ${this.creature.type} ${this.creature.id} has food in shelter`);
@@ -486,8 +555,18 @@ export default class CreatureMovement {
         return newPosition;
     }
 
+    goToShelter = (plants, creatures, objects, shelters, canvasInfo) => {
+      if (this.creature.targetType === NeedType.SLEEP && isInPosition(this.creature.position, this.creature.targetPosition)) {
+        makeCreatureSleep(this.creature);
+        return this.creature.position;
+      } else {
+        console.log(`${this.creature.id} target position: ${JSON.stringify(this.creature.targetPosition)}`);
+        return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters);
+      }
+    }
+
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      this.testWithMovementPatterns();
+      //this.testWithMovementPatterns();
 
       this.previousDirection = this.direction !== null ? {...this.direction} : null;
       this.previousSide = this.sideOfCollision;
@@ -534,6 +613,32 @@ export default class CreatureMovement {
     }
     //console.log(`creature ${this.creature.id} moving to position ${JSON.stringify(this.creature.targetPosition)}`);
     return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+    }
+
+    getRandomPositionInsideShelter = () => {
+      if (!this.creature.safety.shelter) {
+        return this.creature.position;
+      }
+
+      let creaturePadding = (this.creature.size / 2) + 1;
+
+      let shelter = this.creature.safety.shelter;
+      let xAndY = getStartAndEndPoints(shelter.id, shelter.position, shelter.size, shelter.size);
+      let randomPosition = getRandomPositionInBounds(xAndY.xStart, xAndY.xEnd, xAndY.yStart, xAndY.yEnd, creaturePadding);
+      return randomPosition;
+    }
+
+    getShelterCornerPosition = () => {
+      if (!this.creature.safety.shelter) {
+        return this.creature.position;
+      }
+
+      let creaturePadding = (this.creature.size / 2) + 2;
+
+      let shelter = this.creature.safety.shelter;
+      let xAndY = getStartAndEndPoints(shelter.id, shelter.position, shelter.size, shelter.size);
+      let position = {x: xAndY.xStart + creaturePadding, y: xAndY.yStart + creaturePadding};
+      return position;
     }
 
     moveAroundObject = (obj, collisionSide, canvasInfo) => {

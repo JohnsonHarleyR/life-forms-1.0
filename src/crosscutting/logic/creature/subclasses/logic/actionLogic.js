@@ -3,7 +3,8 @@ import { getTargetFromArea } from "../../creatureLogic";
 import { FoodType } from "../../../../constants/objectConstants";
 
 export const makeCreatureDie = (creature) => {
-    creature.life.LifeStage = LifeStage.DECEASED;
+    creature.life.lifeStage = LifeStage.DECEASED;
+    creature.needs.isSleeping = false;
     creature.life.updateLife();
 }
 
