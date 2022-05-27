@@ -76,6 +76,13 @@ export const isCombinedFoodEnoughToMate = (creature) => {
         inventoryFoodPoints += f.energy;
     });
 
+    if (creature.family.mate) {
+        let mate = creature.family.mate;
+        mate.inventory.food.forEach(f => {
+            inventoryFoodPoints += f.energy;
+        });
+    }
+
     let combinedFoodPoints = shelterFoodPoints + inventoryFoodPoints;
     if (combinedFoodPoints >= creature.needs.foodRequiredToMate) {
         return true;

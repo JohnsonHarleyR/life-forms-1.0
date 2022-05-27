@@ -27,8 +27,8 @@ export default class Emojis {
             findSafety: this.createVisual('FIND_SAFETY', EmojiInfo.FIND_SAFETY),
             feedSelf: this.createVisual('FEED_SELF', EmojiInfo.FEED_SELF),
             feedFamily: this.createVisual('FEED_FAMILY', EmojiInfo.FEED_FAMILY),
-            createShelter: null,
-            leaveShelter: null,
+            createShelter: this.createVisual('CREATE_SHELTER', EmojiInfo.CREATE_SHELTER),
+            leaveShelter: this.createVisual('LEAVE_SHELTER', EmojiInfo.LEAVE_SHELTER),
             sleepInShelter: this.createVisual('SLEEP_IN_SHELTER', EmojiInfo.SLEEP_IN_SHELTER),
             sleepInSpot: this.createVisual('SLEEP_IN_SPOT', EmojiInfo.SLEEP_IN_SPOT),
             findMate: this.createVisual('FIND_MATE', EmojiInfo.FIND_MATE),
@@ -51,7 +51,7 @@ export default class Emojis {
             return;
         }
 
-        //console.log(`${getCreatureIdentityString(this.creature)} emoji for: ${emojiVisual.name} {startX: ${emojiVisual.startX}, startY: ${emojiVisual.startY}}`);
+        console.log(`${getCreatureIdentityString(this.creature)} emoji for: ${emojiVisual.name} {startX: ${emojiVisual.startX}, startY: ${emojiVisual.startY}}`);
 
         let dx = this.creature.position.x + EmojiInfo.X_OFFSET;
         let dy = this.creature.position.y + EmojiInfo.Y_OFFSET;

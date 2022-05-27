@@ -11,10 +11,12 @@ export const EmojiInfo = {
     DIE: {y: 0, x: 3},
     BE_DEAD:  {y: 0, x: 3},
     FIND_MATE: {y: 1, x: 0},
-    GATHER_FOOD_TO_MATE: {y: 0, x: 1},
+    GATHER_FOOD_TO_MATE: {y: 2, x: 0},
     MATE: {y: 1, x: 1},
     PRODUCE_OFFSPRING: {y: 1, x: 1},
     HAVE_CHILD: {y: 1, x: 1},
     SLEEP_IN_SPOT: {y: 1, x: 2},
-    FIND_SAFETY: {y: 1, x: 3}
+    FIND_SAFETY: {y: 1, x: 3},
+    CREATE_SHELTER: {y: 2, x: 1},
+    LEAVE_SHELTER: {y: 2, x: 2}
 }
