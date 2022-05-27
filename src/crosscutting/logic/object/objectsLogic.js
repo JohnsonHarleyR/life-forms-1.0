@@ -266,12 +266,12 @@ export const determineCollisionSideByCollidingPoints = (creature, creaturePoints
 
 export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo) => {
   // determine the axis of the side - if it's x axis that's top or bottom, y is left or right
-  console.log(`creature: ${creature.gender} ${creature.type} ${creature.id}`);
+  //console.log(`creature: ${creature.gender} ${creature.type} ${creature.id}`);
   let axis = determineAxisBySide(objectSide);
 
   // attempt to grab travel direction based on target distance from each corner
   let direction = getDirectionByCornerDistancesToTarget(obj, objectSide, axis, creature.targetPosition);
-  console.log(`direction by corner distances to target: ${direction}`);
+  //console.log(`direction by corner distances to target: ${direction}`);
 
   // if it was null or anything attempt to grab direction from creature directions
   if (!direction) {
@@ -280,19 +280,19 @@ export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo
     } else if (axis === Axis.Y) {
       direction = creature.movement.direction.y;
     }
-    console.log(`direction by creature direction: ${direction}`);
+    //console.log(`direction by creature direction: ${direction}`);
   }
 
     // if the direction is still null, choose a direction by the side furthest from the wall
     if (!direction) {
       direction = chooseDirectionByFurthestSideFromWall(axis, obj, canvasInfo);
-      console.log(`direction based on side furthest from wall: ${direction}`);
+      //console.log(`direction based on side furthest from wall: ${direction}`);
     }
   
     // if it's still null, just choose a default...
     if (!direction) {
       direction = chooseDirectionByAxisDefault(axis);
-      console.log(`choosing default direction: ${direction}`);
+      //console.log(`choosing default direction: ${direction}`);
     }
     
     return direction;

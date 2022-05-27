@@ -73,14 +73,14 @@ export default class CreatureMovement {
 
         if (this.creature.needs.startNewAction === true) {
           this.creature.needs.startNewAction = false;
-          console.log(`Creature ${this.creature.id} about to think`);
+          //console.log(`Creature ${this.creature.id} about to think`);
                 this.moveMode = MoveMode.THINK;
                 this.resetMovementProperties(); // keey?
         }
 
         // if creature is thinking, determine move mode based on priority
         if (this.moveMode === MoveMode.THINK) {
-          console.log(`Creature ${this.creature.id} thinking`);
+          //console.log(`Creature ${this.creature.id} thinking`);
             this.determineModeByPriority();
             this.creature.targetPosition = this.getInitialTargetPosition(objects, creatures, plants, shelters);
         }
@@ -338,10 +338,10 @@ export default class CreatureMovement {
         } else if (this.creature.targetType === NeedType.MATE) {
           newPosition = this.searchForMate(plants, creatures, objects, shelters, canvasInfo);
         } else if (this.creature.targetType === NeedType.FOOD_FOR_SELF) {
-          console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForSelf`);
+          //console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForSelf`);
           newPosition = this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
         } else if (this.creature.targetType === NeedType.FOOD_FOR_FAMILY) {
-          console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForFamily`);
+          //console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForFamily`);
           newPosition = this.searchForFoodForFamily(plants, creatures, objects, shelters, canvasInfo);
         }
     
@@ -349,6 +349,13 @@ export default class CreatureMovement {
         
     
         return newPosition;
+      }
+
+      wanderAroundShelter = (objects, creatures, shelters, canvasInfo) => {
+        if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+          this.creature.targetPosition = this.getRandomPositionInsideShelter();
+        }
+       return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
       }
 
     searchForFoodForSelf = (plants, creatures, objects, shelters, canvasInfo) => {
@@ -370,21 +377,8 @@ export default class CreatureMovement {
         } // if they don't have food in the shelter, move to random position waiting for food
         else
         {
-          let endPosition;
-          // check if they're already in the target position - if so getr random position in shelter
-          if (isInPosition(this.creature.position, this.creature.targetPosition)) {
-            let doPause = this.doPause(5);
-            if (doPause) {
-              endPosition = this.creature.position;
-            } else {
-              endPosition = this.getRandomPositionInsideShelter();
-            }
-
-          } // if not, keep moving that way
-           else {
-            endPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
-          }
-          return endPosition;
+          console.log('wandering around shelter');
+          return this.wanderAroundShelter(objects, creatures, shelters, canvasInfo);
         }
       }
 
@@ -560,7 +554,7 @@ export default class CreatureMovement {
         makeCreatureSleep(this.creature);
         return this.creature.position;
       } else {
-        console.log(`${this.creature.id} target position: ${JSON.stringify(this.creature.targetPosition)}`);
+        //console.log(`${this.creature.id} target position: ${JSON.stringify(this.creature.targetPosition)}`);
         return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters);
       }
     }

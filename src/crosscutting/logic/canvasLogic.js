@@ -105,10 +105,11 @@ const drawCreature = (canvas, canvasInfo, creature) => { // TODO
     );
     ctx.closePath();
 
-    if (creature.needs.isSleeping) {
-        console.log(`drawing sleep for ${creature.id}`);
-        drawSleepIndicator(canvas, creature);
-    }
+    creature.emojis.drawEmoji(canvas);
+    // if (creature.needs.isSleeping) {
+    //     //console.log(`drawing sleep for ${creature.id}`);
+    //     drawSleepIndicator(canvas, creature);
+    // }
 }
 
 const drawSleepIndicator = (canvas, creature) => {

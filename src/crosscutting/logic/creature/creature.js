@@ -18,13 +18,13 @@ import {
     getFoodTargetType
 } from "./creatureLogic";
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
+import Emojis from "./subclasses/emojis/emojis";
 
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
         food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
         genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring,
         mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
-        this.showLines = true;
 
         // do not touch the stuff in the next paragraph - as in don't refactor
         this.id = id;
@@ -68,6 +68,9 @@ export default class Creature {
         this.position = position;
         this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed);
     
+        
+        this.showLines = true;
+        this.emojis = new Emojis(this);
     
         this.setPlants = setPlants;
         this.setCreatures = setCreatures;

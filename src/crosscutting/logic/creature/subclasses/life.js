@@ -208,8 +208,12 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
     }
 
     determineDeceasedSize = () => {
-        let chipAwayAmount = roundToPlace(this.creature.adultSize * CreatureDefaults.DECEASED_SHRINK, 1);
+        if (this.creature.size < this.creature.adultSize) {
+            return this.creature.size;
+        }
 
+        let chipAwayAmount = roundToPlace(this.creature.adultSize * CreatureDefaults.DECEASED_SHRINK, 1);
+        
         return this.creature.adultSize - chipAwayAmount;
     }
 

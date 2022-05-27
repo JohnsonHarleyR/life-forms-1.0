@@ -71,7 +71,7 @@ export default class CreatureNeeds {
 
         // double check sleep - if the creature is sleeping then recalculate sleep amount
         if (this.isSleeping) {
-            console.log(`creature ${this.creature.id} is sleeping`);
+            //console.log(`creature ${this.creature.id} is sleeping`);
             sleepPoints = calculateNewAmount(this.sleepLevel.points, this.sleepPerMs, timeLapsed, AddOrSubtract.ADD);
             if (sleepPoints > this.maxSleep) {
                 sleepPoints = this.maxSleep;
@@ -87,7 +87,7 @@ export default class CreatureNeeds {
         
         // set previous priority before changing the priority
         if (this.isPriorityComplete(this.priority, creatures)) {
-            console.log(`priority complete for ${getCreatureIdentityString(this.creature)}`);
+            //console.log(`priority complete for ${getCreatureIdentityString(this.creature)}`);
             this.previousPriority = this.priority;
             this.priorityComplete = true;
         }
@@ -129,14 +129,14 @@ export default class CreatureNeeds {
             }
         }
 
-        if (this.creature.life.lifeStage === LifeStage.CHILD) {
-            console.log(`priority for CHILD ${getCreatureIdentityString(this.creature)}: ${newPriority}`);
-            if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter !== null) {
-                console.log(`Shelter number: ${this.creature.safety.shelter.id}`);
-            } else if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter === null) {
-                console.log(`No shelter for creature`);
-            }
-        }
+        // if (this.creature.life.lifeStage === LifeStage.CHILD) {
+        //     console.log(`priority for CHILD ${getCreatureIdentityString(this.creature)}: ${newPriority}`);
+        //     if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter !== null) {
+        //         console.log(`Shelter number: ${this.creature.safety.shelter.id}`);
+        //     } else if (newPriority === ActionType.SLEEP_IN_SHELTER && this.creature.safety.shelter === null) {
+        //         console.log(`No shelter for creature`);
+        //     }
+        // }
 
         // only set the new priority is priority is complete OR new priority is about death, falling asleep, running away
         if (!this.priorityComplete && (this.priority === ActionType.DIE ||
@@ -170,6 +170,8 @@ export default class CreatureNeeds {
         switch (priority) {
             case ActionType.DIE:
                 if (this.creature.life.LifeStage === LifeStage.DECEASED) {
+                    console.log(`creature ${getCreatureIdentityString(this.creature)} is dead.`);
+                    this.displayCreatureNeedLevels();
                     return true;
                 }
                 break;
@@ -205,6 +207,12 @@ export default class CreatureNeeds {
                     return true;
                 }
                 break;
+            case ActionType.FEED_SELF:
+                if (this.foodPercentGoal === null || this.foodLevel.percent >= this.foodPercentGoal) {
+                    this.foodPercentGoal = null;
+                    return true;
+                }
+                break;
             case ActionType.FEED_FAMILY:
                 if (this.foodPercentGoal === null || this.determineFamilyFoodPercent() >= this.foodPercentGoal) {
                     this.foodPercentGoal = null;
@@ -232,6 +240,10 @@ export default class CreatureNeeds {
     }
 
     getPriorityOrder = () => {
+
+        if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+            console.log(`creature ${getCreatureIdentityString(this.creature)} is deceased`);
+        }
         
         // first check if priority is complete - if it's not then get from the shortened list to continue the priority
         if (!this.priorityComplete) {
@@ -243,7 +255,7 @@ export default class CreatureNeeds {
 
         // special priorities for  child and deceased
         if (this.creature.life.lifeStage === LifeStage.CHILD) {
-            console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
+            //console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
             return this.getChildPriorityOrder();
         } else if (this.creature.life.lifeStage === LifeStage.DECEASED) {
             return [
@@ -332,6 +344,7 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 15) {
+                        this.foodPercentGoal = 50;
                         return true;
                     }
                     return false;
@@ -372,7 +385,7 @@ export default class CreatureNeeds {
                     let familyFoodPercent = this.determineFamilyFoodPercent();
                     if (this.foodLevel.percent <= 20 || 
                         familyFoodPercent <= 20) {
-                            this.foodPercentGoal = 60;
+                            this.foodPercentGoal = 40;
                             return true;
                         }
                         return false;
@@ -387,6 +400,35 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.SLEEP_IN_SHELTER
+            },
+            {
+                meetsCondition: () => {
+                    if (this.foodLevel.percent <= 40 || 
+                        this.determineFamilyFoodPercent() <= 40) {
+                            this.foodPercentGoal = 60;
+                            return true;
+                        }
+                        return false;
+                },
+                priority: ActionType.FEED_FAMILY
+            },
+            {
+                meetsCondition: () => { // if sleep is less than 10%
+                    if (this.sleepLevel.percent <= 40) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.SLEEP_IN_SHELTER
+            },
+            {
+                meetsCondition: () => {
+                    if (this.matingLevel.percent <= 40) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.MATE
             },
             {
                 meetsCondition: () => {
@@ -407,15 +449,6 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.SLEEP_IN_SHELTER
-            },
-            {
-                meetsCondition: () => {
-                    if (this.matingLevel.percent <= 50) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.MATE
             },
             {
                 meetsCondition: () => {
@@ -502,7 +535,8 @@ export default class CreatureNeeds {
                     if (this.foodLevel.percent < 20 && 
                         this.creature.safety.shelter !== null && 
                         this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
-                        return true;
+                        this.foodPercentGoal = 50;
+                            return true;
                     }
                     return false;
                 },
@@ -518,11 +552,12 @@ export default class CreatureNeeds {
                 priority: ActionType.SLEEP_IN_SHELTER
             },
             {
-                meetsCondition: () => { // food less than equal to sleep;
-                    if (this.foodLevel.percent <= this.sleepLevel.percent && 
+                meetsCondition: () => { // food less than 20%;
+                    if (this.foodLevel.percent < 50 && 
                         this.creature.safety.shelter !== null && 
                         this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
-                        return true;
+                        this.foodPercentGoal = 75;
+                            return true;
                     }
                     return false;
                 },
@@ -530,7 +565,28 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if (this.sleepLevel.percent < 95) {
+                    if (this.sleepLevel.percent < 40) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.SLEEP_IN_SHELTER
+            },
+            {
+                meetsCondition: () => { // food less than 20%;
+                    if (this.foodLevel.percent < 70 && 
+                        this.creature.safety.shelter !== null && 
+                        this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
+                        this.foodPercentGoal = 95;
+                            return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FEED_SELF
+            },
+            {
+                meetsCondition: () => {
+                    if (this.sleepLevel.percent < 75) {
                         return true;
                     }
                     return false;
