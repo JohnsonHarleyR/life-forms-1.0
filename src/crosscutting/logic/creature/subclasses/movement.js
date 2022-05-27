@@ -148,6 +148,10 @@ export default class CreatureMovement {
             this.creature.safety.isBeingChased = false;
             this.creature.safety.isBeingEaten = false;
             break;
+          case ActionType.BE_DEAD:
+            this.creature.targetType = NeedType.NONE;
+            this.moveMode = MoveMode.STAND_STILL;
+            break;
           case ActionType.SLEEP_IN_SPOT:
             this.creature.targetType = NeedType.SLEEP;
             this.moveMode = MoveMode.STAND_STILL;

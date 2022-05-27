@@ -280,18 +280,18 @@ export default class CreatureNeeds {
         this.prepareForNextPriority();
 
         // special priorities for  child and deceased
-        if (this.creature.life.lifeStage === LifeStage.CHILD) {
-            //console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
-            return this.getChildPriorityOrder();
-        } else if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+        if (this.creature.life.lifeStage === LifeStage.DECEASED) {
             return [
                 {
                     meetsCondition: () => {
                             return true;
                         },
-                    priority: ActionType.NONE
+                    priority: ActionType.BE_DEAD
                 }
             ]
+        } else if (this.creature.life.lifeStage === LifeStage.CHILD) {
+            //console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
+            return this.getChildPriorityOrder();
         }
 
         // otherwise return the default
