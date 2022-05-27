@@ -125,7 +125,7 @@ export const Boop = {
     foodToGatherAtOnce: 5,
     sleepNeeded: 8,
     foodNeeded: 3,
-    matingNeeded: 10,
+    matingNeeded: 2, // how many days before it's needed again
     genderOfProvider: Gender.FEMALE,
     genderOfCaregiver: Gender.MALE,
     genderOfShelterMaker: Gender.FEMALE,
@@ -155,7 +155,7 @@ export const Bleep = {
     foodToGatherAtOnce: 5,
     sleepNeeded: 6,
     foodNeeded: 2,
-    matingNeeded: 10,
+    matingNeeded: 3,
     genderOfProvider: Gender.MALE,
     genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,

@@ -9,6 +9,7 @@ export const EmojiInfo = {
     FEED_FAMILY: {row: 0, col: 1},
     SLEEP_IN_SHELTER: {row: 0, col: 2},
     DIE: {row: 0, col: 3},
+    BE_DEAD:  {row: 0, col: 3},
     FIND_MATE: {row: 1, col: 0},
     MATE: {row: 1, col: 1},
     PRODUCE_OFFSPRING: {row: 1, col: 1},

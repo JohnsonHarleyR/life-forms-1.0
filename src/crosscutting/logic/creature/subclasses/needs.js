@@ -15,14 +15,15 @@ export default class CreatureNeeds {
         this.creature = creature;
 
         this.foodQuotient = foodNeeded;
+        this.matingDividend = matingNeeded;
 
         this.maxFood = determineMaxFood(creature, foodNeeded);
         this.maxSleep = sleepNeeded;
-        this.maxMating = matingNeeded;
+        this.maxMating = 100;
 
         this.foodLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxFood);
         this.sleepLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxSleep);
-        this.matingLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxMating);
+        this.matingLostPerMs = calculateAmountLostPerMs(this.creature.life.msPerYear, this.maxMating / this.matingDividend);
 
         this.sleepPerMs = calculateSleepRecoveryPerMs(this.maxSleep, this.creature.life.msPerYear);
         this.isSleeping = false;
@@ -37,7 +38,7 @@ export default class CreatureNeeds {
         } 
 
         this.matingLevel = {
-            points: creature.life.lifeStage !== LifeStage.CHILD ? this.maxMating / 2 : this.maxMating,
+            points: creature.life.lifeStage !== LifeStage.CHILD ? 0 : this.maxMating,
             percent: this.determineNeedPercent(creature.life.lifeStage !== LifeStage.CHILD ? this.maxMating / 2 : this.maxMating, this.maxMating)
         } 
 
