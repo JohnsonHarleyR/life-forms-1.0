@@ -48,19 +48,73 @@ export const calculateNewAmount = (currentAmount, amountLostPerMs, msPassed, add
     return newAmount;
 }
 
+// mating
+export const hasYoungChildren = (creature) => {
+    if (creature.family.children.length === 0) {
+        return false;
+    }
+
+    let children = creature.family.children;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].life.lifeStage === LifeStage.CHILD) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export const hasStarvingChildren = (creature) => {
+    if (!hasYoungChildren(creature)) {
+        return false;
+    }
+
+    let children = creature.family.children;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].needs.foodLevel.percent <= 15) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export const hasHungryChildren = (creature) => {
+    if (!hasYoungChildren(creature)) {
+        return false;
+    }
+
+    let children = creature.family.children;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].needs.foodLevel.percent <= 50) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 // food
+export const isStarving = (creature) => {
+    if (creature.needs.foodLevel.percent <= 15) {
+        return true;
+    }
+    return false;
+}
+
 export const determineMaxFood = (creature, foodQuotient) => {
     let result = creature.energy * foodQuotient;
     return result;
 }
 
-export const isFoodInInventoryEnoughForFamily = (creature) => {
+export const isFoodInInventoryEnoughForFamily = (creature, fractionAmount = 1) => {
     if (creature.needs.foodPercentGoal === null) {
         return true;
     }
 
     let totalFoodInInventory = getTotalFoodPointsInInventory(creature.inventory);
-    let totalFoodNeeded = getTotalFoodPointsNeededForFamily(creature);
+    let totalFoodNeeded = getTotalFoodPointsNeededForFamily(creature) * fractionAmount;
     let percentInInventory = (totalFoodInInventory / totalFoodNeeded) * 100;
 
     if (percentInInventory >= creature.needs.foodPercentGoal) {

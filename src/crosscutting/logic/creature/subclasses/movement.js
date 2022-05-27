@@ -32,8 +32,14 @@ import {
   putTargetInFoodInventory,
   addFoodToShelter
 } from "./logic/actionLogic";
-import { isFoodInInventoryEnoughForFamily, isFoodInShelterEnoughForFamily,
-  isCombinedFoodEnoughToMate } from "./logic/needLogic";
+import { 
+  isFoodInInventoryEnoughForFamily,
+  isFoodInShelterEnoughForFamily,
+  isCombinedFoodEnoughToMate,
+  isStarving,
+  hasStarvingChildren,
+  hasHungryChildren
+ } from "./logic/needLogic";
 
 export default class CreatureMovement {
     constructor(creature, sightRadius, sightDistance, speed) {
@@ -195,7 +201,7 @@ export default class CreatureMovement {
               this.creature.targetType = NeedType.MATE;
               let centerPosition = this.creature.safety.shelter.getCenterPosition();
               if (isInPosition(this.creature.position, centerPosition) && 
-              isInPosition(this.creature.family.mate.position, centerPosition)) {
+              isInPosition(this.creature.family.mate.position, centerPosition) && this.doPause(10)) {
                 this.moveMode = MoveMode.COMPLETE_MATING;
               } else {
                 this.moveMode = MoveMode.GO_TO_SHELTER;
@@ -396,7 +402,7 @@ export default class CreatureMovement {
       }
 
       // first determine if creature has food in shelter or personal inventory
-      if (creatureHasFoodInShelter(this.creature)) {
+      if (creatureHasFoodInShelter(this.creature) && !hasHungryChildren(this.creature)) {
         //console.log(`creature ${this.creature.type} ${this.creature.id} has food in shelter`);
         if (this.creature.safety.shelter.isInsideShelter(this.creature)) { // if inside shelter, eat from shelter inventory
           //console.log(`creature ${this.creature.id} is inside shelter`);
@@ -432,7 +438,7 @@ export default class CreatureMovement {
         //console.log(`creature has shelter and the shelter has enough food - searching for food for self`);
         return this.searchForFoodForSelf(plants, creatures, objects, shelters, canvasInfo);
       } // otherwise, if shelter and if the amount of food in their own inventory is greater than or equal to the amount to gather at once, take that food to shelter inventory
-      else if (this.creature.safety.shelter && isFoodInInventoryEnoughForFamily(this.creature)) {
+      else if (this.creature.safety.shelter && isFoodInInventoryEnoughForFamily(this.creature, 0.3)) {
         // see if creature is inside shelter - if they are, put creature food into shelter inventory
         //console.log(`creature has shelter and is taking inventory food to shelter`);
         if (this.creature.safety.shelter.isInsideShelter(this.creature)) {
@@ -520,7 +526,7 @@ export default class CreatureMovement {
         this.creature.targetPosition = this.creature.mating.mateTarget.position; // make mate position the target
         // now check if they are in the same position - if so, make that creature their mate
         let newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
-        if (isInPosition(newPosition, this.creature.targetPosition)) {
+        if (isInPosition(newPosition, this.creature.targetPosition) && this.doPause(6)) {
           let newMate = this.creature.mating.mateTarget;
           this.creature.mating.makeMate(newMate);
           // also change the move mode to think for both creatures so they can proceed to mate

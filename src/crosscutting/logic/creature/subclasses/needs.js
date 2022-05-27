@@ -7,7 +7,11 @@ import {
     calculateNewAmount,
     calculateSleepRecoveryPerMs,
     determineMaxFood,
-    getTotalFoodPointsNeededForFamily
+    getTotalFoodPointsNeededForFamily,
+    hasYoungChildren,
+    isStarving,
+    hasStarvingChildren,
+    hasHungryChildren
 } from "./logic/needLogic";
 
 export default class CreatureNeeds {
@@ -48,7 +52,7 @@ export default class CreatureNeeds {
         this.startNewAction = false;
 
         this.foodPercentGoal = null;
-        this.foodRequiredToMate = this.creature.adultEnergy * 2.5;
+        this.foodRequiredToMate = this.creature.adultEnergy * 2;
 
         this.lastUpdate = Date.now();
 
@@ -366,7 +370,7 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 15) {
-                        this.foodPercentGoal = 50;
+                        this.foodPercentGoal = 40;
                         return true;
                     }
                     return false;
@@ -404,16 +408,6 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if ( this.creature.safety.shelter && this.creature.family.mate && 
-                        !this.creature.mating.canMate()) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.GATHER_FOOD_TO_MATE
-            },
-            {
-                meetsCondition: () => {
                     let familyFoodPercent = this.determineFamilyFoodPercent();
                     if (this.foodLevel.percent <= 20 || 
                         familyFoodPercent <= 20) {
@@ -435,6 +429,27 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
+                    if ( this.creature.safety.shelter && this.creature.family.mate && 
+                        this.matingLevel.percent <= 20 &&
+                        !this.creature.mating.canMate()) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.GATHER_FOOD_TO_MATE
+            },
+            {
+                meetsCondition: () => {
+                    if ( this.matingLevel.percent <= 20 && 
+                        this.creature.mating.canMate()) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.MATE
+            },
+            {
+                meetsCondition: () => {
                     if (this.foodLevel.percent <= 40 || 
                         this.determineFamilyFoodPercent() <= 40) {
                             this.foodPercentGoal = 60;
@@ -452,15 +467,6 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.SLEEP_IN_SHELTER
-            },
-            {
-                meetsCondition: () => {
-                    if ( this.matingLevel.percent <= 20 && this.creature.mating.canMate()) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.MATE
             },
             {
                 meetsCondition: () => {

@@ -3,6 +3,7 @@ import { LifeStage, Gender } from "../../../constants/creatureConstants";
 import { getRandomIntInRange, getRandomPositionInBounds, addItemToArray } from "../../universalLogic";
 import Creature from "../creature";
 import { getRandomShelterPosition } from "../creatureLogic";
+import { hasYoungChildren } from "./logic/needLogic";
 export default class CreatureMating {
     constructor(creature, genderOfProvider, genderOfCaregiver, genderOfShelterMaker,
         pregnancyTerm, minOffspring, maxOffspring) {
@@ -35,7 +36,7 @@ export default class CreatureMating {
 
     produceOffspring = () => {
         console.log(`creature ${this.creature.id} producing offspring with ${this.creature.family.mate.id}`);
-        if (this.creature.gender === Gender.FEMALE) {
+        if (this.creature.gender === Gender.FEMALE && !hasYoungChildren(this.creature)) {
             // if female, make them pregnant
             this.isPregnant = true;
             // get random number of offspring
@@ -224,7 +225,7 @@ export default class CreatureMating {
         if (this.canMateNoPartnerCheck() && this.creature.family.mate.mating.canMateNoPartnerCheck()) {
             return true;
         }
-        
+
         return false;
     }
 
