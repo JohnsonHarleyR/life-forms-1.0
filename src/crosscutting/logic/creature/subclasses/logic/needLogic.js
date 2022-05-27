@@ -69,6 +69,20 @@ export const isFoodInInventoryEnoughForFamily = (creature) => {
     return false;
 }
 
+export const isCombinedFoodEnoughToMate = (creature) => {
+    let shelterFoodPoints = creature.safety.shelter ? creature.safety.shelter.totalFoodEnergy : 0;
+    let inventoryFoodPoints = 0;
+    creature.inventory.food.forEach(f => {
+        inventoryFoodPoints += f.energy;
+    });
+
+    let combinedFoodPoints = shelterFoodPoints + inventoryFoodPoints;
+    if (combinedFoodPoints >= creature.needs.foodRequiredToMate) {
+        return true;
+    }
+    return false;
+}
+
 export const isFoodInShelterEnoughForFamily = (creature) => {
     if (creature.needs.foodPercentGoal === null) {
         return true;

@@ -32,7 +32,8 @@ import {
   putTargetInFoodInventory,
   addFoodToShelter
 } from "./logic/actionLogic";
-import { isFoodInInventoryEnoughForFamily, isFoodInShelterEnoughForFamily } from "./logic/needLogic";
+import { isFoodInInventoryEnoughForFamily, isFoodInShelterEnoughForFamily,
+  isCombinedFoodEnoughToMate } from "./logic/needLogic";
 
 export default class CreatureMovement {
     constructor(creature, sightRadius, sightDistance, speed) {
@@ -181,7 +182,15 @@ export default class CreatureMovement {
               this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
               this.moveMode = MoveMode.SEARCH;
               break;
+          case ActionType.GATHER_FOOD_TO_MATE:
+            console.log(`creature ${this.creature.id} determineModeByPriority: GATHER_FOOD_TO_MATE`);
+            this.creature.targetType = NeedType.FOOD_TO_MATE;
+            this.moveMode = MoveMode.SEARCH;
+            break;
           case ActionType.MATE:
+            if (this.creature.family.mate && !this.creature.family.mate.mating.isMating) {
+                this.creature.family.mate.mating.isMating = true;
+              }
             if (this.creature.safety.shelter) {
               this.creature.targetType = NeedType.MATE;
               let centerPosition = this.creature.safety.shelter.getCenterPosition();
@@ -221,6 +230,7 @@ export default class CreatureMovement {
             return getRandomShelterPosition(this.creature, creatures, objects, shelters);
         case ActionType.FEED_SELF:
         case ActionType.FEED_FAMILY:
+        case ActionType.GATHER_FOOD_TO_MATE:
             return this.creature.position; // temp
         case ActionType.MATE:
           if (this.creature.safety.shelter) {
@@ -343,6 +353,9 @@ export default class CreatureMovement {
         } else if (this.creature.targetType === NeedType.FOOD_FOR_FAMILY) {
           //console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForFamily`);
           newPosition = this.searchForFoodForFamily(plants, creatures, objects, shelters, canvasInfo);
+        } else if (this.creature.targetType === NeedType.FOOD_TO_MATE) {
+          //console.log(`creature ${this.creature.id} searchForTarget: searchForFoodForFamily`);
+          newPosition = this.searchForFoodToMate(plants, creatures, objects, shelters, canvasInfo);
         }
     
     
@@ -443,6 +456,33 @@ export default class CreatureMovement {
       
     }
 
+    searchForFoodToMate = (plants, creatures, objects, shelters, canvasInfo) => {
+      //console.log(`${this.creature.gender} ${this.creature.type} ${this.creature.id} is finding food for their family`);
+      // if shelter and if the amount of food in the shelter inventory is greater than the amount to gather at once, let the creature get food for themselves
+      if (this.creature.safety.shelter && isCombinedFoodEnoughToMate(this.creature)) {
+        // see if creature is inside shelter - if they are, put creature food into shelter inventory
+        //console.log(`creature has shelter and is taking inventory food to shelter`);
+        if (this.creature.safety.shelter.isInsideShelter(this.creature)) {
+          addFoodToShelter(this.creature);
+          return this.creature.position;
+
+        }  // if they are not, head for the shelter!
+        else {
+          //console.log(`creature is moving to shelter`);
+          this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
+          return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
+        }
+
+
+      } // otherwise, search for food
+      else {
+        //console.log(`creature is going to search for food`);
+        return this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
+      }
+
+      
+    }
+
     searchForFoodTarget = (plants, creatures, objects, shelters, canvasInfo) => {
       let newPosition = this.creature.position;
       // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
@@ -484,8 +524,8 @@ export default class CreatureMovement {
           let newMate = this.creature.mating.mateTarget;
           this.creature.mating.makeMate(newMate);
           // also change the move mode to think for both creatures so they can proceed to mate
-          this.moveMode = MoveMode.THINK;
-          newMate.movement.moveMode = MoveMode.THINK;
+          // this.moveMode = MoveMode.THINK;
+          // newMate.movement.moveMode = MoveMode.THINK;
         }
         return newPosition;
       } else if (this.creature.mating.isMateTarget) { // if they are a target, just stay in the same position

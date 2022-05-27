@@ -102,6 +102,13 @@ export default class Shelter {
         return result;
     }
 
+    putShelterFoodBackInInventory = (creature) => {
+        this.inventory.food.forEach(f => {
+            creature.inventory.food.push(f);
+        });
+        this.inventory.food = [];
+    }
+
     getXStart = () => {
         let halfSize = this.size / 2;
         return this.position.x - halfSize;

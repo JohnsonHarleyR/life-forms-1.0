@@ -48,6 +48,7 @@ export default class CreatureNeeds {
         this.startNewAction = false;
 
         this.foodPercentGoal = null;
+        this.foodRequiredToMate = this.creature.adultEnergy * 4;
 
         this.lastUpdate = Date.now();
 
@@ -176,6 +177,11 @@ export default class CreatureNeeds {
                     return true;
                 }
                 break;
+            case ActionType.GATHER_FOOD_TO_MATE:
+                if (!this.creature.safety.shelter || this.creature.safety.shelter.totalFoodEnergy >= this.foodRequiredToMate) {
+                    return true;
+                }
+                break;
             case ActionType.MATE:
                 if (this.creature.safety.shelter && this.creature.safety.shelter.isInsideShelter(this.creature)
                 && this.creature.mating.isMating === false) {
@@ -204,7 +210,8 @@ export default class CreatureNeeds {
                 }
                 break;
             case ActionType.FIND_MATE:
-                if (this.creature.family.mate !== null || !doesPotentialMateExist(this.creature, creatures)) {
+                if ((this.creature.family.mate !== null && this.creature.family.mate.life.lifeStage !== LifeStage.DECEASED) ||
+                !doesPotentialMateExist(this.creature, creatures)) {
                     return true;
                 }
                 break;
@@ -424,12 +431,22 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if (this.matingLevel.percent <= 40) {
+                    if ( this.matingLevel.percent <= 20 && this.creature.mating.canMate()) {
                         return true;
                     }
                     return false;
                 },
                 priority: ActionType.MATE
+            },
+            {
+                meetsCondition: () => {
+                    if ( this.creature.safety.shelter && this.creature.family.mate && 
+                        !this.creature.mating.canMate()) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.GATHER_FOOD_TO_MATE
             },
             {
                 meetsCondition: () => {
@@ -482,15 +499,15 @@ export default class CreatureNeeds {
                 },
                 priority: ActionType.FEED_FAMILY
             },
-            {
-                meetsCondition: () => {
-                    if (this.matingLevel.percent <= 80) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.MATE
-            },
+            // {
+            //     meetsCondition: () => {
+            //         if (this.matingLevel.percent <= 80 ) {
+            //             return true;
+            //         }
+            //         return false;
+            //     },
+            //     priority: ActionType.MATE
+            // },
             {
                 meetsCondition: () => { // if sleep is less than 10%
                     if (this.sleepLevel.percent <= 95) {

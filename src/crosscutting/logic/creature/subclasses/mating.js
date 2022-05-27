@@ -140,6 +140,7 @@ export default class CreatureMating {
                 // first remove creature from their shelter
                 let shelter = this.creature.safety.shelter;
                 if (shelter !== null) {
+                    shelter.putShelterFoodBackInInventory(this.creature);
                     shelter.removeMemberFromShelter(this.creature);
                     shelter.updateShelter();
                 }
@@ -153,8 +154,8 @@ export default class CreatureMating {
             }
             
             // set is mating
-            this.isMating = true;
-            newMate.mating.isMating = true;
+            //this.isMating = true;
+            //newMate.mating.isMating = true;
 
         }
 
@@ -213,5 +214,27 @@ export default class CreatureMating {
                     this.isMating = false;
                 }
         }
+    }
+
+    canMate = () => {
+        if (this.creature.family.mate === null) {
+            return false;
+        }
+
+        if (this.canMateNoPartnerCheck() && this.creature.family.mate.mating.canMateNoPartnerCheck()) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    canMateNoPartnerCheck = () => {
+        if (this.creature.safety.shelter && this.creature.family.mate && 
+            this.creature.family.mate.life.lifeStage !== LifeStage.DECEASED && 
+            this.creature.family.mate.life.lifeStage !== LifeStage.ELDER &&
+            this.creature.safety.shelter.totalFoodEnergy >= this.creature.needs.foodRequiredToMate) {
+                return true;
+            }
+            return false;
     }
 }

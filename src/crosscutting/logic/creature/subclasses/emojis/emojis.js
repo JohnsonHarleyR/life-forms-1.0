@@ -1,6 +1,7 @@
 import { EmojiInfo } from "../../../../constants/emojiConstants";
 import { ActionType } from "../../../../constants/creatureConstants";
 import emojiImg from './creature-emojis.png';
+import {getCreatureIdentityString} from '../../../universalLogic';
 
 class Visual {
     constructor(name, url, startX, startY, width, height) {
@@ -31,9 +32,11 @@ export default class Emojis {
             sleepInShelter: this.createVisual('SLEEP_IN_SHELTER', EmojiInfo.SLEEP_IN_SHELTER),
             sleepInSpot: this.createVisual('SLEEP_IN_SPOT', EmojiInfo.SLEEP_IN_SPOT),
             findMate: this.createVisual('FIND_MATE', EmojiInfo.FIND_MATE),
+            gatherFoodToMate: this.createVisual('GATHER_FOOD_TO_MATE', EmojiInfo.GATHER_FOOD_TO_MATE),
             mate: this.createVisual('MATE', EmojiInfo.MATE),
             produceOffspring: this.createVisual('PRODUCE_OFFSPRING', EmojiInfo.PRODUCE_OFFSPRING),
             haveChild: this.createVisual('HAVE_CHILD', EmojiInfo.HAVE_CHILD),
+            beDead: this.createVisual('BE_DEAD', EmojiInfo.BE_DEAD),
             die: this.createVisual('DIE', EmojiInfo.DIE),
             none: null
         }
@@ -47,6 +50,8 @@ export default class Emojis {
         if (emojiVisual === null) {
             return;
         }
+
+        //console.log(`${getCreatureIdentityString(this.creature)} emoji for: ${emojiVisual.name} {startX: ${emojiVisual.startX}, startY: ${emojiVisual.startY}}`);
 
         let dx = this.creature.position.x + EmojiInfo.X_OFFSET;
         let dy = this.creature.position.y + EmojiInfo.Y_OFFSET;
@@ -89,12 +94,16 @@ export default class Emojis {
                 return this.emojis.sleepInSpot;
             case ActionType.FIND_MATE:
                 return this.emojis.findMate;
+            case ActionType.GATHER_FOOD_TO_MATE:
+                return this.emojis.gatherFoodToMate;
             case ActionType.MATE:
                 return this.emojis.mate;
             case ActionType.PRODUCE_OFFSPRING:
                 return this.emojis.produceOffspring;
             case ActionType.HAVE_CHILD:
                 return this.emojis.haveChild;
+            case ActionType.BE_DEAD:
+                return this.emojis.beDead;
             case ActionType.DIE:
                 return this.emojis.die;
             case ActionType.NONE:
@@ -105,8 +114,8 @@ export default class Emojis {
     createVisual = (name, gridPos) => {
         let width = EmojiInfo.WIDTH;
         let height = EmojiInfo.HEIGHT;
-        let startX = gridPos.row * width;
-        let startY = gridPos.col * height;
+        let startX = gridPos.x * width;
+        let startY = gridPos.y * height;
 
         let visual = new Visual(name, this.url, startX, startY, width, height);
         return visual;
