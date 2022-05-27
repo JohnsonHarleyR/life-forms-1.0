@@ -8,7 +8,7 @@ import {
     findArrayPatterns
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
-    CreatureType, Bleep, Boop, CreatureDefaults } from "../../constants/creatureConstants";
+    CreatureType, Bleep, Boop, CreatureDefaults, Biddy } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
 import { FoodType } from "../../constants/objectConstants";
 
@@ -331,6 +331,8 @@ export const getCreatureInfoByType = (type) => {
             return Boop;
         case CreatureType.BLEEP:
             return Bleep;
+        case CreatureType.BIDDY:
+            return Biddy;
         default:
             throw "Error: No relevent creature type specified inside getCreatureInfoByType inside of CreatureLogic.js.";
     }

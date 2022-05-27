@@ -104,7 +104,8 @@ export const InventoryLocation = {
 
 export const CreatureType = {
     BOOP: "BOOP",
-    BLEEP: "BLEEP"
+    BLEEP: "BLEEP",
+    BIDDY: "BIDDY"
 };
 
 export const Boop = {
@@ -165,4 +166,34 @@ export const Bleep = {
     pregnancyTerm: .7,  // TODO determine quotient
     minOffspring: 2,
     maxOffspring: 5
+};
+
+export const Biddy = {
+    type: CreatureType.BIDDY,
+    color: "#AD1360",
+    food: {
+    plants: [PlantSpecies.BUD],
+    prey: []
+    },
+    energy: 15,
+    size: 5,
+    sightRadius: 50,
+    sightDistance: 50,
+    speed: 7,
+    lifeSpanRange: {
+        low: 10,
+        high: 25
+    },
+    fractionAsChild: .1,
+    fractionAsElder: .15,
+    foodToGatherAtOnce: 5,
+    sleepNeeded: 5,
+    foodNeeded: 2,
+    matingNeeded: 2,
+    genderOfProvider: Gender.MALE,
+    genderOfCaregiver: Gender.FEMALE,
+    genderOfShelterMaker: Gender.MALE,
+    pregnancyTerm: .7,  // TODO determine quotient
+    minOffspring: 3,
+    maxOffspring: 7
 };

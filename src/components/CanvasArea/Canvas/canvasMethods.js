@@ -1,6 +1,6 @@
 import { ObjectType } from "../../../crosscutting/constants/objectConstants";
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
-import { Gender, LifeStage, Boop, Bleep } from "../../../crosscutting/constants/creatureConstants";
+import { Gender, LifeStage, Boop, Bleep, Biddy } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants,
     drawAllShelters } from "../../../crosscutting/logic/canvasLogic";
@@ -34,6 +34,12 @@ export const createCreatures = (objects, plants, shelters, setCreatures, setPlan
     array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Boop, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
     array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Bleep, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
     array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Bleep, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
 
     return array;
 }

@@ -1,7 +1,17 @@
 export const PlantSpecies = {
     SHRUB: "SHRUB",
     WEED: "WEED",
-    WHEAT: "WJEAT"
+    WHEAT: "WHEAT",
+    BUD: "BUD"
+}
+
+export const Bud = {
+    type: PlantSpecies.BUD,
+    color: "#AD6687",
+    width: 4,
+    height: 6,
+    growInterval: 10,
+    energy: 10
 }
 
 export const Shrub = {
@@ -31,4 +41,4 @@ export const Wheat = {
     energy: 8
 }
 
-export const Plants = [Weed, Shrub, Wheat];
+export const Plants = [Bud, Weed, Shrub, Wheat];
