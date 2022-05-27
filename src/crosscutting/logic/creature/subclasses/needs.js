@@ -193,6 +193,9 @@ export default class CreatureNeeds {
                     return true;
                 }
                 break;
+            case ActionType.BE_DEAD:
+                return false;
+                break;
             case ActionType.GATHER_FOOD_TO_MATE:
                 if (!this.creature.safety.shelter || this.creature.safety.shelter.totalFoodEnergy >= this.foodRequiredToMate) {
                     return true;
@@ -651,7 +654,7 @@ export default class CreatureNeeds {
                     }
                     return false;
                 },
-                priority: ActionType.NONE
+                priority: ActionType.BE_DEAD
             },
             {
                 // TODO write if statement for if creature is eaten

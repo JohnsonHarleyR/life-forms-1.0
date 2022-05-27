@@ -18,5 +18,6 @@ export const EmojiInfo = {
     SLEEP_IN_SPOT: {y: 1, x: 2},
     FIND_SAFETY: {y: 1, x: 3},
     CREATE_SHELTER: {y: 2, x: 1},
-    LEAVE_SHELTER: {y: 2, x: 2}
+    LEAVE_SHELTER: {y: 2, x: 2},
+    NONE: {y: 2, x: 3}
 }

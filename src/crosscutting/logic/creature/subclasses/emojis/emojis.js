@@ -38,7 +38,7 @@ export default class Emojis {
             haveChild: this.createVisual('HAVE_CHILD', EmojiInfo.HAVE_CHILD),
             beDead: this.createVisual('BE_DEAD', EmojiInfo.BE_DEAD),
             die: this.createVisual('DIE', EmojiInfo.DIE),
-            none: null
+            none: this.createVisual('NONE', EmojiInfo.NONE)
         }
     }
 

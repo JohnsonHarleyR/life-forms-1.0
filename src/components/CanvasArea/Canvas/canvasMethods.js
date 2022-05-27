@@ -77,8 +77,8 @@ export const renderCanvas = (canvasRef, creatures, plants, objects, shelters) =>
     //drawXMark(canvasRef.current, chosenCreature.targetPosition);
     drawAllPlants(canvasRef.current, plants);
     //drawCreature(canvasRef.current, CanvasInfo, creature);
-    drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
     drawAllShelters(canvasRef.current, shelters);
+    drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
     drawAllObjects(canvasRef.current, objects);
 };
 
