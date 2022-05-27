@@ -219,6 +219,9 @@ export default class CreatureMovement {
             console.log(`creature ${this.creature.id} HAVE_CHILD`);
             this.moveMode = MoveMode.STAND_STILL;
             break;
+          case ActionType.LEAVE_SHELTER:
+            this.creature.targetType = NeedType.SHELTER;
+            this.moveMode = MoveMode.WANDER;
 
       }
   }
@@ -236,6 +239,8 @@ export default class CreatureMovement {
         case ActionType.SLEEP_IN_SHELTER:
           console.log('getting random sleep position');
           return this.getRandomPositionInsideShelter();
+        case ActionType.LEAVE_SHELTER:
+          return getRandomStartPosition(this.creature, creatures, objects, plants, shelters);
         case ActionType.CREATE_SHELTER:
             return getRandomShelterPosition(this.creature, creatures, objects, shelters);
         case ActionType.FEED_SELF:
@@ -643,7 +648,22 @@ export default class CreatureMovement {
       return newPosition;
     }
 
+    leaveShelter = (objects, creatures, shelters, canvasInfo) => {
+      if (this.creature.safety.shelter !== null) {
+        this.creature.safety.shelter = null;
+      }
+
+      if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+        return (this.creature.position);
+      }
+      //console.log(`creature ${this.creature.id} moving to position ${JSON.stringify(this.creature.targetPosition)}`);
+      return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
+    }
+
     moveToRandomPosition = (objects, creatures, shelters, canvasInfo) => {
+      if (this.creature.targetType === NeedType.SHELTER) {
+        return this.leaveShelter(objects, creatures, shelters, canvasInfo);
+      }
         //console.log('moveToRandomPosition');
             //console.log('moving to random position');
     // if creature is in the current target position, set the target position to a new random one

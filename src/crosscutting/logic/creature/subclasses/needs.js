@@ -1,5 +1,5 @@
 import { LifeStage, ActionType, AmountNeeded, AddOrSubtract } from "../../../constants/creatureConstants";
-import { roundToPlace, getCreatureIdentityString } from "../../universalLogic";
+import { roundToPlace, getCreatureIdentityString, isInPosition } from "../../universalLogic";
 import { doesPotentialMateExist } from "../creatureLogic";
 import { 
     getAmountNeededDecimal,
@@ -220,7 +220,8 @@ export default class CreatureNeeds {
                 }
                 break;
             case ActionType.LEAVE_SHELTER:
-                if (!this.creature.safety.shelter.isInsideShelter(this.creature)) {
+                if (!this.creature.safety.shelter.isInsideShelter(this.creature) && 
+                    isInPosition(this.creature.position, this.creature.targetPosition)) {
                     return true;
                 }
                 break;
