@@ -1,4 +1,4 @@
-import { LifeStage, ActionType, NeedType } from "../../../constants/creatureConstants";
+import { LifeStage, ActionType, NeedType, CreatureType } from "../../../constants/creatureConstants";
 import { Direction, CreatureDefaults } from "../../../constants/creatureConstants";
 import { determineSightCoordinates,
     getRandomShelterPosition,
@@ -16,7 +16,7 @@ import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
     getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
-  getRandomPositionInBounds } from "../../universalLogic";
+  getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals } from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget } from "../../object/objectsLogic";
 import Shelter from "./shelter";
@@ -89,7 +89,8 @@ export default class CreatureMovement {
         if (this.moveMode === MoveMode.THINK) {
           //console.log(`Creature ${this.creature.id} thinking`);
             this.determineModeByPriority();
-            this.creature.targetPosition = this.getInitialTargetPosition(objects, creatures, plants, shelters);
+            this.changeTargetPosition(this.getInitialTargetPosition(objects, creatures, plants, shelters));
+            //this.creature.targetPosition = this.getInitialTargetPosition(objects, creatures, plants, shelters);
         }
 
         // now move
@@ -107,6 +108,20 @@ export default class CreatureMovement {
         this.newDirection = null;
         this.previousDirection = null;
         this.intervalCount = 0;
+    }
+
+    changeTarget = (newTarget) => {
+      this.creature.currentTarget = newTarget;
+
+      let newTargetPosition = newTarget !== null ? newTarget.position : null;
+      this.changeTargetPosition(newTargetPosition);
+    }
+
+    changeTargetPosition = (newTargetPosition) => {
+      if (newTargetPosition !== null) {
+        this.creature.targetPosition = newTargetPosition;
+      }
+      this.resetMovementProperties();
     }
 
     testWithMovementPatterns = () => {
@@ -279,7 +294,7 @@ export default class CreatureMovement {
 
         // setting a target position is not required but there is an option
         if (targetPosition !== null) {
-            this.creature.targetPosition = targetPosition;
+            this.changeTargetPosition(targetPosition);
         }
         let endPosition = this.creature.targetPosition;
         let newPosition = this.position;
@@ -381,7 +396,8 @@ export default class CreatureMovement {
 
       wanderAroundShelter = (objects, creatures, shelters, canvasInfo) => {
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
-          this.creature.targetPosition = this.getRandomPositionInsideShelter();
+          this.changeTargetPosition(this.getRandomPositionInsideShelter());
+          //this.creature.targetPosition = this.getRandomPositionInsideShelter();
         }
        return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
       }
@@ -391,11 +407,12 @@ export default class CreatureMovement {
       if (this.creature.lifeStage === LifeStage.CHILD) {
         // if there's food, go eat the food
         if (creatureHasFoodInShelter(this.creature)) {
-          this.creature.targetPosition = this.getShelterCornerPosition();
+          this.changeTargetPosition(this.getShelterCornerPosition());
+          //this.creature.targetPosition = this.getShelterCornerPosition();
           // if the creature is in the shelter corner, eat food
           if (isInPosition(this.creature.position, this.creature.targetPosition)) {
             eatFoodFromShelter(this.creature);
-            this.creature.currentTarget = null;
+            this.creature.currentTarget = this.changeTarget(null);
             return this.creature.position;
           } // if not in the corner, move toward the corner
            else {
@@ -457,7 +474,8 @@ export default class CreatureMovement {
         }  // if they are not, head for the shelter!
         else {
           //console.log(`creature is moving to shelter`);
-          this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
+          this.changeTargetPosition(this.creature.safety.shelter.getCenterPosition());
+          //this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
           return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
         }
 
@@ -484,7 +502,8 @@ export default class CreatureMovement {
         }  // if they are not, head for the shelter!
         else {
           //console.log(`creature is moving to shelter`);
-          this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
+          this.changeTargetPosition(this.creature.safety.shelter.getCenterPosition());
+          //this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
           return this.moveToPoint(this.creature.safety.shelter.getCenterPosition(), objects, creatures, shelters, canvasInfo);
         }
 
@@ -516,7 +535,8 @@ export default class CreatureMovement {
         if (newTarget !== null) {
           this.creature.currentTarget = newTarget;
           //console.log(`creature ${this.creature.id} has new food target found`);
-          this.creature.targetPosition = newTarget.position;
+
+          //this.creature.targetPosition = newTarget.position;
           newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
         // if there is no target, move to random position
         } else {
@@ -532,7 +552,8 @@ export default class CreatureMovement {
 
       // first determine if they already have a mate target or are a mate target
       if (this.creature.mating.hasMateTarget) {
-        this.creature.targetPosition = this.creature.mating.mateTarget.position; // make mate position the target
+        this.changeTargetPosition(this.creature.mating.mateTarget.position);
+        //this.creature.targetPosition = this.creature.mating.mateTarget.position; // make mate position the target
         // now check if they are in the same position - if so, make that creature their mate
         let newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
         if (isInPosition(newPosition, this.creature.targetPosition) && this.doPause(6)) {
@@ -555,7 +576,8 @@ export default class CreatureMovement {
         if (mateResult.isMateFound) {
           console.log(`Mate found for ${this.creature.id}: ${mateResult.newMate.id}`);
           this.creature.mating.makeMateTarget(mateResult.newMate);
-          this.creature.targetPosition = mateResult.newMate.position;
+          this.changeTargetPosition(mateResult.newMate.position);
+          //this.creature.targetPosition = mateResult.newMate.position;
           return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
         } else { // if there's no targeted mate/mate targeting them, then move to random spot to look for a mate
           return this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
@@ -588,7 +610,8 @@ export default class CreatureMovement {
           // addItemToArray(newShelter, shelters, this.creature.setShelters);
 
           if (!canSetShelterInPosition(this.creature.targetPosition, this.creature, creatures, objects, shelters)) {
-            this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
+            this.changeTargetPosition(getRandomShelterPosition(this.creature, creatures, objects, shelters));
+            //this.creature.targetPosition = getRandomShelterPosition(this.creature, creatures, objects, shelters);
             return this.searchForShelter(plants, creatures, objects, shelters, canvasInfo);
           } else {
             let shelterId = `sh-${this.creature.id}`;
@@ -668,11 +691,20 @@ export default class CreatureMovement {
             //console.log('moving to random position');
     // if creature is in the current target position, set the target position to a new random one
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
-      //console.log(`creature ${this.creature.id} is in position, targetting new position`);
-      this.resetMovementProperties();
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE, this.creature.id, CreatureDefaults.LARGEST_SIZE);
+      if (this.creature.type === CreatureType.BIDDY) {
+        console.log(`creature ${this.creature.type} ${this.creature.id} is in position, targetting new position`);
+      }
+      //this.resetMovementProperties();
+      //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE, this.creature.id, false);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
+      if (this.creature.type === CreatureType.BIDDY) {
+        console.log(`line 700 in movement.js`);
+        console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
+      }
+      
       //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
-      this.creature.targetPosition = newTargetPosition;
+      this.changeTargetPosition(newTargetPosition);
+      //this.creature.targetPosition = newTargetPosition;
       //this.logMovementProperties();
     }
     //console.log(`creature ${this.creature.id} moving to position ${JSON.stringify(this.creature.targetPosition)}`);
@@ -738,74 +770,89 @@ export default class CreatureMovement {
     }
 
     moveTowardPosition = (endPosition, objects) => {
-        let newPosition = { x: this.creature.position.x, y: this.creature.position.y };
+      let newPosition = { x: this.creature.position.x, y: this.creature.position.y };
 
-        let dif = getPositionDifference(this.creature.position, endPosition);
-        this.setDirection(dif.xDifference, dif.yDifference);
-        //console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
-          //`${JSON.stringify(this.creature.position)}`);
-    
-        // if a direction is null, that means it's not going in any direction
-        // so set the new position to be the same as the end position
-        if (this.direction.x === null) {
-          newPosition.x = endPosition.x;
-        }
-    
-        if (this.direction.y === null) {
-          newPosition.y = endPosition.y;
-        }
-    
-        // if neither direction is null, that means it's moving
-        // in a diagonal
-        if (this.direction.x !== null && this.direction.y !== null) {
-          let triangeResult = getTriangleMovePosition(
-            this.creature.position,
-            Math.abs(dif.xDifference),
-            this.direction.x,
-            Math.abs(dif.yDifference),
-            this.direction.y,
-            this.speed
-          );
-          newPosition = triangeResult;
-          // if x direction is null but not y, or vice versa, that means
-          // it is moving in a line, not diagonal, so move accordingly
-        } else if (this.direction.x === null) {
-          newPosition.x = endPosition.x;
-          let newY;
-          if (this.direction.y === Direction.SOUTH) {
-            newY = this.creature.position.y + this.speed;
-            // if it's going to go past the end point,
-            // set it to the end point
-            if (newY > endPosition.y) {
-              newY = endPosition.y;
-            }
-          } else {
-            newY = this.creature.position.y - this.speed;
-            // if it's going to go past the end point,
-            // set it to the end point
-            if (newY < endPosition.y) {
-              newY = endPosition.y;
-            }
+      let dif = getPositionDifference(this.creature.position, endPosition);
+      this.setDirection(dif.xDifference, dif.yDifference);
+      //console.log(`Direction for ${this.creature.gender} ${this.creature.type} ${this.creature.id}: {x: ${this.direction.x}, y: ${this.direction.y}}` + 
+        //`${JSON.stringify(this.creature.position)}`);
+  
+      // if a direction is null, that means it's not going in any direction
+      // so set the new position to be the same as the end position
+      if (this.direction.x === null) {
+        newPosition.x = endPosition.x;
+      }
+  
+      if (this.direction.y === null) {
+        newPosition.y = endPosition.y;
+      }
+  
+      // if neither direction is null, that means it's moving
+      // in a diagonal
+      if (this.direction.x !== null && this.direction.y !== null) {
+        let triangeResult = getTriangleMovePosition(
+          this.creature.position,
+          Math.abs(dif.xDifference),
+          this.direction.x,
+          Math.abs(dif.yDifference),
+          this.direction.y,
+          this.speed
+        );
+        newPosition = triangeResult;
+        // if x direction is null but not y, or vice versa, that means
+        // it is moving in a line, not diagonal, so move accordingly
+      } else if (this.direction.x === null) {
+        newPosition.x = endPosition.x;
+        let newY;
+        if (this.direction.y === Direction.SOUTH) {
+          newY = this.creature.position.y + this.speed;
+          // if it's going to go past the end point,
+          // set it to the end point
+          if (newY > endPosition.y) {
+            newY = endPosition.y;
           }
-          newPosition.y = newY;
-          // this will be similar logic as above, except for the
-          // y directions instead of x
-        } else if (this.direction.y === null) {
-          newPosition.y = endPosition.y;
-          let newX;
-          if (this.direction.x === Direction.EAST) {
-            newX = this.creature.position.x + this.speed;
-            if (newX > endPosition.x) {
-              newX = endPosition.x;
-            }
-          } else {
-            newX = this.creature.position.x - this.speed;
-            if (newX < endPosition.X) {
-              newX = endPosition.x;
-            }
+        } else {
+          newY = this.creature.position.y - this.speed;
+          // if it's going to go past the end point,
+          // set it to the end point
+          if (newY < endPosition.y) {
+            newY = endPosition.y;
           }
-          newPosition.x = newX;
         }
+        newPosition.y = newY;
+        // this will be similar logic as above, except for the
+        // y directions instead of x
+      } else if (this.direction.y === null) {
+        newPosition.y = endPosition.y;
+        let newX;
+        if (this.direction.x === Direction.EAST) {
+          newX = this.creature.position.x + this.speed;
+          if (newX > endPosition.x) {
+            newX = endPosition.x;
+          }
+        } else {
+          newX = this.creature.position.x - this.speed;
+          if (newX < endPosition.X) {
+            newX = endPosition.x;
+          }
+        }
+        newPosition.x = newX;
+      }
+
+      // make attempts toward the position - check collision with each interval
+      let changeIntervals = getPositionChangeIntervals(this.creature.position, newPosition);
+
+      let attemptResult = null;
+      let index = 0;
+      do {
+        attemptResult = this.attemptMoveTowardPosition(changeIntervals[index], dif, objects);
+        index++;
+      } while (attemptResult.success && index < changeIntervals.length);
+
+      return attemptResult;
+    }
+
+    attemptMoveTowardPosition = (newPosition, dif, objects) => {
     
         // TODO write logic in case creature cannot move diagonally
         // and can only move up or down, left or right
