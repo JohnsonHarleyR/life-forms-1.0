@@ -83,6 +83,11 @@ export const removeItemFromArray = (itemId, array, setFunction) => {
     return didFind;
 }
 
+// testing
+export const showMessageIfInsideObject = (creature, message) => { // TODO finish method
+
+}
+
 // pattern finding
 export const testFindArrayPatterns = () => {
     console.log(`testing findArrayPatterns`);
@@ -281,6 +286,62 @@ export const getPositionDifference = (startPosition, endPosition) => {
         yDifference: yDifference
     };
 };
+
+
+export const getPositionChangeIntervals = (startPos, newPos) => {
+    let posDif = getPositionDifference(startPos, newPos);
+    let difIntervals = getPositionDifferenceIntervals(posDif);
+
+    let changeIntervals = [];
+    let prevPos = {...startPos};
+    difIntervals.forEach(i => {
+        changeIntervals.push({...prevPos});
+        prevPos.x += i.xDifference;
+        prevPos.y += i.yDifference;
+    });
+
+    changeIntervals.push(newPos);
+
+    return changeIntervals;
+}
+
+// this one takes in the result of getPositionDifference to determine intervals
+const getPositionDifferenceIntervals = (posDif) => {
+    let difIntervals = [];
+
+    let intervalCount = 0;
+    let xInterval = 0;
+    let yInterval = 0;
+
+    let xDif = Math.abs(posDif.xDifference);
+    let yDif = Math.abs(posDif.yDifference);
+
+    if (xDif >= yDif) {
+        intervalCount = xDif;
+    }
+
+    if (intervalCount === 0) {
+        difIntervals.push({...posDif});
+        return difIntervals;
+    }
+
+    xInterval = posDif.xDifference / intervalCount;
+    yInterval = posDif.yDifference / intervalCount;
+
+
+    let prevX = xInterval;
+    let prevY = yInterval;
+    for (let i = 0; i < intervalCount; i++) {
+        difIntervals.push({
+            xDifference: prevX,
+            yDifference: prevY
+        });
+        prevX += xInterval;
+        prevY += yInterval;
+    }
+
+    return difIntervals;
+} 
 
 export const getCenterPosition = (xStart, yStart, width, height) => {
     let halfWidth = width / 2;
