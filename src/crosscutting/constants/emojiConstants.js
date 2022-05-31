@@ -5,6 +5,7 @@ export const EmojiInfo = {
     HEIGHT: 30,
     X_OFFSET: -5,
     Y_OFFSET: -30,
+    
     FEED_SELF: {y: 0, x: 0},
     FEED_FAMILY: {y: 0, x: 1},
     SLEEP_IN_SHELTER: {y: 0, x: 2},
