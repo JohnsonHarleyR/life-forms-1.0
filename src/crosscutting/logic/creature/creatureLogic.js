@@ -46,6 +46,28 @@ export const getRandomCreatureStartPosition = (info, creatures, objects, plants,
     return result;
 }
 
+export const getNearbyPosition = (creature, creatures, objects, plants, shelters) => {
+    let moveAmount = creature.size;
+    let relativePositionsToTry = [
+        {x: -moveAmount, y: -moveAmount},
+        {x: -moveAmount, y: moveAmount},
+        {x: moveAmount, y: -moveAmount},
+        {x: moveAmount, y: moveAmount},
+        {x: moveAmount, y: 0},
+        {x: -moveAmount, y: 0},
+        {x: 0, y: moveAmount},
+        {x: 0, y: -moveAmount}
+    ];
+
+    for (let i = 0; i < relativePositionsToTry.length; i++) {
+        let rp = relativePositionsToTry[i];
+        let position = {x: creature.position.x + rp.x, y: creature.position.y + rp.y};
+        let creatureInfo = {id: creature.id, position: position, width: creature.width, height: creature.height};
+        let result = isAnyCollision(creatureInfo)
+    }
+
+}
+
 const setCreatureDirectionByTargetPosition = (creature) => {
     let dif = getPositionDifference(creature.position, creature.targetPosition);
     creature.movement.setDirection(dif.xDifference, dif.yDifference);
@@ -192,21 +214,21 @@ export const determineSightCoordinates = (creature, sightDirection, canvasInfo) 
     return result;
 }
 
-export const getPositionInNewDirection = (creature, direction) => {
+export const getPositionInNewDirection = (creature, direction, extra = 0) => {
     let newX = creature.position.x;
     let newY = creature.position.y;
     switch (direction) {
       case Direction.NORTH:
-        newY = creature.position.y - creature.movement.speed;
+        newY = creature.position.y - creature.movement.speed - extra;
         break;
       case Direction.SOUTH:
-        newY = creature.position.y + creature.movement.speed;
+        newY = creature.position.y + creature.movement.speed + extra;
         break;
       case Direction.WEST:
-        newX = creature.position.x - creature.movement.speed;
+        newX = creature.position.x - creature.movement.speed - extra;
         break;
       case Direction.EAST:
-        newX = creature.position.x + creature.movement.speed;
+        newX = creature.position.x + creature.movement.speed + extra;
         break;
       default:
         break;

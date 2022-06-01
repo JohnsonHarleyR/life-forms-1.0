@@ -472,7 +472,7 @@ export const getRandomStartPosition = (info, creatures, objects, plants, shelter
 
 
 export const isAnyCollision = (creationInfo, creatures, objects, plants, shelters,
-    largestCreatureSize = CanvasInfo.OBJECT_PADDING, excludeCreatureId = null, checkForPlants = true) => {
+    objectPadding = CanvasInfo.OBJECT_PADDING, excludeCreatureId = null, checkForPlants = true) => {
     let id = creationInfo.id ? creationInfo.id : null;
     let creationPoints = getStartAndEndPoints(id, creationInfo.position, creationInfo.width, creationInfo.height);
 
@@ -482,19 +482,19 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
 
     // loop through each one
     //console.log('checking objects');
-    let result = checkAnyArrayCollision(creationPoints, objects, largestCreatureSize);
+    let result = checkAnyArrayCollision(creationPoints, objects, objectPadding);
     if (result.isCollision) {
         return true;
     }
     //console.log('checking plants');
     if (checkForPlants) {
-        result = checkAnyArrayCollision(creationPoints, plants, largestCreatureSize);
+        result = checkAnyArrayCollision(creationPoints, plants, 0);
         if (result.isCollision) {
             return true;
         }
     }
     //console.log('checking shelters');
-    result = checkAnyArrayCollision(creationPoints, shelters, largestCreatureSize);
+    result = checkAnyArrayCollision(creationPoints, shelters, 0);
     if (result.isCollision) {
         return true;
     }
@@ -508,10 +508,10 @@ export const isAnyCollision = (creationInfo, creatures, objects, plants, shelter
             }
         });
         //console.log(`checking creatures without id ${excludeCreatureId}`);
-        result = checkAnyArrayCollision(creationPoints, creaturesCopy, largestCreatureSize);
+        result = checkAnyArrayCollision(creationPoints, creaturesCopy, 0);
     } else {
         //console.log('checking creatures');
-        result = checkAnyArrayCollision(creationPoints, creatures, largestCreatureSize);
+        result = checkAnyArrayCollision(creationPoints, creatures, 0);
     }
     // it's the last check so return the result
     return result.isCollision;
@@ -545,7 +545,7 @@ export const checkAnyArrayCollision = (creationPoints, array, padding = CanvasIn
     };
 }
 
-export const isOverlap = (smallerPoints, obj) => {
+export const isOverlap = (smallerPoints, obj, padding = 0) => {
     let isOverlap = false;
     let overlapSides = [];
 
@@ -569,7 +569,7 @@ export const isOverlap = (smallerPoints, obj) => {
                     default:
                         throw "Error in isOverlap. No x or y axis specified.";
                 }
-                let isOnObject = isPositionOnObject(position, obj);
+                let isOnObject = isPositionOnObject(position, obj, padding);
                 if (isOnObject) {
                     isOverlap = true;
                     overlapSides.push({
@@ -641,11 +641,11 @@ const getSidesForOverlapMethod = (smallerPoints) => {
     return array;
 }
 
-export const isPositionOnObject = (position, objectStartAndEndPoints) => {
-    if (position.x >= objectStartAndEndPoints.xStart &&
-        position.x <= objectStartAndEndPoints.xEnd && 
-        position.y >= objectStartAndEndPoints.yStart &&
-        position.y <= objectStartAndEndPoints.yEnd) {
+export const isPositionOnObject = (position, objectStartAndEndPoints, padding = 0) => {
+    if (position.x >= objectStartAndEndPoints.xStart - padding &&
+        position.x <= objectStartAndEndPoints.xEnd + padding && 
+        position.y >= objectStartAndEndPoints.yStart - padding &&
+        position.y <= objectStartAndEndPoints.yEnd + padding) {
             return true;
     }
     
@@ -673,20 +673,22 @@ export const isCollision = (creation1, creation2, padding = CanvasInfo.OBJECT_PA
     let result = compareLargeAndSmallForCollisionCheck(creationsBySize, padding);
 
     // if the collision resulted false, switch creationsBySize just to double check collision
-    if (!result.isCollision) {
-        // let creationsBySizeSwitched = switchCreationsBySize(creationsBySize);
-        // result = compareLargeAndSmallForCollisionCheck(creationsBySizeSwitched, padding);
+    // if (!result.isCollision) {
+    //     // let creationsBySizeSwitched = switchCreationsBySize(creationsBySize);
+    //     // result = compareLargeAndSmallForCollisionCheck(creationsBySizeSwitched, padding);
 
-        // try using the isOverlap method
-        let overlapResult = isOverlap(creationsBySize.small, creationsBySize.large);
-        if (overlapResult.isOverlap) {
-            result.isCollision = overlapResult.isOverlap;
-            result.collisionPoints = overlapResult.overlapSides;
-            result.collidedWith = creationsBySize.large;
-            result.smallId = creationsBySize.small.id;
-        }
+    //     // try using the isOverlap method
+    //     let overlapResult = isOverlap(creationsBySize.small, creationsBySize.large, padding);
+    //     if (overlapResult.isOverlap) {
+    //         console.log(`Small item ${creationsBySize.small.id} overlaps ${creationsBySize.large.id}`);
 
-    }
+    //         result.isCollision = overlapResult.isOverlap;
+    //         result.collisionPoints = overlapResult.overlapSides;
+    //         result.collidedWith = creationsBySize.large;
+    //         result.smallId = creationsBySize.small.id;
+    //     }
+
+    // }
 
     return result;
 

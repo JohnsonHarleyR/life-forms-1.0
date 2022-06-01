@@ -121,12 +121,12 @@ export default class CreatureMovement {
       if (newTargetPosition !== null) {
         this.creature.targetPosition = newTargetPosition;
       }
-      this.resetMovementProperties();
+      //this.resetMovementProperties();
     }
 
     testWithMovementPatterns = () => {
       this.recordMovement();
-      this.detectPattern(); 
+      return this.detectPattern(); 
     }
 
     recordMovement = () => {
@@ -144,8 +144,9 @@ export default class CreatureMovement {
       if (result && result.pattern.length >= CreatureDefaults.PATTERN_DETECTION_SIZE) {
         console.log(`Movement pattern detected for ${this.creature.type} ${this.creature.id}:\n`);
         displayPatternResult(result);
+        return true;
       }
-
+      return false;
     }
 
     determineModeByPriority = () => {
@@ -638,12 +639,25 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      //this.testWithMovementPatterns();
+      let isPattern = this.testWithMovementPatterns();
+      if (isPattern) {
+        this.resetMovementProperties();
+        // move creature to nearby position
+        this.changeTargetPosition(this.creature.position);
+        endPosition = this.creature.position;
+        this.previousDirection = this.direction !== null ? {...this.direction} : null;
+        this.previousSide = null;
+      }
+      else
+      {
+        this.previousDirection = this.direction !== null ? {...this.direction} : null;
+        this.previousSide = this.sideOfCollision;
+      }
 
-      this.previousDirection = this.direction !== null ? {...this.direction} : null;
-      this.previousSide = this.sideOfCollision;
+
 
       let newPosition = this.creature.position;
+      
 
       let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
       if (result.success) {
@@ -695,8 +709,8 @@ export default class CreatureMovement {
         console.log(`creature ${this.creature.type} ${this.creature.id} is in position, targetting new position`);
       }
       //this.resetMovementProperties();
-      //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE, this.creature.id, false);
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2, this.creature.id, false);
+      //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
       if (this.creature.type === CreatureType.BIDDY) {
         console.log(`line 700 in movement.js`);
         console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
@@ -747,7 +761,7 @@ export default class CreatureMovement {
       this.previousSide = collisionSide;
 
       // now determine the new position based on the new direction
-      let newPosition = getPositionInNewDirection(this.creature, this.newDirection);
+      let newPosition = getPositionInNewDirection(this.creature, this.newDirection, 1);
 
       return newPosition;
     }
