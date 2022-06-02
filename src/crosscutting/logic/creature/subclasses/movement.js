@@ -639,28 +639,29 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      let isPattern = this.testWithMovementPatterns();
-      if (isPattern) {
-        this.resetMovementProperties();
-        // move creature to nearby position
-        this.changeTargetPosition(this.creature.position);
-        endPosition = this.creature.position;
-        this.previousDirection = this.direction !== null ? {...this.direction} : null;
-        this.previousSide = null;
-      }
-      else
-      {
-        this.previousDirection = this.direction !== null ? {...this.direction} : null;
-        this.previousSide = this.sideOfCollision;
-      }
-
+      // let isPattern = this.testWithMovementPatterns();
+      // if (isPattern) {
+      //   this.resetMovementProperties();
+      //   // move creature to nearby position
+      //   this.changeTargetPosition(this.creature.position);
+      //   endPosition = this.creature.position;
+      //   this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      //   this.previousSide = null;
+      // }
+      // else
+      // {
+      //   this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      //   this.previousSide = this.sideOfCollision;
+      // }
+      this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      this.previousSide = this.sideOfCollision;
 
 
       let newPosition = this.creature.position;
       
 
       let result = this.moveTowardPosition(endPosition, objects, canvasInfo);
-      if (result.success) {
+      if (result.success || isInPosition(result.forPosition, this.creature.targetPosition)) {
         this.sideOfCollision = null;
         //console.log(`no collision for ${this.creature.type} ${this.creature.id}`);
           newPosition = result.forPosition;
@@ -709,7 +710,7 @@ export default class CreatureMovement {
         console.log(`creature ${this.creature.type} ${this.creature.id} is in position, targetting new position`);
       }
       //this.resetMovementProperties();
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2, this.creature.id, false);
+      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2 + CanvasInfo.OBJECT_PADDING + 1, this.creature.id, false);
       //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
       if (this.creature.type === CreatureType.BIDDY) {
         console.log(`line 700 in movement.js`);
@@ -862,6 +863,8 @@ export default class CreatureMovement {
         attemptResult = this.attemptMoveTowardPosition(changeIntervals[index], dif, objects);
         index++;
       } while (attemptResult.success && index < changeIntervals.length);
+
+      //attemptResult.forPosition = newPosition;
 
       return attemptResult;
     }
