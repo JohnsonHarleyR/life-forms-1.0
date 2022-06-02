@@ -7,11 +7,456 @@ import {
     getObjectStartAndEndPoints,
     isCollision,
   determineAxisBySide,
-getCornerPositionFromStartAndEndPoints } from "../universalLogic";
-import { Side, Corner } from "../../constants/objectConstants";
+getCornerPositionFromStartAndEndPoints, 
+getCreatureIdentityString} from "../universalLogic";
+import { Side, Corner, RelativeToObject, CornerSideResult } from "../../constants/objectConstants";
 import { CreatureDefaults, Direction } from "../../constants/creatureConstants";
 import { Axis, CanvasInfo } from "../../constants/canvasConstants";
 
+
+// v2 collision logic
+export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosition, objects) => {
+  let padding = CanvasInfo.OBJECT_PADDING;
+
+  let endResult = {
+    didCollide: false,
+    objectCollided: null,
+    collisionSide: null,
+    directionToMove: null
+  }
+
+  if (!objects) {
+    console.log(`value of objects: ${JSON.stringify(objects)}`);
+    return endResult;
+  } else if (!creature) {
+    console.log(`value of creature: ${JSON.stringify(creature)}`);
+  }
+
+  let relativePlacement = null;
+  let placementBools = null;
+
+  // determine collision
+  for (let i = 0; i < objects.length; i++) {
+    let result = objects[i].doesNewPositionCollideWithObject(creature, newCreaturePosition, padding);
+    if (result.isCollision) {
+      endResult.didCollide = true;
+      endResult.objectCollided = objects[i];
+      relativePlacement = result.relativePlacement;
+      placementBools = result.placementBools;
+      break;
+    } 
+  }
+
+  // return if no collision
+  if (!endResult.didCollide) {
+    return endResult;
+  }
+
+  // throw exception if relative placement was already an overlap
+  if (relativePlacement === RelativeToObject.OVERLAP) {
+    // console.log(`Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
+    // `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
+    // `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)`);
+    throw `Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
+      `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
+      `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)`;
+  }
+
+  // determine if side or corner
+  let isSide = isRelativeSideOfObject(relativePlacement);
+
+  // determine side of object for determining direction
+  let sideOfObject = null;
+  let objCorner = null;
+  let wasATie = false;
+  if (isSide) {
+    sideOfObject = getObjectSideFromRelativePlacement(relativePlacement);
+  } else { // if it's a corner not a side, figure out which side of the object to deal with
+    objCorner = getObjectCornerFromRelativePlacement(relativePlacement)
+    let cornerSideResult = getCreatureCornerObjectSideResult(objCorner, endResult.objectCollided, creature, newCreaturePosition, padding);
+    // set side of object if it's not a tie
+    if (cornerSideResult !== CornerSideResult.TIE) {
+      sideOfObject = cornerSideResult;
+    } else {
+      //figure out what to do now if it was a tie - how do we determine which direction from here?
+      sideOfObject = breakCornerTieToGetObjectSide(objCorner, endResult.objectCollided, creature);
+      wasATie = true;
+    }
+  }
+  endResult.collisionSide = sideOfObject;
+
+  // decide direction
+  // NOTE: keep in mind cases of a corner tie where moving in the side of a direction doesn't make sense
+  // keep this in mind if there are any weird bugs around this
+  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo);
+  endResult.directionToMove = direction;
+  
+  if (wasATie) {
+    console.log(`direction determined: ${direction}`);
+  }
+
+  // return result finally!
+  return endResult;
+}
+
+const checkIfPreviousRelativePlacementWasCollision = (objects, creature, padding) => {
+  let prevPlacementWasCollision = false;
+
+  // determine collision
+  for (let i = 0; i < objects.length; i++) {
+    let result = objects[i].doesNewPositionCollideWithObject(creature, creature.position, padding);
+    if (result.isCollision) {
+      prevPlacementWasCollision = true;
+      break;
+    } 
+  }
+
+  return prevPlacementWasCollision;
+}
+
+const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
+  let objSides = getSidesOfCorner(objCorner);
+
+  // first, if one of the sides was the previous collision side, return the other one?
+  // NOTE: actually, perhaps it would be better to return the same side until there's no longer a collision?
+  // consider circumstances - ok, I'm choosing the side with opposite closest to target in this case
+  let prevSide = creature.movement.previousSide;
+  if (prevSide === objSides[0] || prevSide === objSides[1]) {
+    let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
+    console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+    `New side determined by checking previousSide and using getObjectSideWithOppositeClosestToTarget: ${side}`);
+    if (side !== CornerSideResult.TIE) {
+      return side;
+    }
+  }
+
+  // try to break by shortest length
+  let shortestSide = getObjectSideWithShortestLength(objSides, obj);
+  console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+  `New side determined by getObjectSideWithShortestLength: ${shortestSide}`);
+  if (shortestSide !== CornerSideResult.TIE) {
+    return shortestSide;
+  }
+
+  // otherwise, try to break with side opposite closest to target again
+  let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
+  console.log(`There is still a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+  `New side determined by getObjectSideWithOppositeClosestToTarget: ${side}`);
+  if (side !== CornerSideResult.TIE) {
+    return side;
+  }
+
+  // if it's STILL a tie, return the side on the axis position
+
+  side = getObjectSideWithYAxis(objSides);
+  console.log(`There is still a corner tie at the end for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+  `New side determined by getObjectSideWithYAxis: ${side}`);
+  return side;
+
+}
+
+const getObjectSideWithYAxis = (sides) => {
+  let side = null;
+  sides.forEach(s => {
+    let axis = getAxisFromSide(s);
+    if (axis === Axis.Y) {
+      side = s;
+    }
+  });
+
+  if (side === null) {
+    throw `Error: No side has Y axis for sides ${JSON.stringify(sides)} inside getObjectSideWithYAxis. (objectsLogic.js)`;
+  }
+
+  return side;
+}
+
+const getAxisFromSide = (side) => {
+  switch (side) {
+    case Side.TOP:
+    case Side.BOTTOM:
+      return Axis.Y;
+    case Side.LEFT:
+    case Side.RIGHT:
+      return Axis.X;
+    default:
+      throw `Error: Axis could not be determined from side ${side} in getAxisFromSide. (objectsLogic.js)`;
+  }
+}
+
+const getObjectSideWithOppositeClosestToTarget = (objSides, obj, targetPosition) => {
+  let oppositeDistances = [];
+  objSides.forEach(s => {
+    let oppositeSide = getOppositeSide(s);
+    let oppPosInfo = getObjectSideAxisPosition(oppositeSide, obj);
+    let distance = getSideDistanceFromTarget(oppPosInfo.axis, oppPosInfo.position, targetPosition);
+    oppositeDistances.push({objSide: s, oppositeDistance: distance});
+  });
+
+  if (oppositeDistances[0].distance > oppositeDistances[1].distance) {
+    return oppositeDistances[1].objSide;
+  } else if (oppositeDistances[0].distance < oppositeDistances[1].distance) {
+    return oppositeDistances[0].objSide;
+  } else {
+    return CornerSideResult.TIE;
+  }
+}
+
+const getSideDistanceFromTarget = (axis, objCoord, targetPosition) => {
+  let targetCoord = null;
+  if (axis === Axis.Y) {
+    targetCoord = targetPosition.y;
+  } else {
+    targetCoord = targetPosition.x;
+  }
+
+  let distance = Math.abs(objCoord - targetCoord);
+  return distance;
+}
+
+const getObjectSideWithShortestLength = (objSides, obj) => {
+  let sideLengths = [];
+  objSides.forEach(s => {
+    let length = getObjectSideLength(s, obj);
+    sideLengths.push({objSide: s, length: length});
+  });
+
+  if (sideLengths[0].length > sideLengths[1].length) {
+    return sideLengths[1].objSide;
+  } else if (sideLengths[0].length < sideLengths[1].length) {
+    return sideLengths[0].objSide;
+  } else {
+    return CornerSideResult.TIE;
+  }
+}
+
+const getObjectSideLength = (side, obj) => {
+  switch (side) {
+    case Side.TOP:
+    case Side.BOTTOM:
+      return obj.width;
+    case Side.LEFT:
+    case Side.RIGHT:
+      return obj.height;
+    default:
+      throw `Error: something went wrong inside of getObjectSideLength. (objectsLogic.js)`;
+  }
+}
+
+// for determining which side of an object corner the creature is colliding with
+// could be a tie that will need to be broken
+const getCreatureCornerObjectSideResult = (objCorner, obj, creature, newPosition, padding) => {
+  let objSides = getSidesOfCorner(objCorner);
+
+  let sideDifs = [];
+  objSides.forEach(s => {
+    let creatureSide = getOppositeSide(s);
+    let cPosInfo = getCreatureSideAxisPosition(creatureSide, creature, newPosition);
+    let objPosInfo = getObjectSideAxisPosition(s, obj, padding);
+    let dif = Math.abs(cPosInfo.position - objPosInfo.position);
+    sideDifs.push({objSide: s, difference: dif});
+  });
+
+  if (sideDifs[0].difference > sideDifs[1].difference) {
+    return sideDifs[1].objSide;
+  } else if (sideDifs[0].difference < sideDifs[1].difference) {
+    return sideDifs[0].objSide;
+  } else {
+    return CornerSideResult.TIE;
+  }
+}
+
+const getObjectSideFromRelativePlacement = (placement) => {
+  switch (placement) {
+    case RelativeToObject.LEFT_SIDE:
+      return Side.LEFT;
+    case RelativeToObject.RIGHT_SIDE:
+      return Side.RIGHT;
+    case RelativeToObject.TOP_SIDE:
+      return Side.TOP;
+    case RelativeToObject.BOTTOM_SIDE:
+      return Side.BOTTOM;
+    default:
+      throw `Error: Placement ${placement} is not a side. This should not happen inside this method.` +
+      `\n(getObjectSideFromRelativePlacement inside objectLogic.js)`;
+  }
+}
+
+const isRelativeSideOfObject = (placement) => {
+  switch (placement) {
+    case RelativeToObject.LEFT_SIDE:
+    case RelativeToObject.RIGHT_SIDE:
+    case RelativeToObject.TOP_SIDE:
+    case RelativeToObject.BOTTOM_SIDE:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const getObjectCornerFromRelativePlacement = (placement) => {
+  switch (placement) {
+    case RelativeToObject.TOP_LEFT_CORNER:
+      return Corner.TOP_LEFT;
+    case RelativeToObject.TOP_RIGHT_CORNER:
+      return Corner.TOP_RIGHT;
+    case RelativeToObject.BOTTOM_LEFT_CORNER:
+      return Corner.BOTTOM_LEFT;
+    case RelativeToObject.BOTTOM_RIGHT_CORNER:
+      return Corner.BOTTOM_RIGHT;
+    default:
+      throw `Error: Placement ${placement} is not a corner. This should not happen inside this method.` +
+      `\n(getObjectCornerFromRelativePlacement inside objectLogic.js)`;
+  }
+}
+
+const isRelativeCornerOfObject = (placement) => {
+  switch (placement) {
+    case RelativeToObject.TOP_LEFT_CORNER:
+    case RelativeToObject.TOP_RIGHT_CORNER:
+    case RelativeToObject.BOTTOM_LEFT_CORNER:
+    case RelativeToObject.BOTTOM_RIGHT_CORNER:
+      return true;
+    default:
+      return false;
+  }
+}
+
+
+
+// doesNewPositionCollideWithObject = (creature, newCreaturePosition, padding = 0) => {
+//   let isCollision = false;   
+//   let positionChecked = newCreaturePosition;     
+//   let objectChecked = this;
+//   let relativePlacement = null; // relative placement to object before collision (if collision)
+
+//   let newCreaturePoints = getStartAndEndPoints(creature.id, newCreaturePosition, creature.size, creature.size);
+//   let newPositionCondition = this.getRelativeToObjectCondition(newCreaturePoints, padding);
+
+//   if (newPositionCondition === RelativeToObject.OVERLAP) {
+//       isCollision = true;
+
+//       let oldCreaturePoints = getStartAndEndPoints(creature.id, newCreaturePosition, creature.size, creature.size);
+//       relativePlacement = this.getRelativeToObjectCondition(oldCreaturePoints, padding);
+//   }
+  
+//   return {
+//       isCollision: isCollision,
+//       positionChecked: positionChecked,
+//       objectChecked: objectChecked,
+//       relativePlacement: relativePlacement
+//   }
+// }
+
+// getRelativeToObjectCondition = (creaturePoints, padding = 0) => {
+//   //let creaturePoints = getStartAndEndPoints(creature.id, creaturePosition, creature.size, creature.size);
+//   let result = {
+//       condition: null,
+//       isAwayFromLeft: null,
+//       isAwayFromRight: null,
+//       isAwayFromTop: null,
+//       isAwayFromBottom: null
+//   }
+//   let resultsToFill = [
+//       {
+//           side: Side.LEFT,
+//           fieldString: "isAwayFromLeft"
+//       }, 
+//       {
+//           side: Side.RIGHT,
+//           fieldString: "isAwayFromRight"
+//       }, 
+//       {
+//           side: Side.TOP,
+//           fieldString: "isAwayFromTop"
+//       }, 
+//       {
+//           side: Side.BOTTOM,
+//           fieldString: "isAwayFromBottom"
+//       },
+//       {
+//           side: null,
+//           fieldString: "condition"
+//       }, 
+//   ];
+
+//   resultsToFill.forEach(rf => {
+//       let resultValue = null;
+//       if (rf.side !== null) {
+//           resultValue = this.isAwayFromSide(creaturePoints, side, padding);
+//       };
+//       let newResult = fillRelativeFieldForObjectConditionResult(rf.fieldString, resultValue, result);
+//       result = newResult;
+//   });
+
+//   let finalResult = result.condition;
+//   return finalResult;
+// }
+
+// const getObjectBorderPointsByType = (obj) => {
+//   switch (obj.type) {
+//     case ObjectType.WALL:
+//       return {
+//         xStart: obj.xStart,
+//         xEnd: obj.xEnd,
+//         yStart: obj.yStart,
+//         yEnd: obj.yEnd
+//       }
+//     case ObjectType.SHELTER:
+//       return {
+//         xStart: obj.getXStart(),
+//         xEnd: obj.getXEnd(),
+//         yStart: obj.getYStart(),
+//         yEnd: obj.getYEnd()
+//       }
+//   }
+// }
+
+// const isAwayFromSide = (obj, creaturePoints, side, padding) => {
+//   let creaturePoint = null;
+//   let objPoint = null;
+//   let lessOrGreater = null;
+
+//   let b = getObjectBorderPointsByType(obj);
+
+//   switch (side) {
+//       case Side.LEFT:
+//           creaturePoint = creaturePoints.xEnd;
+//           objPoint = b.xStart;
+//           lessOrGreater = "less";
+//           break;
+//       case Side.RIGHT:
+//           creaturePoint = creaturePoints.xStart;
+//           objPoint = b.xEnd;
+//           lessOrGreater = "greater";
+//           break;
+//       case Side.TOP:
+//           creaturePoint = creaturePoints.yEnd;
+//           objPoint = b.yStart;
+//           lessOrGreater = "less";
+//           break;
+//       case Side.BOTTOM:
+//           creaturePoint = creaturePoints.yStart;
+//           objPoint = b.yEnd;
+//           lessOrGreater = "greater";
+//           break;
+//   }
+
+//   let result = null;
+//   if (lessOrGreater === "less") {
+//       result = creaturePoint < objPoint - padding;
+//   } else if (lessOrGreater === "greater") {
+//       result = creaturePoint > objPoint + padding;
+//   }
+
+//   if (result) {
+//       return result;
+//   }
+//   throw `isAwayFromSide could not be determined inside of class for object ${this.id} in position ${this.position}`;
+// }
+
+
+// v1 collision logic
 export const checkCreatureObjectCollision = (creationInfo, newPosition, objects) => {
     let creationPoints = getStartAndEndPoints(creationInfo.position, creationInfo.width, creationInfo.height);
 
@@ -164,6 +609,30 @@ export const isCreatureObjectCollision = (creature, newPosition, obj) => {
         isCollision: result,
         collisionSide: collisionSide
     };
+}
+
+const getSidesOfCorner = (corner) => {
+  let sides = [];
+  switch (corner) {
+    case Corner.TOP_LEFT:
+      sides.push(Side.TOP);
+      sides.push(Side.LEFT);
+      break;
+    case Corner.TOP_RIGHT:
+      sides.push(Side.TOP);
+      sides.push(Side.RIGHT);
+      break;
+    case Corner.BOTTOM_LEFT:
+      sides.push(Side.BOTTOM);
+      sides.push(Side.LEFT);
+      break;
+    case Corner.BOTTOM_RIGHT:
+      sides.push(Side.BOTTOM);
+      sides.push(Side.RIGHT);
+      break;
+  }
+
+  return sides;
 }
 
 const getMidCoordsBySide = (points, side) => {
@@ -445,6 +914,53 @@ const getOppositeSide = (side) => {
     return determineDirectionByAxisAndCorner(axis, cornerToMoveToward);
   }
 
+  const getCreatureCornerPosition = (creature, creaturePos, corner) => {
+
+    let creaturePoints = getStartAndEndPoints(creature.id, creaturePos, creature.size, creature.size);
+    let x = null;
+    let y = null;
+    
+    switch (corner) {
+      case Corner.TOP_LEFT:
+        x = creaturePoints.xStart;
+        y = creaturePoints.yStart;
+        break;
+      case Corner.TOP_RIGHT:
+        x = creaturePoints.xEnd;
+        y = creaturePoints.yStart;
+        break;
+      case Corner.BOTTOM_LEFT:
+        x = creaturePoints.xStart;
+        y = creaturePoints.yEnd;
+        break;
+      case Corner.BOTTOM_RIGHT:
+        x = creaturePoints.xEnd;
+        y = creaturePoints.yEnd;
+        break;
+      default:
+        throw `Error: No opposite corner could be determined for ${corner}. This should not happen inside this method.` +
+      `\n(getOppositeCorner inside objectLogic.js)`;
+    }
+
+    return {x: x, y: y};
+  }
+
+  const getOppositeCorner = (corner) => {
+    switch (corner) {
+      case Corner.TOP_LEFT:
+        return Corner.BOTTOM_RIGHT;
+      case Corner.TOP_RIGHT:
+        return Corner.BOTTOM_LEFT;
+      case Corner.BOTTOM_LEFT:
+        return Corner.TOP_RIGHT;
+      case Corner.BOTTOM_RIGHT:
+        return Corner.TOP_LEFT;
+      default:
+        throw `Error: No opposite corner could be determined for ${corner}. This should not happen inside this method.` +
+      `\n(getOppositeCorner inside objectLogic.js)`;
+    }
+  }
+
   const getPositionDifferenceFromCorner = (axis, cornerPos, position) => {
     let cornerNum;
     let positionNum;
@@ -458,31 +974,93 @@ const getOppositeSide = (side) => {
     return Math.abs(cornerNum - positionNum);
   }
 
-  export const getObjectCornerPosition = (obj, corner) => {
+  const getCreatureSideAxisPosition = (side, creature, creaturePos) => {
+    let creaturePoints = getStartAndEndPoints(creature.id, creaturePos, creature.size, creature.size);
+
+    let axis = null;
+    let position = null;
+    switch(side) {
+      case Side.TOP:
+        axis = Axis.Y;
+        position = creaturePoints.yStart;
+        break;
+      case Side.BOTTOM:
+        axis = Axis.Y;
+        position = creaturePoints.yEnd;
+        break;
+      case Side.LEFT:
+        axis = Axis.X;
+        position = creaturePoints.xStart;
+        break;
+      case Side.RIGHT:
+        axis = Axis.X;
+        position = creaturePoints.xEnd;
+        break;
+      default:
+        throw `something went wrong inside getCreatureSideAxisPosition. (objectsLogic.js)`;
+    }
+
+    return {
+      axis: axis,
+      position: position
+    }
+  }
+
+  const getObjectSideAxisPosition = (side, obj, padding = 0) => {
+    let axis = null;
+    let position = null;
+    switch(side) {
+      case Side.TOP:
+        axis = Axis.Y;
+        position = obj.yStart - padding;
+        break;
+      case Side.BOTTOM:
+        axis = Axis.Y;
+        position = obj.yEnd + padding;
+        break;
+      case Side.LEFT:
+        axis = Axis.X;
+        position = obj.xStart - padding;
+        break;
+      case Side.RIGHT:
+        axis = Axis.X;
+        position = obj.xEnd + padding;
+        break;
+      default:
+        throw `something went wrong inside getCreatureSideAxisPosition. (objectsLogic.js)`;
+    }
+
+    return {
+      axis: axis,
+      position: position
+    }
+  }
+
+  export const getObjectCornerPosition = (obj, corner, padding = 0) => {
     let position = null;
     switch (corner) {
       case Corner.TOP_LEFT:
         position = {
-          x: obj.xStart,
-          y: obj.yStart
+          x: obj.xStart - padding,
+          y: obj.yStart - padding
         };
         break;
       case Corner.TOP_RIGHT:
         position = {
-          x: obj.xEnd,
-          y: obj.yStart
+          x: obj.xEnd + padding,
+          y: obj.yStart - padding
         };
         break;
       case Corner.BOTTOM_LEFT:
         position = {
-          x: obj.xStart,
-          y: obj.yEnd
+          x: obj.xStart - padding,
+          y: obj.yEnd + padding
         };
         break;
       case Corner.BOTTOM_RIGHT:
         position = {
-          x: obj.xEnd,
-          y: obj.yEnd
+          x: obj.xEnd + padding,
+          y: obj.yEnd + padding
         };
         break;
       default:

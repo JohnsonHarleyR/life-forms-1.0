@@ -1,4 +1,5 @@
 
+import { CanvasInfo } from "../../../constants/canvasConstants";
 import { getRandomStartPosition } from "../../universalLogic";
 
 export const getRandomPlantStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize) => {

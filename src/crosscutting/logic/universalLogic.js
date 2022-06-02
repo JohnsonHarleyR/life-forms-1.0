@@ -1,6 +1,7 @@
 import { CanvasInfo, Axis } from "../constants/canvasConstants";
-import { Corner, Side } from "../constants/objectConstants";
+import { Corner, Side, RelativeToObject, RelativeToObjectCases } from "../constants/objectConstants";
 import { Direction, CreatureDefaults } from "../constants/creatureConstants";
+import { checkIfCreatureCollidesWithAnyObjects } from "./object/objectsLogic";
 
 // display methods
 export const getCreatureIdentityString = (creature) => {
@@ -39,6 +40,56 @@ export const roundToPlace = (number, decimalPlaces) => {
 export const getRandomIntInRange = (min, max) => {
     let result = Math.floor((Math.random() * max) + min)
     return result;
+}
+
+// object collision - v2
+
+// has to do with a method inside object class that determines side bools and stuff
+// {isAwayFromLeft, isAwayFromRight, isAwayFromTop, isAwayFromBottom} = spread of boolResults
+const getRelativeToObjectCondition = (boolResults) => {
+    let condition = null;
+    RelativeToObjectCases.forEach(c => {
+        if (meetsRelativeToObjectCondition(boolResults, c)) {
+            condition = c.condition;
+        }
+    });
+    if (!condition) {
+        throw `Error: no condition could be determined inside of getRelativeToObjectCondition. (universalLogic.js)\nParameter spread: ${JSON.stringify(boolResults)}`;
+    }
+    return condition;
+}
+
+export const fillRelativeFieldForObjectConditionResult = (fieldString, resultValue, resultObject) => {
+    let copy = {...resultObject};
+    switch (fieldString) {
+        case "isAwayFromLeft":
+            copy.isAwayFromLeft = resultValue;
+            break;
+        case "isAwayFromRight":
+            copy.isAwayFromRight = resultValue;
+            break;
+        case "isAwayFromTop":
+            copy.isAwayFromTop = resultValue;
+            break;
+        case "isAwayFromBottom":
+            copy.isAwayFromBottom = resultValue;
+            break;
+        case "condition":
+            copy.condition = getRelativeToObjectCondition(resultObject);
+            break;
+    }
+    
+    return copy;
+}
+
+const meetsRelativeToObjectCondition = (actual, expected) => {
+    if (actual.isAwayFromLeft === expected.isAwayFromLeft &&
+        actual.isAwayFromRight === expected.isAwayFromRight &&
+        actual.isAwayFromTop === expected.isAwayFromTop &&
+        actual.isAwayFromBottom === expected.isAwayFromBottom) {
+            return true;
+    }
+    return false;
 }
 
 // color methods
@@ -447,6 +498,35 @@ export const getRandomPositionInBounds = (xStart, xEnd, yStart, yEnd, padding) =
     } while (y < yStart - padding || y > yEnd - padding);
 
     return {x: x, y: y};
+}
+
+export const getRandomCreatureTargetPosition = (creature, objects, shelters) => {
+    let maxX = CanvasInfo.WIDTH - (creature.size); // this prevents going over edge
+    let maxY = CanvasInfo.HEIGHT - (creature.size);
+  
+    let isCollision = true;
+    let randomPosition = null;
+    do {
+        let x = Math.floor((Math.random() * maxX));
+        let y = Math.floor((Math.random() * maxY));
+        randomPosition = {x: x, y: y};
+        
+        // check objects
+        let objectCheck = checkIfCreatureCollidesWithAnyObjects(creature, randomPosition, objects);
+        isCollision = objectCheck.isCollision;
+  
+        // check shelters too
+        if (!isCollision) {
+            shelters.forEach(s => {
+                if (s.willBeInsideShelter(creature, randomPosition)) {
+                    isCollision = true;
+                }
+            })
+        }
+  
+    } while (isCollision);
+  
+    return randomPosition;
 }
 
 export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = CreatureDefaults.LARGEST_SIZE, excludeCreatureId = null, checkForPlants = true) => {

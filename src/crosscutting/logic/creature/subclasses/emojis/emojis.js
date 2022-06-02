@@ -51,7 +51,7 @@ export default class Emojis {
             return;
         }
 
-        console.log(`${getCreatureIdentityString(this.creature)} emoji for: ${emojiVisual.name} {startX: ${emojiVisual.startX}, startY: ${emojiVisual.startY}}`);
+        //console.log(`${getCreatureIdentityString(this.creature)} emoji for: ${emojiVisual.name} {startX: ${emojiVisual.startX}, startY: ${emojiVisual.startY}}`);
 
         let dx = this.creature.position.x + EmojiInfo.X_OFFSET;
         let dy = this.creature.position.y + EmojiInfo.Y_OFFSET;

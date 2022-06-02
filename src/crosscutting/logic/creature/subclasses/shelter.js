@@ -4,10 +4,12 @@ import {
     getRandomPositionInBounds
 } from "../../universalLogic";
 import { LifeStage } from "../../../constants/creatureConstants";
+import { ObjectType } from "../../../constants/objectConstants";
 
 export default class Shelter {
     constructor(id, position, color, creatureSize) {
         this.id = id;
+        this.type = ObjectType.SHELTER;
         this.position = position;
         this.color = color;
         this.size = creatureSize * ShelterLine.MULTIPLIER;
@@ -45,6 +47,20 @@ export default class Shelter {
 
         if (creaturePoints.xStart >= xStart && creaturePoints.xEnd <= xEnd &&
             creaturePoints.yStart >= yStart && creaturePoints.yEnd <= yEnd) {
+                return true;
+            }
+        return false;
+    }
+
+    willBeInsideShelter = (creature, newPosition) => {
+        let creaturePoints = getStartAndEndPoints(creature.id, newPosition, creature.width, creature.height);
+        let xStart = this.getXStart();
+        let yStart = this.getYStart();
+        let xEnd = this.getXEnd();
+        let yEnd = this.getYEnd();
+
+        if ((creaturePoints.xEnd > xStart && creaturePoints.xStart < xEnd) &&
+            (creaturePoints.yEnd > yStart && creaturePoints.yStart < yEnd)) {
                 return true;
             }
         return false;

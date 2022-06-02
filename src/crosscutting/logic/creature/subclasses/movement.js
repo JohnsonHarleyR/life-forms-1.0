@@ -16,9 +16,11 @@ import { ShelterLine } from "../../../constants/canvasConstants";
 import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
     getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
-  getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals } from "../../universalLogic";
+  getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals,
+getRandomCreatureTargetPosition } from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
-  determineDirectionByTarget } from "../../object/objectsLogic";
+  determineDirectionByTarget,
+  checkIfCreatureCollidesWithAnyObjects } from "../../object/objectsLogic";
 import Shelter from "./shelter";
 import { 
   makeCreatureDie,
@@ -679,6 +681,7 @@ export default class CreatureMovement {
           newPosition = this.moveAroundObject(
             result.objectCollided,
             result.collisionSide,
+            result.directionToMove,
             canvasInfo
           );
         }
@@ -752,12 +755,14 @@ export default class CreatureMovement {
       return position;
     }
 
-    moveAroundObject = (obj, collisionSide, canvasInfo) => {
+    moveAroundObject = (obj, collisionSide, directionToMove, canvasInfo) => {
       //console.log(`Collision side: ${collisionSide}`);
       this.sideOfCollision = collisionSide;
+      // NOTE: the below if block could be a potential problem area?
       if (this.newDirection === null || this.previousSide !== collisionSide) {
-        this.newDirection = determineDirectionByTarget(this.creature, this.sideOfCollision, obj, canvasInfo);
-      //console.log(`new direction: ${this.newDirection}`);
+        //this.newDirection = determineDirectionByTarget(this.creature, this.sideOfCollision, obj, canvasInfo);
+        this.newDirection = directionToMove;
+        //console.log(`new direction: ${this.newDirection}`);
       }
       this.previousSide = collisionSide;
 
@@ -873,9 +878,8 @@ export default class CreatureMovement {
     
         // TODO write logic in case creature cannot move diagonally
         // and can only move up or down, left or right
-        let collisionResult = checkAllCreatureObjectCollisions(this.creature, newPosition, objects);
-
-        //
+        //let collisionResult = checkAllCreatureObjectCollisions(this.creature, newPosition, objects);
+        let collisionResult = checkIfCreatureCollidesWithAnyObjects(this.creature, newPosition, objects);
     
         //TODO write logic to also avoid going over other creature's shelters - move around them
 
@@ -886,7 +890,8 @@ export default class CreatureMovement {
           forPosition: newPosition,
           difference: dif,
           objectCollided: collisionResult.objectCollided,
-          collisionSide: collisionResult.collisionSide
+          collisionSide: collisionResult.collisionSide,
+          directionToMove: collisionResult.directionToMove
         };
     }
 
