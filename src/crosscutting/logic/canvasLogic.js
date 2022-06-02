@@ -81,14 +81,24 @@ export const fillBackground = (canvas, color) => {
 
 export const drawAllCreatures = (canvas, canvasInfo, creatures) => {
     if (creatures) {
-        // draw creature lines if they're supposed to show them
-        creatures.forEach(c => {
-            drawCreatureLines(canvas, canvasInfo, c);
-        })
+        // // draw creature lines if they're supposed to show them
+        // creatures.forEach(c => {
+        //     drawCreatureLines(canvas, canvasInfo, c);
+        // })
         // then draw creatures
         creatures.forEach(c => {
             drawCreature(canvas, canvasInfo, c);
         })
+    }
+}
+
+export const drawAllCreatureLines = (canvas, canvasInfo, creatures) => {
+    if (creatures) {
+        creatures.forEach(c => {
+            if (c.showLines) {
+                drawCreatureLines(canvas, canvasInfo, c);
+            }
+        });
     }
 }
 
@@ -172,30 +182,51 @@ export const drawAllShelters = (canvas, shelters) => {
     }
 }
 
-const drawShelter = (canvas, shelter) => { 
+export const drawAllShelterTexts = (canvas, shelters) => {
+    if (shelters) {
+        shelters.forEach(s => {
+            drawShelterText(canvas, s);
+        });
+    }
+}
+
+const drawShelterText = (canvas, shelter) => {
+    drawText(canvas, shelter.totalFoodEnergy, ShelterLine.FONT, ShelterLine.FONT_COLOR, 
+        shelter.getXStart() + ShelterLine.X_TEXT_OFFSET, shelter.getYStart() + ShelterLine.Y_TEXT_OFFSET);
+}
+
+const getShelterValues = (shelter) => {
     let color = shelter.color;
     let lineWidth = ShelterLine.LINE_WIDTH;
     let xStart = shelter.getXStart();
     let yStart = shelter.getYStart();
     let xEnd = shelter.getXEnd();
     let yEnd = shelter.getYEnd();
+
+    return {color: color, lineWidth: lineWidth, xStart: xStart, yStart: yStart, xEnd: xEnd, yEnd: yEnd};
+}
+
+const drawShelter = (canvas, shelter, doDrawShelterText = false) => { 
+    let v = getShelterValues(shelter);
   
     // draw each line edge
   
     // Top
-    drawLine(canvas, color, lineWidth, xStart, xEnd, yStart, yStart);
+    drawLine(canvas, v.color, v.lineWidth, v.xStart, v.xEnd, v.yStart, v.yStart);
     // Bottom
-    drawLine(canvas, color, lineWidth, xStart, xEnd, yEnd, yEnd);
+    drawLine(canvas, v.color, v.lineWidth, v.xStart, v.xEnd, v.yEnd, v.yEnd);
     // Left
-    drawLine(canvas, color, lineWidth, xStart, xStart, yStart, yEnd);
+    drawLine(canvas, v.color, v.lineWidth, v.xStart, v.xStart, v.yStart, v.yEnd);
     // Right
-    drawLine(canvas, color, lineWidth, xEnd, xEnd, yStart, yEnd);
+    drawLine(canvas, v.color, v.lineWidth, v.xEnd, v.xEnd, v.yStart, v.yEnd);
 
     // TODO add food energy number inside square
 
     // draw food amount
-    drawText(canvas, shelter.totalFoodEnergy, ShelterLine.FONT, ShelterLine.FONT_COLOR, 
-        xStart + ShelterLine.X_TEXT_OFFSET, yStart + ShelterLine.Y_TEXT_OFFSET);
+    if (doDrawShelterText) {
+        this.drawShelterText(canvas, shelter);
+    }
+
 }
 
 

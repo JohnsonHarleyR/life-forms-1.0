@@ -3,7 +3,7 @@ import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
 import { Gender, LifeStage, Boop, Bleep, Biddy } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants,
-    drawAllShelters } from "../../../crosscutting/logic/canvasLogic";
+    drawAllShelters, drawAllCreatureLines, drawAllShelterTexts } from "../../../crosscutting/logic/canvasLogic";
 import { isCollision } from "../../../crosscutting/logic/universalLogic";
 import { getRandomPlantStartPosition } from "../../../crosscutting/logic/object/plants/plantsLogic";
 import Plant from "../../../crosscutting/logic/object/plants/plant";
@@ -82,10 +82,12 @@ export const renderCanvas = (canvasRef, creatures, plants, objects, shelters) =>
     //drawPathLine({ canvas: canvasRef.current, ...lineInfo });
     //drawXMark(canvasRef.current, chosenCreature.targetPosition);
     drawAllPlants(canvasRef.current, plants);
-    //drawCreature(canvasRef.current, CanvasInfo, creature);
     drawAllShelters(canvasRef.current, shelters);
-    drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
+    //drawCreature(canvasRef.current, CanvasInfo, creature);
+    drawAllCreatureLines(canvasRef.current, CanvasInfo, creatures);
     drawAllObjects(canvasRef.current, objects);
+    drawAllCreatures(canvasRef.current, CanvasInfo, creatures);
+    drawAllShelterTexts(canvasRef.current, shelters);
 };
 
 export const updateShelters = (creatures, setShelters) => {

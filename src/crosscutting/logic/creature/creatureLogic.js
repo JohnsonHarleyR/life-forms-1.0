@@ -9,7 +9,7 @@ import {
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop, CreatureDefaults, Biddy } from "../../constants/creatureConstants";
-import { ShelterLine, CanvasInfo } from "../../constants/canvasConstants";
+import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType } from "../../constants/objectConstants";
 
 
@@ -233,11 +233,64 @@ export const getPositionInNewDirection = (creature, direction, extra = 0) => {
       default:
         break;
     }
+
+    // let newPos = modifyPositionInNewDirectionByTargetPosition(creature.targetPosition, {x: newX, y: newY}, direction);
+    // return newPos;
+
     return {
       x: newX,
       y: newY
     };
   };
+
+  // if a creature is going around a corner, they may get stuck if they are moving further than their target on one axis and then circling back - prevent this
+const modifyPositionInNewDirectionByTargetPosition = (targetPos, newDirPos, direction) => {
+    let modifiedPos = {...newDirPos};
+    let doChange = false;
+    let changeAxis = null;
+    let changeValue = 0;
+
+    switch (direction) {
+        case Direction.WEST:
+            if (newDirPos.x < targetPos.x) {
+                doChange = true;
+                changeAxis = Axis.X;
+                changeValue = targetPos.x;
+            }
+            break;
+        case Direction.EAST:
+            if (newDirPos.x > targetPos.x) {
+                doChange = true;
+                changeAxis = Axis.X;
+                changeValue = targetPos.x;
+            }
+            break;
+        case Direction.NORTH:
+            if (newDirPos.y < targetPos.y) {
+                doChange = true;
+                changeAxis = Axis.Y;
+                changeValue = targetPos.y;
+            }
+            break;
+        case Direction.NORTH:
+            if (newDirPos.y > targetPos.y) {
+                doChange = true;
+                changeAxis = Axis.Y;
+                changeValue = targetPos.y;
+            }
+            break;
+    }
+
+    if (doChange) {
+        if (changeAxis === Axis.X) {
+            modifiedPos.x = changeValue;
+        } else {
+            modifiedPos.y = changeValue;
+        }
+    }
+
+    return modifiedPos;
+}
 
 const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
     if (!offset) {
