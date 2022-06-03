@@ -415,13 +415,6 @@ export default class CreatureNeeds {
                     let familyFoodPercent = this.determineFamilyFoodPercent();
                     if (this.foodLevel.percent <= 20 || 
                         familyFoodPercent <= 20) {
-
-                            if (this.foodLevel.percent <= 20) {
-                                console.log(`creature ${getCreatureIdentityString(this.creature)} has food level less or equal to 20.`);
-                            } else if (familyFoodPercent <= 20) {
-                                console.log(`creature ${getCreatureIdentityString(this.creature)} has FAMILY food level less or equal to 20.`);
-                            }
-
                             this.foodPercentGoal = 40;
                             return true;
                         }
@@ -581,10 +574,10 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // food less than 20%;
-                    if (this.foodLevel.percent < 20 && 
+                    if (this.foodLevel.percent < 15 && 
                         this.creature.safety.shelter !== null && 
                         this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
-                        this.foodPercentGoal = 50;
+                        this.foodPercentGoal = 40;
                             return true;
                     }
                     return false;

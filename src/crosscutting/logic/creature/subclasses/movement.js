@@ -17,7 +17,8 @@ import { FoodType } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
     getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
   getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals,
-getRandomCreatureTargetPosition } from "../../universalLogic";
+getRandomCreatureTargetPosition, 
+getCreatureIdentityString} from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget,
   checkIfCreatureCollidesWithAnyObjects } from "../../object/objectsLogic";
@@ -145,10 +146,18 @@ export default class CreatureMovement {
       let result = checkForMovementPattern(this.movementRecords);
       if (result && result.pattern.length >= CreatureDefaults.PATTERN_DETECTION_SIZE) {
         console.log(`Movement pattern detected for ${this.creature.type} ${this.creature.id}:\n`);
-        displayPatternResult(result);
+        //displayPatternResult(result);
         return true;
       }
       return false;
+    }
+
+    escapeCorner = (creatures, objects, shelters) => {
+      this.resetMovementProperties();
+      this.movementRecords = [];
+      //this.creature.currentTarget = null;
+      this.creature.targetPosition = this.creature.position;
+      return this.moveToRandomPosition(objects, creatures, shelters, CanvasInfo);
     }
 
     determineModeByPriority = () => {
@@ -641,7 +650,15 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      // let isPattern = this.testWithMovementPatterns();
+      let isPattern = this.testWithMovementPatterns();
+
+      if (isPattern && 
+        (this.creature.needs.priority === ActionType.FEED_FAMILY || 
+          this.creature.needs.priority === ActionType.FEED_SELF)) {
+        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to feed family`);
+        this.escapeCorner(creatures, objects, shelters);
+      }
+
       // if (isPattern) {
       //   this.resetMovementProperties();
       //   // move creature to nearby position
@@ -709,16 +726,9 @@ export default class CreatureMovement {
             //console.log('moving to random position');
     // if creature is in the current target position, set the target position to a new random one
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
-      if (this.creature.type === CreatureType.BIDDY) {
-        console.log(`creature ${this.creature.type} ${this.creature.id} is in position, targetting new position`);
-      }
       //this.resetMovementProperties();
       let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2 + CanvasInfo.OBJECT_PADDING + 1, this.creature.id, false);
       //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
-      if (this.creature.type === CreatureType.BIDDY) {
-        console.log(`line 700 in movement.js`);
-        console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
-      }
       
       //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
       this.changeTargetPosition(newTargetPosition);
