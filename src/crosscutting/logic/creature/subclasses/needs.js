@@ -220,8 +220,11 @@ export default class CreatureNeeds {
                 }
                 break;
             case ActionType.LEAVE_SHELTER:
-                if (!this.creature.safety.shelter.isInsideShelter(this.creature) && 
-                    isInPosition(this.creature.position, this.creature.targetPosition)) {
+                let momsShelter = this.creature.family.mother !== null ? this.creature.family.mother.safety.shelter : null;
+                if ((this.creature.safety.shelter !== null && !this.creature.safety.shelter.isInsideShelter(this.creature)) ||
+                    (this.creature.safety.shelter === null && momsShelter === null) ||
+                    (!momsShelter.isInsideShelter(this.creature) && 
+                    isInPosition(this.creature.position, this.creature.targetPosition))) {
                     return true;
                 }
                 break;
@@ -678,12 +681,13 @@ export default class CreatureNeeds {
                 priority: ActionType.SLEEP_IN_SPOT
             },
             {
-                meetsCondition: () => { // food less than 20%;
-                    if (this.foodLevel.percent < 20 && 
+                meetsCondition: () => { // food less than 15%;
+                    if (this.foodLevel.percent < 15 && 
                         this.creature.safety.shelter !== null && 
                         this.creature.safety.shelter.inventory.food.length > 0 && 
                         this.priority !== ActionType.FEED_SELF) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
-                        return true;
+                            this.foodPercentGoal = 40;
+                            return true;
                     }
                     return false;
                 },
@@ -698,6 +702,22 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
+            },
+            {
+                meetsCondition: () => { // food less than 20%;
+                    if (this.creature.life.lifeStage === LifeStage.CHILD || this.priority === ActionType.FEED_FAMILY) {
+                        return false;
+                    }
+                    let familyFoodPercent = this.determineFamilyFoodPercent();
+                    if (familyFoodPercent < 20 && 
+                        this.creature.safety.shelter !== null && 
+                        this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
+                            this.foodPercentGoal = 40;
+                            return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FEED_FAMILY
             },
             {
                 meetsCondition: () => {

@@ -186,7 +186,7 @@ export const getTotalFoodPointsNeededForFamily = (creature) => {
     // loop through members
     members.forEach(m => {
         if (m !== null && m.life.lifeStage !== LifeStage.DECEASED && 
-            m.safety.shelter !== null &&
+            m.safety.shelter !== null && creature.safety.shelter !== null &&
             m.safety.shelter.id === creature.safety.shelter.id) {
                 let foodNeeded = m.needs.maxFood - m.needs.foodLevel.points;
                 needTotal += foodNeeded;

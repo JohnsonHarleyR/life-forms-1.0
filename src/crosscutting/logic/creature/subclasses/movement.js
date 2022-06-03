@@ -145,7 +145,7 @@ export default class CreatureMovement {
     detectPattern = () => {
       let result = checkForMovementPattern(this.movementRecords);
       if (result && result.pattern.length >= CreatureDefaults.PATTERN_DETECTION_SIZE) {
-        console.log(`Movement pattern detected for ${this.creature.type} ${this.creature.id}:\n`);
+        console.log(`Movement pattern detected for ${this.creature.type} ${this.creature.id} - action: ${this.creature.needs.priority}`);
         //displayPatternResult(result);
         return true;
       }
@@ -156,7 +156,8 @@ export default class CreatureMovement {
       this.resetMovementProperties();
       this.movementRecords = [];
       //this.creature.currentTarget = null;
-      this.creature.targetPosition = this.creature.position;
+      //this.creature.targetPosition = this.creature.position;
+      this.creature.position = this.creature.targetPosition;
       return this.moveToRandomPosition(objects, creatures, shelters, CanvasInfo);
     }
 
@@ -652,10 +653,12 @@ export default class CreatureMovement {
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
       let isPattern = this.testWithMovementPatterns();
 
-      if (isPattern && 
+      if (isPattern 
+        && 
         (this.creature.needs.priority === ActionType.FEED_FAMILY || 
-          this.creature.needs.priority === ActionType.FEED_SELF)) {
-        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to feed family`);
+          this.creature.needs.priority === ActionType.FEED_SELF)
+          ) {
+        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
         this.escapeCorner(creatures, objects, shelters);
       }
 
@@ -869,15 +872,17 @@ export default class CreatureMovement {
         newPosition.x = newX;
       }
 
-      // make attempts toward the position - check collision with each interval
-      let changeIntervals = getPositionChangeIntervals(this.creature.position, newPosition);
+      let attemptResult = this.attemptMoveTowardPosition(newPosition, dif, objects);
 
-      let attemptResult = null;
-      let index = 0;
-      do {
-        attemptResult = this.attemptMoveTowardPosition(changeIntervals[index], dif, objects);
-        index++;
-      } while (attemptResult.success && index < changeIntervals.length);
+      // make attempts toward the position - check collision with each interval
+      // let changeIntervals = getPositionChangeIntervals(this.creature.position, newPosition);
+
+      // let attemptResult = null;
+      // let index = 0;
+      // do {
+      //   attemptResult = this.attemptMoveTowardPosition(changeIntervals[index], dif, objects);
+      //   index++;
+      // } while (attemptResult.success && index < changeIntervals.length);
 
       //attemptResult.forPosition = newPosition;
 
