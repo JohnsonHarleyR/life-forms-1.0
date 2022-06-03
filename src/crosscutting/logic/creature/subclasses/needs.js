@@ -227,7 +227,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.FIND_SAFETY:
                 if ((!this.creature.safety.isBeingChased && this.creature.safety.predatorDetected === null)
-                || this.creature.safety.shelter.isInsideShelter(this.creature)) {
+                || (this.creature.safety.shelter !== null && this.creature.safety.shelter.isInsideShelter(this.creature))) {
                     return true;
                 }
                 break;
@@ -415,6 +415,13 @@ export default class CreatureNeeds {
                     let familyFoodPercent = this.determineFamilyFoodPercent();
                     if (this.foodLevel.percent <= 20 || 
                         familyFoodPercent <= 20) {
+
+                            if (this.foodLevel.percent <= 20) {
+                                console.log(`creature ${getCreatureIdentityString(this.creature)} has food level less or equal to 20.`);
+                            } else if (familyFoodPercent <= 20) {
+                                console.log(`creature ${getCreatureIdentityString(this.creature)} has FAMILY food level less or equal to 20.`);
+                            }
+
                             this.foodPercentGoal = 40;
                             return true;
                         }
@@ -496,7 +503,7 @@ export default class CreatureNeeds {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 80 || 
                         this.determineFamilyFoodPercent() <= 80) {
-                            this.foodPercentGoal = 99;
+                            this.foodPercentGoal = 90;
                             return true;
                         }
                         return false;
@@ -516,7 +523,7 @@ export default class CreatureNeeds {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 90 || 
                         this.determineFamilyFoodPercent() <= 90) {
-                            this.foodPercentGoal = 99;
+                            this.foodPercentGoal = 95;
                             return true;
                         }
                         return false;
