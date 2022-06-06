@@ -78,7 +78,7 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     throw `Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
       `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
       `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)` + 
-      `\n (Creature action was ${creature.needs.priority}.)`;
+      `\n (Creature action was ${creature.needs.priority}, position was ${JSON.stringify(creature.position)}.)`;
   }
 
   // determine if side or corner

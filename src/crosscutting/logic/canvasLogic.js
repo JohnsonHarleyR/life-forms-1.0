@@ -142,7 +142,7 @@ const drawCreatureLines = (canvas, canvasInfo, creature) => {
                 creature.position.y !== creature.targetPosition.y) {
                     drawPathLine(canvas, creature);
                 }
-            drawTargetMark(canvas, creature.targetPosition);
+            drawTargetMark(canvas, creature.targetPosition, creature.adultSize);
         }
     }
 }
@@ -158,8 +158,8 @@ const drawPathLine = (canvas, creature) => {
 //     drawLine(canvas, PathLine.COLOR, PathLine.LINE_WIDTH, xStart, xEnd, yStart, yEnd);
 // };
 
-const drawTargetMark = (canvas, position) => {
-    drawXMark(canvas, XMark.COLOR, XMark.LINE_WIDTH, XMark.SIZE, position);
+const drawTargetMark = (canvas, position, creatureSize) => {
+    drawXMark(canvas, XMark.COLOR, XMark.LINE_WIDTH, creatureSize, position);
 };
 
 const drawSightBox = (canvas, canvasInfo, creature) => { // TODO - finish creature before using this method
