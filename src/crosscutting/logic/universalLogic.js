@@ -9,6 +9,22 @@ export const getCreatureIdentityString = (creature) => {
     return str;
 }
 
+// shuffle methods
+export const shuffleArray = (array) => {
+    let arrayCopy = [...array];
+    let newArray = [];
+
+    let arrayLength = arrayCopy.length;
+    do {
+        let spliceIndex = Math.floor(Math.random() * arrayLength);
+        newArray.push(arrayCopy[spliceIndex]);
+        arrayCopy.splice(spliceIndex, 1);
+        arrayLength = arrayCopy.length;
+    } while (arrayLength > 0);
+
+    return newArray;
+}
+
 // time and rounding methods
 export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
     return maxLifeSpan / maxYears;

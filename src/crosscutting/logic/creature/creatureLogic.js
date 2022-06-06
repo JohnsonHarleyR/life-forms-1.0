@@ -18,12 +18,18 @@ export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) =
     let newTarget = null;
     possibleTargets.forEach(t => {
       if (possibleTypes.includes(t.type)) {
-        if ((t.xStart >= sightCoords.xStart && t.xEnd <= sightCoords.xEnd) &&
-            (t.yStart >= sightCoords.yStart && t.yEnd <= sightCoords.yEnd)) {
+        let points = getStartAndEndPoints(t.id, t.position, t.width, t.height);
+        if ((points.xStart >= sightCoords.xStart && points.xEnd <= sightCoords.xEnd) &&
+            (points.yStart >= sightCoords.yStart && points.yEnd <= sightCoords.yEnd)) {
               newTarget = t;
             }
       }
     });
+
+    if (newTarget !== null && newTarget.type === CreatureType.BIDDY) {
+        console.log(`targeting biddy`);
+    }
+
     return newTarget;
   }
 

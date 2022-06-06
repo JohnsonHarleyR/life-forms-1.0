@@ -36,10 +36,10 @@ export const createCreatures = (objects, plants, shelters, setCreatures, setPlan
     array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Bleep, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
     array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
     array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    // array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    // array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    // array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
-    // array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.FEMALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
+    array.push(generateCreature(Gender.MALE, LifeStage.ADULT, Biddy, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
 
     return array;
 }

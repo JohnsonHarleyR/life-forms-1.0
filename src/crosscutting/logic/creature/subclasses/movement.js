@@ -534,6 +534,7 @@ export default class CreatureMovement {
       let newPosition = this.creature.position;
       // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
       if (this.creature.currentTarget !== null) {
+        this.creature.targetPosition = this.creature.currentTarget.position;
         //console.log(`creature ${this.creature.id} has food target, moving toward target`);
         newPosition = this.moveToPoint(this.creature.currentTarget.position, objects, creatures, shelters, canvasInfo);
         if (isInPosition(newPosition, this.creature.currentTarget.position)) {
@@ -651,16 +652,16 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo) => {
-      let isPattern = this.testWithMovementPatterns();
+      // let isPattern = this.testWithMovementPatterns();
 
-      if (isPattern 
-        && 
-        (this.creature.needs.priority === ActionType.FEED_FAMILY || 
-          this.creature.needs.priority === ActionType.FEED_SELF)
-          ) {
-        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
-        this.escapeCorner(creatures, objects, shelters);
-      }
+      // if (isPattern 
+      //   && 
+      //   (this.creature.needs.priority === ActionType.FEED_FAMILY || 
+      //     this.creature.needs.priority === ActionType.FEED_SELF)
+      //     ) {
+      //   console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
+      //   this.escapeCorner(creatures, objects, shelters);
+      // }
 
       // if (isPattern) {
       //   this.resetMovementProperties();

@@ -1,6 +1,7 @@
 import { LifeStage, InventoryLocation } from "../../../../constants/creatureConstants"
 import { getTargetFromArea } from "../../creatureLogic";
 import { FoodType } from "../../../../constants/objectConstants";
+import { shuffleArray } from "../../../universalLogic";
 
 export const makeCreatureDie = (creature) => {
     creature.life.lifeStage = LifeStage.DECEASED;
@@ -94,21 +95,27 @@ export const findFoodTargetInArea = (creature, plants, creatures, canvasInfo) =>
     let possibles = [];
     let types = [];
     if (creature.foodTargetType === FoodType.PLANT) {
-      possibles = plants;
-      types = creature.food.plants;
+        possibles = plants;
+        types = creature.food.plants;
     } else if (creature.foodTargetType === FoodType.PREY) {
-      possibles = creatures;
-      types = creature.food.prey;
+        possibles = creatures;
+        types = creature.food.prey;
     } else if (creature.foodTargetType === FoodType.BOTH) {
-      possibles = [...plants];
-      creatures.forEach(c => {
-        possibles.push(c);
-      })
-      types = [...creature.food.plants];
-      creature.food.prey.forEach(p => {
-        types.push(p);
-      })
+        possibles = [...creatures];
+        plants.forEach(p => {
+            possibles.push(p);
+        })
+        types = [...creature.food.prey];
+        creature.food.plants.forEach(p => {
+            types.push(p);
+        });
+
+          // shuffle possibilities
+        possibles = shuffleArray(possibles);
     }
+
+
+
     let target = getTargetFromArea(sightCoords, types, possibles);
     return target;
 }
