@@ -1,6 +1,7 @@
 import { Corner, Side, RelativeToObject } from "../../constants/objectConstants";
 import { getCenterPosition, getStartAndEndPoints, getRelativeToObjectCondition, fillRelativeFieldForObjectConditionResult } from "../universalLogic";
-import { Axis } from "../../constants/canvasConstants";
+import { Axis, CanvasInfo } from "../../constants/canvasConstants";
+import { getNecessaryCollisionPadding } from "../creature/creatureLogic";
 
 export default class NewObject {
     constructor(id, type, color, xStart, yStart, width, height) {
@@ -16,10 +17,10 @@ export default class NewObject {
         this.position = getCenterPosition(xStart, yStart, width, height);
     }
 
-    isInsideObject = (creature) => {
-        let cPoints = getStartAndEndPoints(creature);
-        if (cPoints.xStart >= this.xStart && cPoints.xEnd <= this.xEnd &&
-            cPoints.yStart >= this.yStart && cPoints.yEnd <= this.yEnd) {
+    isCreatureInsideObject = (creature, creaturePosition = creature.position, padding = getNecessaryCollisionPadding()) => {
+        let cPoints = getStartAndEndPoints(creature, creaturePosition, creature.width, creature.height);
+        if (cPoints.xStart > this.xStart - padding && cPoints.xEnd < this.xEnd + padding &&
+            cPoints.yStart > this.yStart - padding && cPoints.yEnd < this.yEnd + padding) {
                 return true;
             }
         return false;

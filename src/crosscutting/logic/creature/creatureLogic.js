@@ -12,6 +12,13 @@ import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType } from "../../constants/objectConstants";
 
+// misc
+
+export const getNecessaryCollisionPadding = () => {
+    let halfLargest = CreatureDefaults.LARGEST_SIZE / 2;
+    let padding = halfLargest + CanvasInfo.OBJECT_PADDING;
+    return padding;
+}
 
 // search methods
 export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) => {

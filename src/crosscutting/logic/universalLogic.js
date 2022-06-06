@@ -1,7 +1,8 @@
 import { CanvasInfo, Axis } from "../constants/canvasConstants";
 import { Corner, Side, RelativeToObject, RelativeToObjectCases } from "../constants/objectConstants";
 import { Direction, CreatureDefaults } from "../constants/creatureConstants";
-import { checkIfCreatureCollidesWithAnyObjects } from "./object/objectsLogic";
+import { checkIfCreatureCollidesWithAnyObjects, isNewCreaturePositionInsideAnyObject } from "./object/objectsLogic";
+import { getNecessaryCollisionPadding } from "./creature/creatureLogic";
 
 // display methods
 export const getCreatureIdentityString = (creature) => {
@@ -516,7 +517,7 @@ export const getRandomPositionInBounds = (xStart, xEnd, yStart, yEnd, padding) =
     return {x: x, y: y};
 }
 
-export const getRandomCreatureTargetPosition = (creature, objects, shelters) => {
+export const getRandomCreatureTargetPosition = (creature, objects, shelters, padding = getNecessaryCollisionPadding()) => {
     let maxX = CanvasInfo.WIDTH - (creature.size); // this prevents going over edge
     let maxY = CanvasInfo.HEIGHT - (creature.size);
   
@@ -528,21 +529,41 @@ export const getRandomCreatureTargetPosition = (creature, objects, shelters) => 
         randomPosition = {x: x, y: y};
         
         // check objects
-        let objectCheck = checkIfCreatureCollidesWithAnyObjects(creature, randomPosition, objects);
-        isCollision = objectCheck.isCollision;
+        isCollision = isNewCreaturePositionInsideAnyObject(creature, randomPosition, objects, padding);
+        //let objectCheck = checkIfCreatureCollidesWithAnyObjects(creature, randomPosition, objects);
+        //isCollision = objectCheck.isCollision;
   
         // check shelters too
         if (!isCollision) {
-            shelters.forEach(s => {
-                if (s.willBeInsideShelter(creature, randomPosition)) {
-                    isCollision = true;
-                }
-            })
+            isCollision = isPositionInsideAnyShelter(randomPosition, shelters, creature);
         }
   
     } while (isCollision);
   
     return randomPosition;
+}
+
+export const isPositionInsideAnyShelter = (position, shelters, creatureWithShelterToExclude = null) => {
+    let shelterIdToExclude = getShelterIdToExclude(creatureWithShelterToExclude);
+
+    let isInsideShelter = false;
+    for (let i = 0; i < shelters.length; i++) {
+        let isInThisShelter = false;
+        if (shelterIdToExclude === null || shelters[i].id !== shelterIdToExclude) {
+            isInThisShelter = shelters[i].isPositionInsideThisShelter(position);
+            if (isInThisShelter) {
+                isInsideShelter = isInThisShelter;
+                break;
+            }
+        }
+    }
+
+    return isInsideShelter;
+}
+
+const getShelterIdToExclude = (creature) => {
+    let idToExclude = creature !== null ? (creature.safety.shelter !== null ? creature.safety.shelter.id : null) : null;
+    return idToExclude;
 }
 
 export const getRandomStartPosition = (info, creatures, objects, plants, shelters, largestCreatureSize = CreatureDefaults.LARGEST_SIZE, excludeCreatureId = null, checkForPlants = true) => {

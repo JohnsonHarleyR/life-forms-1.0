@@ -407,7 +407,7 @@ export default class CreatureMovement {
         return newPosition;
       }
 
-      wanderAroundShelter = (objects, creatures, shelters, canvasInfo) => {
+      wanderAroundShelter = (objects, creatures, shelters, canvasInfo) => { // TODO improve method to actually work lol
         if (isInPosition(this.creature.position, this.creature.targetPosition)) {
           this.changeTargetPosition(this.getRandomPositionInsideShelter());
           //this.creature.targetPosition = this.getRandomPositionInsideShelter();
@@ -731,8 +731,8 @@ export default class CreatureMovement {
     // if creature is in the current target position, set the target position to a new random one
     if (isInPosition(this.creature.position, this.creature.targetPosition)) {
       //this.resetMovementProperties();
-      let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2 + CanvasInfo.OBJECT_PADDING + 1, this.creature.id, false);
-      //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CanvasInfo.OBJECT_PADDING, this.creature.id, false);
+      //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2 + CanvasInfo.OBJECT_PADDING + 1, this.creature.id, false);
+      let newTargetPosition = getRandomCreatureTargetPosition(this.creature, objects, shelters);
       
       //console.log(`current position: ${JSON.stringify(this.creature.position)}; new target position: ${JSON.stringify(newTargetPosition)}`);
       this.changeTargetPosition(newTargetPosition);

@@ -38,6 +38,19 @@ export default class Shelter {
         this.totalFoodEnergy = total;
     }
 
+    isPositionInsideThisShelter = (position) => {
+        let xStart = this.getXStart();
+        let yStart = this.getYStart();
+        let xEnd = this.getXEnd();
+        let yEnd = this.getYEnd();
+
+        if (position.x >= xStart && position.x <= xEnd &&
+            position.y >= yStart && position.y <= yEnd) {
+                return true;
+            }
+        return false;
+    }
+
     isInsideShelter = (creature) => {
         let creaturePoints = getStartAndEndPoints(creature.id, creature.position, creature.width, creature.height);
         let xStart = this.getXStart();

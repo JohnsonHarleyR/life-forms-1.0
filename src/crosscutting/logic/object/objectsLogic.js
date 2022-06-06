@@ -12,9 +12,27 @@ getCreatureIdentityString} from "../universalLogic";
 import { Side, Corner, RelativeToObject, CornerSideResult } from "../../constants/objectConstants";
 import { CreatureDefaults, Direction } from "../../constants/creatureConstants";
 import { Axis, CanvasInfo } from "../../constants/canvasConstants";
+import { getNecessaryCollisionPadding as getNecessaryCollisionPreventionPadding } from "../creature/creatureLogic";
 
 
 // v2 collision logic
+
+// this one is ONLY for getting a bool whether a position for a creature would be overlapping any object
+export const isNewCreaturePositionInsideAnyObject = (creature, newCreaturePosition, objects, padding = getNecessaryCollisionPreventionPadding()) => {
+
+  let isCollision = false;
+  for (let i = 0; i < objects.length; i++) {
+    let isObjCollision = objects[i].isCreatureInsideObject(creature, newCreaturePosition, padding);
+    if (isObjCollision) {
+      isCollision = true;
+      break;
+    }
+  }
+
+  return isCollision;
+}
+
+// this one provides collision information for a new position, including what side a collision occurs on an object
 export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosition, objects) => {
   let padding = CanvasInfo.OBJECT_PADDING;
 
@@ -59,7 +77,8 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     // `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)`);
     throw `Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
       `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
-      `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)`;
+      `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)` + 
+      `\n (Creature action was ${creature.needs.priority}.)`;
   }
 
   // determine if side or corner
