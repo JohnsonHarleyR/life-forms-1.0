@@ -53,6 +53,7 @@ export default class CreatureNeeds {
 
         this.foodPercentGoal = null;
         this.foodRequiredToMate = this.creature.adultEnergy * 2;
+        this.familyFoodPercent = this.determineFamilyFoodPercent();;
 
         this.lastUpdate = Date.now();
 
@@ -86,6 +87,9 @@ export default class CreatureNeeds {
 
         // now update need levels
         this.updateNeedLevels(foodPoints, sleepPoints, matingPoints);
+
+        // update family food percent
+        this.familyFoodPercent = this.determineFamilyFoodPercent();
 
         //this.displayCreatureNeedLevels();
 
@@ -206,6 +210,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.GATHER_FOOD_TO_MATE:
                 if (!this.creature.safety.shelter || this.creature.safety.shelter.totalFoodEnergy >= this.foodRequiredToMate) {
+                    this.foodPercentGoal = null;
                     return true;
                 }
                 break;
@@ -229,6 +234,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.LEAVE_SHELTER:
                 if (this.creature.safety.shelter === null) {
+                    this.creature.safety.isLeavingShelter = false;
                     return true;
                 }
                 // let momsShelter = this.creature.family.mother !== null ? this.creature.family.mother.safety.shelter : null;
@@ -258,7 +264,13 @@ export default class CreatureNeeds {
                 }
                 break;
             case ActionType.FEED_FAMILY:
-                if (this.foodPercentGoal === null || this.determineFamilyFoodPercent() >= this.foodPercentGoal) {
+                if (this.foodPercentGoal === null || 
+                    (this.familyFoodPercent >= this.foodPercentGoal &&
+                        this.foodLevel.percent >= this.foodPercentGoal)) {
+                    console.log(`creature ${this.creature.id} feed family is complete` + 
+                    `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+                    `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
+                    
                     this.foodPercentGoal = null;
                     return true;
                 }
@@ -426,24 +438,14 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    let familyFoodPercent = this.determineFamilyFoodPercent();
-                    if (this.foodLevel.percent <= 20 || 
-                        familyFoodPercent <= 20) {
+                    if (this.foodLevel.percent > 15 &&
+                        this.familyFoodPercent <= 20) {
                             this.foodPercentGoal = 40;
                             return true;
                         }
                         return false;
                 },
                 priority: ActionType.FEED_FAMILY
-            },
-            {
-                meetsCondition: () => {
-                    if (this.sleepLevel.percent <= 20) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.SLEEP_IN_SHELTER
             },
             {
                 meetsCondition: () => {
@@ -458,6 +460,15 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
+                    if (this.sleepLevel.percent <= 20) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.SLEEP_IN_SHELTER
+            },
+            {
+                meetsCondition: () => {
                     if ( this.matingLevel.percent <= 20 && 
                         this.creature.mating.canMate()) {
                         return true;
@@ -469,8 +480,11 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 40 || 
-                        this.determineFamilyFoodPercent() <= 40) {
+                        this.familyFoodPercent <= 40) {
                             this.foodPercentGoal = 60;
+                            console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
+              `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+              `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
                             return true;
                         }
                         return false;
@@ -489,8 +503,11 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 60 || 
-                        this.determineFamilyFoodPercent() <= 60) {
+                        this.familyFoodPercent <= 60) {
                             this.foodPercentGoal = 80;
+                            console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
+                            `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+                            `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
                             return true;
                         }
                         return false;
@@ -509,7 +526,7 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 80 || 
-                        this.determineFamilyFoodPercent() <= 80) {
+                        this.familyFoodPercent <= 80) {
                             this.foodPercentGoal = 90;
                             return true;
                         }
@@ -529,7 +546,7 @@ export default class CreatureNeeds {
             {
                 meetsCondition: () => {
                     if (this.foodLevel.percent <= 90 || 
-                        this.determineFamilyFoodPercent() <= 90) {
+                        this.familyFoodPercent <= 90) {
                             this.foodPercentGoal = 95;
                             return true;
                         }
@@ -703,10 +720,8 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // food less than 15%;
-                    if (this.foodLevel.percent < 15 && 
-                        this.creature.safety.shelter !== null && 
-                        this.creature.safety.shelter.inventory.food.length > 0 && 
-                        this.priority !== ActionType.FEED_SELF) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
+                    if (this.foodLevel.percent <= 15 && 
+                        this.priority !== ActionType.FEED_SELF) {
                             this.foodPercentGoal = 40;
                             return true;
                     }
@@ -719,8 +734,8 @@ export default class CreatureNeeds {
                     if (this.creature.life.lifeStage === LifeStage.CHILD || this.priority === ActionType.FEED_FAMILY) {
                         return false;
                     }
-                    let familyFoodPercent = this.determineFamilyFoodPercent();
-                    if (familyFoodPercent < 20 && 
+                    if (this.foodLevel.percent > 15 &&
+                        this.familyFoodPercent <= 20 && 
                         this.creature.safety.shelter !== null && 
                         this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
                             this.foodPercentGoal = 40;
