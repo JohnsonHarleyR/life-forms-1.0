@@ -432,6 +432,7 @@ export default class CreatureMovement {
             result.objectCollided,
             result.collisionSide,
             result.directionToMove,
+            result.isCornerCollision,
             canvasInfo
           );
         }
@@ -546,11 +547,12 @@ export default class CreatureMovement {
           objectCollided: collisionResult.objectCollided,
           collisionSide: collisionResult.collisionSide,
           directionToMove: collisionResult.directionToMove,
-          prevPlacement: collisionResult.prevPlacement
+          prevPlacement: collisionResult.prevPlacement,
+          isCornerCollision: collisionResult.isCornerCollision
         };
     }
 
-    moveAroundObject = (obj, collisionSide, directionToMove, canvasInfo) => {
+    moveAroundObject = (obj, collisionSide, directionToMove, isCornerCollision, canvasInfo) => {
       // test
       // if (this.creature.needs.didPriorityChange()) {
       //   console.log(`moveAroundObject - priority change check`);
@@ -575,7 +577,7 @@ export default class CreatureMovement {
       this.previousSide = collisionSide;
 
       // now determine the new position based on the new direction
-      let newPosition = getPositionInNewDirection(this.creature, this.newDirection, 1);
+      let newPosition = getPositionInNewDirection(this.creature, this.newDirection, obj, collisionSide, isCornerCollision, 1);
 
       return newPosition;
     }

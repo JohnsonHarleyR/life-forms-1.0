@@ -46,7 +46,8 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     objectCollided: null,
     collisionSide: null,
     directionToMove: null,
-    prevPlacement: null
+    prevPlacement: null,
+    isCornerCollision: false
   }
 
   if (!objects) {
@@ -102,9 +103,11 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
   let sideOfObject = null;
   let objCorner = null;
   let wasATie = false;
+  let isCorner = false;
   if (isSide) {
     sideOfObject = getObjectSideFromRelativePlacement(relativePlacement);
   } else { // if it's a corner not a side, figure out which side of the object to deal with
+	isCorner = true;
     objCorner = getObjectCornerFromRelativePlacement(relativePlacement)
     let cornerSideResult = getCreatureCornerObjectSideResult(objCorner, endResult.objectCollided, creature, newCreaturePosition, padding);
     // set side of object if it's not a tie
@@ -117,11 +120,12 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     }
   }
   endResult.collisionSide = sideOfObject;
+  endResult.isCornerCollision = isCorner;
 
   // decide direction
   // NOTE: keep in mind cases of a corner tie where moving in the side of a direction doesn't make sense
   // keep this in mind if there are any weird bugs around this
-  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo);
+  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo, isCorner);
   endResult.directionToMove = direction;
   
   if (wasATie) {
@@ -238,6 +242,22 @@ const getObjectSideWithOppositeClosestToTarget = (objSides, obj, targetPosition)
     return CornerSideResult.TIE;
   }
 }
+
+const getObjectSideWithOppositeSideCloserToTarget = (objSides, obj, targetPosition) => {
+  
+}
+
+const isOppositeCornerOnSideCloserToTarget = (obj, corner, side, targetPosition) => {
+
+}
+
+// const getObjectCornerDistanceFromTarget = () => {
+//   let cornerAPos = getObjectCornerPosition(obj, cornerA);
+//   let cornerBPos = getObjectCornerPosition(obj, cornerB);
+
+//   let cornerADif = getPositionDifferenceFromCorner(axis, cornerAPos, targetPosition);
+//   let cornerBDif = getPositionDifferenceFromCorner(axis, cornerBPos, targetPosition);
+// }
 
 const getSideDistanceFromTarget = (axis, objCoord, targetPosition) => {
   let targetCoord = null;
@@ -769,9 +789,59 @@ export const determineCollisionSideByCollidingPoints = (creature, creaturePoints
     //throw "No collision side could be determined.";
 }
 
+// this will be the opposite of what you will expect - perpendicular
+const getSideDirectionOfTarget = (position, targetPosition, side) => {
+	switch (side) {
+		case Side.TOP:
+		case Side.BOTTOM:
+			if (targetPosition.x <= position.x) {
+				return Direction.WEST;
+			} else {
+				return Direction.EAST;
+			}
+		case Side.LEFT:
+		case Side.RIGHT:
+			if (targetPosition.y <= position.y) {
+				return Direction.NORTH;
+			} else {
+				return Direction.SOUTH;
+			}
+	}
+}
 
-export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo) => {
-  // determine the axis of the side - if it's x axis that's top or bottom, y is left or right
+const getCornerSideDirections = (corner) => {
+  let xDir = null;
+  let yDir = null;
+  switch (corner) {
+    case Corner.TOP_LEFT:
+      xDir = Direction.EAST;
+      yDir = Direction.SOUTH;
+      break;
+    // case Corner.TOP_RIGHT
+  }
+}
+
+const getOppositeDirectionsOfCornerSides = (corner) => {
+
+}
+
+const getTargetDirections = (position, targetPosition) => {
+
+}
+
+const isTargetOppositeFromCornerSides = () => {
+
+}
+
+export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo, isCorner = false) => {
+  
+  // if there was a corner involved, determine the direction based on the direction of the target
+  if (isCorner) {
+	  let direction = getSideDirectionOfTarget(creature.position, creature.targetPosition, objectSide);
+	  return direction;
+  }
+
+    // determine the axis of the side - if it's x axis that's top or bottom, y is left or right
   //console.log(`creature: ${creature.gender} ${creature.type} ${creature.id}`);
   let axis = determineAxisBySide(objectSide);
 
@@ -1009,6 +1079,12 @@ const getOppositeSide = (side) => {
       positionNum = position.y;
     }
     return Math.abs(cornerNum - positionNum);
+  }
+
+  const getBothPositionDifferencesFromCorner = (cornerPos, position) => {
+    let x = Math.abs(cornerPos.x - position.x);
+    let y= Math.abs(cornerPos.y - position.y);
+    return {xDifference: x, yDifference: y};
   }
 
   const getCreatureSideAxisPosition = (side, creature, creaturePos) => {

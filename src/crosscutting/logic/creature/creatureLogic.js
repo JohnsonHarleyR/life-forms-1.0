@@ -10,7 +10,7 @@ import {
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop, CreatureDefaults, Biddy } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
-import { FoodType } from "../../constants/objectConstants";
+import { FoodType, Side } from "../../constants/objectConstants";
 import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
 
 // creature collision fixes
@@ -265,21 +265,58 @@ export const determineSightCoordinates = (creature, sightDirection, canvasInfo) 
     return result;
 }
 
-export const getPositionInNewDirection = (creature, direction, extra = 0) => {
+const getOtherAddAmountForNewDirection = (creatureSize, positionValue, obj, isCornerCollision, collisionSide) => {
+    if (!isCornerCollision) {
+        return positionValue;
+    }
+
+    let halfSize = creatureSize / 2 + 1;
+    let relativeAmount = getNecessaryCollisionPadding() + halfSize;
+
+    let objCoord;
+    let amountToAdd;
+    switch(collisionSide) {
+        case Side.TOP:
+            objCoord = obj.yStart;
+            amountToAdd = -1 * relativeAmount;
+            break;
+        case Side.BOTTOM:
+            objCoord = obj.yEnd;
+            amountToAdd = relativeAmount;
+            break;
+        case Side.LEFT:
+            objCoord = obj.xStart;
+            amountToAdd = -1 * relativeAmount;
+            break;
+        case Side.RIGHT:
+            objCoord = obj.xEnd;
+            amountToAdd = relativeAmount;
+            break;
+    }
+
+    let result = positionValue + amountToAdd;
+    return result;
+}
+
+export const getPositionInNewDirection = (creature, direction, obj, collisionSide, isCornerCollision, extra = 0) => {
     let newX = creature.position.x;
     let newY = creature.position.y;
     switch (direction) {
       case Direction.NORTH:
         newY = creature.position.y - creature.movement.speed - extra;
+        newX = getOtherAddAmountForNewDirection(creature.size, newX, obj, isCornerCollision, collisionSide);
         break;
       case Direction.SOUTH:
         newY = creature.position.y + creature.movement.speed + extra;
+        newX = getOtherAddAmountForNewDirection(creature.size, newX, obj, isCornerCollision, collisionSide);
         break;
       case Direction.WEST:
         newX = creature.position.x - creature.movement.speed - extra;
+        newY = getOtherAddAmountForNewDirection(creature.size, newY, obj, isCornerCollision, collisionSide);
         break;
       case Direction.EAST:
         newX = creature.position.x + creature.movement.speed + extra;
+        newY = getOtherAddAmountForNewDirection(creature.size, newY, obj, isCornerCollision, collisionSide);
         break;
       default:
         break;
