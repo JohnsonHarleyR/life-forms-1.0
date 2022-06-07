@@ -279,7 +279,8 @@ export default class CreatureMovement {
         case ActionType.FEED_SELF:
         case ActionType.FEED_FAMILY:
         case ActionType.GATHER_FOOD_TO_MATE:
-            return this.creature.position; // temp
+          return this.creature.targetPosition;
+            //return this.creature.position; // temp
         case ActionType.MATE:
           if (this.creature.safety.shelter) {
             return this.creature.safety.shelter.getCenterPosition();
