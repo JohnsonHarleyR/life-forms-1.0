@@ -222,7 +222,9 @@ export default class CreatureMovement {
               this.moveMode = MoveMode.SEARCH;
               break;
           case ActionType.FEED_FAMILY:
-            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY`);
+            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY` + 
+              `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+              `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
               this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
               this.moveMode = MoveMode.SEARCH;
               break;

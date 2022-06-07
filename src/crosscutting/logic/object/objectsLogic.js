@@ -125,7 +125,7 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
   // decide direction
   // NOTE: keep in mind cases of a corner tie where moving in the side of a direction doesn't make sense
   // keep this in mind if there are any weird bugs around this
-  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo, isCorner, objCorner);
+  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo, isCorner);
   endResult.directionToMove = direction;
   
   if (wasATie) {
@@ -882,7 +882,7 @@ const isTargetOppositeFromCornerSides = (position, targetPosition, corner) => {
 
 }
 
-export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo, isCorner = false, objCorner = null) => {
+export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo, isCorner = false) => {
   
   // if there was a corner involved, determine the direction based on the direction of the target
   if (isCorner) {
