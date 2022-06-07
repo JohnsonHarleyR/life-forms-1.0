@@ -542,7 +542,7 @@ export default class CreatureMovement {
           objectCollided: collisionResult.objectCollided,
           collisionSide: collisionResult.collisionSide,
           directionToMove: collisionResult.directionToMove,
-          prevPlacement: collisionResult.previousPlacement
+          prevPlacement: collisionResult.prevPlacement
         };
     }
 
