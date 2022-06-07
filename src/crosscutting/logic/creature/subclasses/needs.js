@@ -184,6 +184,14 @@ export default class CreatureNeeds {
         this.startNewAction = true;
     }
 
+    didPriorityChange = () => {
+        if (this.priority !== this.previousPriority) {
+            console.log(`Priority changed for creature ${getCreatureIdentityString(this.creature)} from ${this.previousPriority} to ${this.priority}.`);
+            return true;
+        }
+        return false;
+    }
+
     isPriorityComplete = (priority, creatures) => {
         switch (priority) {
             case ActionType.DIE:

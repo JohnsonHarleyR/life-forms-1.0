@@ -143,8 +143,8 @@ export const Bleep = {
     color: "#03BB85",
     food: {
     plants: [PlantSpecies.WEED],
-    prey: [CreatureType.BIDDY]
-    //prey: []
+    //prey: [CreatureType.BIDDY]
+    prey: []
     },
     energy: 15,
     size: 8,

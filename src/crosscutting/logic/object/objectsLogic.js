@@ -40,7 +40,8 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     didCollide: false,
     objectCollided: null,
     collisionSide: null,
-    directionToMove: null
+    directionToMove: null,
+    prevPlacement: null
   }
 
   if (!objects) {
@@ -65,6 +66,8 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     } 
   }
 
+  endResult.prevPlacement = relativePlacement;
+
   // return if no collision
   if (!endResult.didCollide) {
     return endResult;
@@ -78,7 +81,8 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
     throw `Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
       `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
       `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)` + 
-      `\n (Creature action was ${creature.needs.priority}, position was ${JSON.stringify(creature.position)}.)`;
+      `\n (Creature action was ${creature.needs.priority}, position was ${JSON.stringify(creature.position)}.)`+
+      `(Previous placement recorded was: ${creature.movement.previousPlacement}.`;
   }
 
   // determine if side or corner

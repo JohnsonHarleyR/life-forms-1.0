@@ -39,7 +39,8 @@ export const RelativeToObject = {
     TOP_LEFT_CORNER: Corner.TOP_LEFT,
     TOP_RIGHT_CORNER: Corner.TOP_RIGHT,
     BOTTOM_LEFT_CORNER: Corner.BOTTOM_LEFT,
-    BOTTOM_RIGHT_CORNER: Corner.BOTTOM_RIGHT
+    BOTTOM_RIGHT_CORNER: Corner.BOTTOM_RIGHT,
+    NONE: null
 };
 
 export const CornerSideResult = {

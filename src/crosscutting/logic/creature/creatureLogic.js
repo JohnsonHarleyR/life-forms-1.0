@@ -11,13 +11,38 @@ import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop, CreatureDefaults, Biddy } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType } from "../../constants/objectConstants";
+import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
 
-// misc
-
+// creature collision fixes
 export const getNecessaryCollisionPadding = () => {
     let halfLargest = CreatureDefaults.LARGEST_SIZE / 2;
     let padding = halfLargest + CanvasInfo.OBJECT_PADDING;
     return padding;
+}
+
+export const moveCreatureToNearbyValidPosition = (creature, objects) => {
+    let padding = getNecessaryCollisionPadding();
+    let relative = [
+        {x: -padding, y: 0},
+        {x: padding, y: 0},
+        {x: 0, y: -padding},
+        {x: 0, y: padding},
+        {x: padding, y: padding},
+        {x: padding, y: -padding},
+        {x: -padding, y: padding},
+        {x: -padding, y: -padding}
+    ];
+
+    let moveToPosition = {...creature.position};
+    for (let i = 0; i < relative.length; i++) {
+        let posToCheck = {x: creature.x + relative[i].x, y: creature.y + relative[i]. y};
+        let isObjectCollision = isNewCreaturePositionInsideAnyObject(creature, posToCheck, objects);
+        if (!isObjectCollision) {
+            moveToPosition = posToCheck;
+        }
+    }
+
+    this.creature.position = moveToPosition;
 }
 
 // search methods
