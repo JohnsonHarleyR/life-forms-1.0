@@ -40,11 +40,16 @@ export default class NewObject {
         if (newPositionCondition === RelativeToObject.OVERLAP) {
             isCollision = true;
 
-            let oldCreaturePoints = getStartAndEndPoints(creature.id, creature.position, creature.size, creature.size);
-            let placementResult = this.getRelativeToObjectCondition(oldCreaturePoints, padding);
-            relativePlacement = placementResult.condition;
-            placementBools = placementResult.bools;
+            // let oldCreaturePoints = getStartAndEndPoints(creature.id, creature.position, creature.size, creature.size);
+            // let placementResult = this.getRelativeToObjectCondition(oldCreaturePoints, padding);
+            // relativePlacement = placementResult.condition;
+            // placementBools = placementResult.bools;
         }
+
+        let oldCreaturePoints = getStartAndEndPoints(creature.id, creature.position, creature.size, creature.size);
+        let placementResult = this.getRelativeToObjectCondition(oldCreaturePoints, padding);
+        relativePlacement = placementResult.condition;
+        placementBools = placementResult.bools;
         
         return {
             isCollision: isCollision,
