@@ -185,7 +185,7 @@ export const Biddy = {
         low: 10,
         high: 25
     },
-    fractionAsChild: .1,
+    fractionAsChild: .05,
     fractionAsElder: .15,
     foodToGatherAtOnce: 5,
     sleepNeeded: 5,
