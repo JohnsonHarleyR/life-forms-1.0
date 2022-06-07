@@ -15,10 +15,10 @@ import CreatureMating from "./subclasses/mating";
 import { 
     determineSightDirection,
     determineSightCoordinates,
-    getFoodTargetType
 } from "./creatureLogic";
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 import Emojis from "./subclasses/emojis/emojis";
+import { getFoodTargetType } from "./subclasses/logic/safetyLogic";
 
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
@@ -103,7 +103,7 @@ export default class Creature {
         // do other update stuff
         this.life.updateLife();
         //TODO check for predators in view
-        this.safety.updateSafety();
+        this.safety.updateSafety(creatures);
         this.mating.updateMating();
         this.needs.updateNeeds(creatures);
         this.movement.updateMovement(objects, plants, creatures, shelters, CanvasInfo);

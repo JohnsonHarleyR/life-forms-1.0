@@ -246,8 +246,8 @@ export default class CreatureNeeds {
                 // }
                 break;
             case ActionType.FIND_SAFETY:
-                if ((!this.creature.safety.isBeingChased && this.creature.safety.predatorDetected === null)
-                || (this.creature.safety.shelter !== null && this.creature.safety.shelter.isInsideShelter(this.creature))) {
+                if ((!this.creature.safety.isBeingChased && !this.creature.safety.isPredatorDetected())
+                || (this.creature.safety.shelter !== null && this.creature.safety.shelter.isPositionInsideThisShelter(this.creature.position))) {
                     return true;
                 }
                 break;
@@ -379,7 +379,7 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // TODO also search for threat
-                    if (this.creature.safety.isBeingChased || this.creature.safety.predatorDetected !== null) {
+                    if (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected()) {
                         return  true;
                     }
                     return false;
@@ -710,7 +710,7 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // TODO also search for threat
-                    if (this.creature.safety.isBeingChased || this.creature.safety.predatorDetected !== null && 
+                    if (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected() && 
                         this.priority !== ActionType.FIND_SAFETY) {
                         return  true;
                     }

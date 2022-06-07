@@ -46,6 +46,7 @@ import {
   hasStarvingChildren,
   hasHungryChildren
  } from "./logic/needLogic";
+import { canChasePrey, isPrey } from "./logic/safetyLogic";
 
 export default class CreatureMovement {
     constructor(creature, sightRadius, sightDistance, speed) {
@@ -775,7 +776,7 @@ export default class CreatureMovement {
       
     }
 
-    searchForFoodTarget = (plants, creatures, objects, shelters, canvasInfo) => {
+    searchForFoodTarget = (plants, creatures, objects, shelters, canvasInfo) => { // TODO logic for checking if prey can still be eaten
       let newPosition = this.creature.position;
       // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
       if (this.creature.currentTarget !== null) {
@@ -792,11 +793,27 @@ export default class CreatureMovement {
         //console.log(`creature ${this.creature.id} searching for food in area`);
         let newTarget = findFoodTargetInArea(this.creature, plants, creatures, canvasInfo);
         if (newTarget !== null) {
-          this.creature.currentTarget = newTarget;
+
+          if (!isPrey(this.creature, newTarget)) { // if it's a plant, simply make it a target
+            this.creature.currentTarget = newTarget;
+            this.creature.targetPosition = newTarget.position;
+            newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
+          } else { // otherwise, there is more complicated stuff to do!
+            // see if prey is able to be chased
+            if (canChasePrey(this.creature, newTarget)) {
+              this.creature.currentTarget = newTarget;
+              this.creature.targetPosition = newTarget.position;
+              newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
+            } else {
+              this.creature.currentTarget = null;
+              newPosition = this.moveToRandomPosition(objects, creatures, shelters, canvasInfo);
+            }
+          }
+
           //console.log(`creature ${this.creature.id} has new food target found`);
 
           //this.creature.targetPosition = newTarget.position;
-          newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
+          //newPosition = this.moveToPoint(newTarget.position, objects, creatures, shelters, canvasInfo);
         // if there is no target, move to random position
         } else {
           //console.log(`creature ${this.creature.id} sees no food, moving toward random position`);

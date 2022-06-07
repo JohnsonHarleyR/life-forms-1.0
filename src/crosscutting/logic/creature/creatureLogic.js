@@ -399,54 +399,7 @@ const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
     return result;
 }
 
-// predator/prey logic
-export const getFoodTargetType = (food) => {
-    let plantCount = 0;
-    let preyCount = 0;
 
-    food.plants.forEach(p => {
-        plantCount++;
-    });
-    food.prey.forEach(p => {
-        preyCount++;
-    });
-    
-    if (plantCount > 0 && preyCount > 0) {
-        return FoodType.BOTH;
-    } else if (plantCount > 0) {
-        return FoodType.PLANT;
-    } else {
-        return FoodType.PREY;
-    }
-}
-
-export const getListOfPredators = (preyType, creatures) => {
-    let predators = [];
-    creatures.forEach(c => {
-        if (c.food.prey.includes(preyType)) {
-            predators.push(c);
-        }
-    });
-    return predators;
-}
-
-export const isPredatorInSightOrChasing = (creature, predator, canvasInfo) => {
-    if (isPredatorInSight(creature, predator, canvasInfo) || 
-        (predator.currentTarget !== null && predator.currentTarget.id === creature.id)) {
-            return true;
-        }
-    return false;
-}
-
-export const isPredatorInSight = (creature, predator, canvasInfo) => {
-    let sightCoords = creature.movement.getSightCoords(canvasInfo);
-    return isInSight(sightCoords, predator);
-}
-
-export const isPreyInSight = (creature, prey, canvasInfo) => {
-    let sightCoords = creature.movement.getSightCoords(canvasInfo);
-    return isInSight(sightCoords, prey);
-}
 
 // sight logic
 export const isInSight = (sightCoords, item) => {
