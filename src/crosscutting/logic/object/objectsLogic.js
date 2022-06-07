@@ -125,7 +125,7 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
   // decide direction
   // NOTE: keep in mind cases of a corner tie where moving in the side of a direction doesn't make sense
   // keep this in mind if there are any weird bugs around this
-  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo, isCorner);
+  let direction = determineDirectionByTarget(creature, sideOfObject, endResult.objectCollided, CanvasInfo, isCorner, objCorner);
   endResult.directionToMove = direction;
   
   if (wasATie) {
@@ -817,26 +817,78 @@ const getCornerSideDirections = (corner) => {
       xDir = Direction.EAST;
       yDir = Direction.SOUTH;
       break;
-    // case Corner.TOP_RIGHT
+    case Corner.TOP_RIGHT:
+      xDir = Direction.WEST;
+      yDir = Direction.SOUTH;
+      break;
+    case Corner.BOTTOM_LEFT:
+      xDir = Direction.EAST;
+      yDir = Direction.NORTH;
+      break;
+    case Corner.BOTTOM_RIGHT:
+      xDir = Direction.WEST;
+      yDir = Direction.NORTH;
+      break;
+  }
+
+  return {xDir: xDir, yDir: yDir};
+}
+
+export const getOppositeDirection = (direction) => {
+  switch (direction) {
+    case Direction.NORTH:
+      return Direction.SOUTH;
+    case Direction.SOUTH:
+      return Direction.NORTH;
+    case Direction.WEST:
+      return Direction.EAST;
+    case Direction.EAST:
+      return Direction.WEST;
   }
 }
 
 const getOppositeDirectionsOfCornerSides = (corner) => {
+  let cornerDirections = getCornerSideDirections(corner);
+  let opposite = {
+    xDir: getOppositeDirection(cornerDirections.xDir),
+    yDir: getOppositeDirection(cornerDirections.yDir)
+  };
+  return opposite;
+}
+
+export const getTargetDirections = (position, targetPosition) => {
+  let xDir;
+  if (targetPosition.x === position.x) {
+    xDir = Direction.NONE;
+  } else if (targetPosition.x < position.x) {
+    xDir = Direction.WEST;
+  } else {
+    xDir = Direction.EAST;
+  }
+
+  let yDir;
+  if (targetPosition.y === position.y) {
+    yDir = Direction.NONE;
+  } else if (targetPosition.y < position.y) {
+    yDir = Direction.NORTH;
+  } else {
+    yDir = Direction.SOUTH;
+  }
+
+  return {xDir: xDir, yDir: yDir};
+}
+
+const isTargetOppositeFromCornerSides = (position, targetPosition, corner) => {
 
 }
 
-const getTargetDirections = (position, targetPosition) => {
-
-}
-
-const isTargetOppositeFromCornerSides = () => {
-
-}
-
-export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo, isCorner = false) => {
+export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo, isCorner = false, objCorner = null) => {
   
   // if there was a corner involved, determine the direction based on the direction of the target
   if (isCorner) {
+
+    // also make sure it's not opposite of corner sides direction - fix bug TODO
+
 	  let direction = getSideDirectionOfTarget(creature.position, creature.targetPosition, objectSide);
 	  return direction;
   }
