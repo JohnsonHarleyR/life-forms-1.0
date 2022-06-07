@@ -20,6 +20,19 @@ export const getNecessaryCollisionPadding = () => {
     return padding;
 }
 
+export const isCreatureInRangeOfTargetPosition = (creature) => {
+    let pos = creature.position;
+    let targetPos = creature.targetPosition;
+
+    let xDif = Math.abs(targetPos.x - pos.x);
+    let yDif = Math.abs(targetPos.y - pos.y);
+
+    if (xDif <= creature.movement.speed && yDif <= creature.movement.speed) {
+        return true;
+    }
+    return false;
+}
+
 export const moveCreatureToNearbyValidPosition = (creature, objects) => {
     let padding = getNecessaryCollisionPadding();
     let relative = [

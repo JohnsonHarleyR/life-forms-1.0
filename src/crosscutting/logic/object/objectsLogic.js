@@ -17,12 +17,17 @@ import { getNecessaryCollisionPadding as getNecessaryCollisionPreventionPadding 
 
 // v2 collision logic
 
+export const isValidTargetPosition = (creature, objects) => {
+  return !isNewCreaturePositionInsideAnyObject(creature, creature.targetPosition, objects);
+}
+
 // this one is ONLY for getting a bool whether a position for a creature would be overlapping any object
 export const isNewCreaturePositionInsideAnyObject = (creature, newCreaturePosition, objects, padding = getNecessaryCollisionPreventionPadding()) => {
 
   let isCollision = false;
   for (let i = 0; i < objects.length; i++) {
-    let isObjCollision = objects[i].isCreatureInsideObject(creature, newCreaturePosition, padding);
+    //let isObjCollision = objects[i].isCreatureInsideObject(creature, newCreaturePosition, padding);
+    let isObjCollision = objects[i].doesNewPositionCollideWithObject(creature, newCreaturePosition, padding).isCollision;
     if (isObjCollision) {
       isCollision = true;
       break;
@@ -75,14 +80,19 @@ export const checkIfCreatureCollidesWithAnyObjects = (creature, newCreaturePosit
 
   // throw exception if relative placement was already an overlap
   if (relativePlacement === RelativeToObject.OVERLAP) {
-    // console.log(`Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
-    // `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
-    // `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)`);
+
+    // if the previous placement wasn't an overlap, return that instead of throwing an error
+    if (creature.movement.previousPlacement !== RelativeToObject.OVERLAP) {
+      relativePlacement = creature.movement.previousPlacement;
+    } else {
     throw `Error: Creature ${creature.gender} ${creature.type} ${creature.id} was already colliding ` +
       `with object ${endResult.objectCollided.id} in position ${JSON.stringify(creature.position)} before ` +
       `moving. This should not happen.\n(method checkIfCreatureCollidesWithAnyObjects inside objectLogic.js)` + 
       `\n (Creature action was ${creature.needs.priority}, position was ${JSON.stringify(creature.position)}.)`+
       `(Previous placement recorded was: ${creature.movement.previousPlacement}.`;
+    }
+
+    
   }
 
   // determine if side or corner
@@ -148,6 +158,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
     let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
     console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
     `New side determined by checking previousSide and using getObjectSideWithOppositeClosestToTarget: ${side}`);
+    let change = creature.needs.didPriorityChange();
     if (side !== CornerSideResult.TIE) {
       return side;
     }
@@ -157,6 +168,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let shortestSide = getObjectSideWithShortestLength(objSides, obj);
   console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithShortestLength: ${shortestSide}`);
+  let didPriorityChange = creature.needs.didPriorityChange();
   if (shortestSide !== CornerSideResult.TIE) {
     return shortestSide;
   }
@@ -165,6 +177,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
   console.log(`There is still a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithOppositeClosestToTarget: ${side}`);
+  didPriorityChange = creature.needs.didPriorityChange();
   if (side !== CornerSideResult.TIE) {
     return side;
   }
@@ -174,6 +187,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   side = getObjectSideWithYAxis(objSides);
   console.log(`There is still a corner tie at the end for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithYAxis: ${side}`);
+  didPriorityChange = creature.needs.didPriorityChange();
   return side;
 
 }

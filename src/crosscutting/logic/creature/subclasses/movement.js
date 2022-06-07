@@ -9,11 +9,12 @@ import { determineSightCoordinates,
     canSetShelterInPosition,
     searchAreaForMate,
   addMovementRecord,
-  checkForMovementPattern} from "../creatureLogic";
+  checkForMovementPattern,
+  isCreatureInRangeOfTargetPosition} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
-import { FoodType } from "../../../constants/objectConstants";
+import { FoodType, RelativeToObject } from "../../../constants/objectConstants";
 import { isInPosition, getPositionDifference, getTriangleMovePosition,
     getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
   getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals,
@@ -22,7 +23,8 @@ getCreatureIdentityString} from "../../universalLogic";
 import { checkAllCreatureObjectCollisions, 
   determineDirectionByTarget,
   checkIfCreatureCollidesWithAnyObjects,
-isValidCreatureTargetPosition } from "../../object/objectsLogic";
+isValidCreatureTargetPosition, 
+isValidTargetPosition} from "../../object/objectsLogic";
 import Shelter from "./shelter";
 import { 
   makeCreatureDie,
@@ -112,7 +114,7 @@ export default class CreatureMovement {
         this.sideOfCollision = null;
         this.previousSide = null;
         this.newDirection = null;
-        this.previousDirection = null;
+        //this.previousDirection = null;
         this.intervalCount = 0;
     }
 
@@ -279,8 +281,8 @@ export default class CreatureMovement {
         case ActionType.FEED_SELF:
         case ActionType.FEED_FAMILY:
         case ActionType.GATHER_FOOD_TO_MATE:
-          return this.creature.targetPosition;
-            //return this.creature.position; // temp
+          //return this.creature.targetPosition;
+            return this.creature.position; // temp
         case ActionType.MATE:
           if (this.creature.safety.shelter) {
             return this.creature.safety.shelter.getCenterPosition();
@@ -402,7 +404,8 @@ export default class CreatureMovement {
       //   this.previousDirection = this.direction !== null ? {...this.direction} : null;
       //   this.previousSide = this.sideOfCollision;
       // }
-      this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      //this.previousDirection = this.direction !== null ? {...this.direction} : null;
+      this.previousDirection = this.newDirection !== null ? this.newDirection : null;
       this.previousSide = this.sideOfCollision;
 
 
@@ -509,7 +512,7 @@ export default class CreatureMovement {
       }
 
       let attemptResult = this.attemptMoveTowardPosition(newPosition, dif, objects);
-      this.previousPlacement = attemptResult.prevPlacement;
+      this.previousPlacement = attemptResult.prevPlacement !== RelativeToObject.OVERLAP ? attemptResult.prevPlacement : this.previousPlacement;
       // make attempts toward the position - check collision with each interval
       // let changeIntervals = getPositionChangeIntervals(this.creature.position, newPosition);
 
@@ -548,6 +551,17 @@ export default class CreatureMovement {
     }
 
     moveAroundObject = (obj, collisionSide, directionToMove, canvasInfo) => {
+      // test
+      // if (this.creature.needs.didPriorityChange()) {
+      //   console.log(`moveAroundObject - priority change check`);
+      // }
+
+      if (isCreatureInRangeOfTargetPosition(this.creature)) {
+        this.resetMovementProperties();
+        return this.creature.targetPosition;
+      }
+
+
       //console.log(`Collision side: ${collisionSide}`);
       this.sideOfCollision = collisionSide;
       // NOTE: the below if block could be a potential problem area?
@@ -881,11 +895,9 @@ export default class CreatureMovement {
     
 
     leaveShelter = (objects, creatures, shelters, canvasInfo) => {
-      if (this.creature.safety.shelter !== null) {
-        this.creature.safety.shelter = null;
-      }
 
       if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+        this.creature.safety.shelter = null;
         return (this.creature.position);
       }
       //console.log(`creature ${this.creature.id} moving to position ${JSON.stringify(this.creature.targetPosition)}`);
@@ -899,7 +911,7 @@ export default class CreatureMovement {
         //console.log('moveToRandomPosition');
             //console.log('moving to random position');
     // if creature is in the current target position, set the target position to a new random one
-    if (isInPosition(this.creature.position, this.creature.targetPosition)) {
+    if (isInPosition(this.creature.position, this.creature.targetPosition) || !isValidTargetPosition(this.creature, objects)) {
       //this.resetMovementProperties();
       //let newTargetPosition = getRandomStartPosition(this.creature, creatures, objects,[], shelters, CreatureDefaults.LARGEST_SIZE / 2 + CanvasInfo.OBJECT_PADDING + 1, this.creature.id, false);
       let newTargetPosition = getRandomCreatureTargetPosition(this.creature, objects, shelters);

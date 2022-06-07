@@ -157,11 +157,11 @@ export default class CreatureNeeds {
         // }
 
         // only set the new priority is priority is complete OR new priority is about death, falling asleep, running away
-        if (!this.priorityComplete && (this.priority === ActionType.DIE ||
-            (this.priority === ActionType.FEED_SELF && this.foodLevel.percent <= 15) || 
-            this.priority === ActionType.LEAVE_SHELTER)) {
-                return  this.priority;
-            }
+        // if (!this.priorityComplete && (this.priority === ActionType.DIE ||
+        //     (this.priority === ActionType.FEED_SELF && this.foodLevel.percent <= 15) || 
+        //     this.priority === ActionType.LEAVE_SHELTER)) {
+        //         return  this.priority;
+        //     }
 
         // What as I doing with the above part again?
 
@@ -228,13 +228,16 @@ export default class CreatureNeeds {
                 }
                 break;
             case ActionType.LEAVE_SHELTER:
-                let momsShelter = this.creature.family.mother !== null ? this.creature.family.mother.safety.shelter : null;
-                if ((this.creature.safety.shelter !== null && !this.creature.safety.shelter.isInsideShelter(this.creature)) ||
-                    (this.creature.safety.shelter === null && momsShelter === null) ||
-                    (!momsShelter.isInsideShelter(this.creature) && 
-                    isInPosition(this.creature.position, this.creature.targetPosition))) {
+                if (this.creature.safety.shelter === null) {
                     return true;
                 }
+                // let momsShelter = this.creature.family.mother !== null ? this.creature.family.mother.safety.shelter : null;
+                // if ((this.creature.safety.shelter !== null && !this.creature.safety.shelter.isInsideShelter(this.creature)) ||
+                //     (this.creature.safety.shelter === null && momsShelter === null) ||
+                //     (!momsShelter.isInsideShelter(this.creature) && 
+                //     isInPosition(this.creature.position, this.creature.targetPosition))) {
+                //     return true;
+                // }
                 break;
             case ActionType.FIND_SAFETY:
                 if ((!this.creature.safety.isBeingChased && this.creature.safety.predatorDetected === null)
@@ -689,6 +692,16 @@ export default class CreatureNeeds {
                 priority: ActionType.SLEEP_IN_SPOT
             },
             {
+                meetsCondition: () => { // TODO also search for threat
+                    if (this.creature.safety.isBeingChased || this.creature.safety.predatorDetected !== null && 
+                        this.priority !== ActionType.FIND_SAFETY) {
+                        return  true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
+            },
+            {
                 meetsCondition: () => { // food less than 15%;
                     if (this.foodLevel.percent < 15 && 
                         this.creature.safety.shelter !== null && 
@@ -700,16 +713,6 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.FEED_SELF
-            },
-            {
-                meetsCondition: () => { // TODO also search for threat
-                    if (this.creature.safety.isBeingChased || this.creature.safety.predatorDetected !== null && 
-                        this.priority !== ActionType.FIND_SAFETY) {
-                        return  true;
-                    }
-                    return false;
-                },
-                priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
             },
             {
                 meetsCondition: () => { // food less than 20%;
