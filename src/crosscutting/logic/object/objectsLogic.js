@@ -8,7 +8,8 @@ import {
     isCollision,
   determineAxisBySide,
 getCornerPositionFromStartAndEndPoints, 
-getCreatureIdentityString} from "../universalLogic";
+getCreatureIdentityString,
+getPositionDifference} from "../universalLogic";
 import { Side, Corner, RelativeToObject, CornerSideResult } from "../../constants/objectConstants";
 import { CreatureDefaults, Direction } from "../../constants/creatureConstants";
 import { Axis, CanvasInfo } from "../../constants/canvasConstants";
@@ -154,15 +155,17 @@ const checkIfPreviousRelativePlacementWasCollision = (objects, creature, padding
 const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let objSides = getSidesOfCorner(objCorner);
 
+  let didPriorityChange = creature.needs.didPriorityChange();
+
   // first, if one of the sides was the previous collision side, return the other one?
   // NOTE: actually, perhaps it would be better to return the same side until there's no longer a collision?
   // consider circumstances - ok, I'm choosing the side with opposite closest to target in this case
   let prevSide = creature.movement.previousSide;
-  if (prevSide === objSides[0] || prevSide === objSides[1]) {
+  if (!didPriorityChange && prevSide === objSides[0] || prevSide === objSides[1]) {
     let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
     console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
     `New side determined by checking previousSide and using getObjectSideWithOppositeClosestToTarget: ${side}`);
-    let change = creature.needs.didPriorityChange();
+    //let change = creature.needs.didPriorityChange();
     if (side !== CornerSideResult.TIE) {
       return side;
     }
@@ -172,7 +175,6 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let shortestSide = getObjectSideWithShortestLength(objSides, obj);
   console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithShortestLength: ${shortestSide}`);
-  let didPriorityChange = creature.needs.didPriorityChange();
   if (shortestSide !== CornerSideResult.TIE) {
     return shortestSide;
   }
@@ -181,7 +183,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
   console.log(`There is still a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithOppositeClosestToTarget: ${side}`);
-  didPriorityChange = creature.needs.didPriorityChange();
+  //didPriorityChange = creature.needs.didPriorityChange();
   if (side !== CornerSideResult.TIE) {
     return side;
   }
@@ -191,7 +193,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   side = getObjectSideWithYAxis(objSides);
   console.log(`There is still a corner tie at the end for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithYAxis: ${side}`);
-  didPriorityChange = creature.needs.didPriorityChange();
+  //didPriorityChange = creature.needs.didPriorityChange();
   return side;
 
 }
@@ -199,7 +201,7 @@ const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
 const getObjectSideWithYAxis = (sides) => {
   let side = null;
   sides.forEach(s => {
-    let axis = getAxisFromSide(s);
+    let axis = determineAxisBySide(s);
     if (axis === Axis.Y) {
       side = s;
     }
@@ -212,18 +214,18 @@ const getObjectSideWithYAxis = (sides) => {
   return side;
 }
 
-const getAxisFromSide = (side) => {
-  switch (side) {
-    case Side.TOP:
-    case Side.BOTTOM:
-      return Axis.Y;
-    case Side.LEFT:
-    case Side.RIGHT:
-      return Axis.X;
-    default:
-      throw `Error: Axis could not be determined from side ${side} in getAxisFromSide. (objectsLogic.js)`;
-  }
-}
+// const getAxisFromSide = (side) => {
+//   switch (side) {
+//     case Side.TOP:
+//     case Side.BOTTOM:
+//       return Axis.Y;
+//     case Side.LEFT:
+//     case Side.RIGHT:
+//       return Axis.X;
+//     default:
+//       throw `Error: Axis could not be determined from side ${side} in getAxisFromSide. (objectsLogic.js)`;
+//   }
+// }
 
 const getObjectSideWithOppositeClosestToTarget = (objSides, obj, targetPosition) => {
   let oppositeDistances = [];
@@ -898,7 +900,7 @@ export const determineDirectionByTarget = (creature, objectSide, obj, canvasInfo
   let axis = determineAxisBySide(objectSide);
 
   // attempt to grab travel direction based on target distance from each corner
-  let direction = getDirectionByCornerDistancesToTarget(obj, objectSide, axis, creature.targetPosition);
+  let direction = getDirectionByCornerDistancesToTarget(obj, objectSide, axis, creature.targetPosition, creature.position);
   //console.log(`direction by corner distances to target: ${direction}`);
 
   // if it was null or anything attempt to grab direction from creature directions
@@ -1029,7 +1031,26 @@ const getOppositeSide = (side) => {
     return side;
   }
 
-  export const getDirectionByCornerDistancesToTarget = (obj, collisionSide, axis, targetPosition) => {
+  const getObjectCornerClosestToPosition = (cornerA, cornerB, position, obj) => {
+    let cornerAPos = getObjectCornerPosition(obj, cornerA, 0);
+    let cornerBPos = getObjectCornerPosition(obj, cornerB, 0);
+
+    let cornerADifResult = getPositionDifference(position, cornerAPos);
+    let cornerADif = {x: Math.abs(cornerADifResult.xDifference), y: Math.abs(cornerADifResult.yDifference)};
+
+    let cornerBDifResult = getPositionDifference(position, cornerBPos);
+    let cornerBDif = {x: Math.abs(cornerBDifResult.xDifference), y: Math.abs(cornerBDifResult.yDifference)};
+
+    if (cornerADif.x > cornerBDif.x || cornerADif.y > cornerBDif.y) {
+      return cornerA;
+    } else if (cornerADif.x < cornerBDif.x || cornerADif.y < cornerBDif.y) {
+      return cornerB;
+    }
+
+    return null;
+  }
+
+  export const getDirectionByCornerDistancesToTarget = (obj, collisionSide, axis, targetPosition, creaturePosition = null) => {
     let cornerA = null;
     let cornerB = null;
     switch (collisionSide) {
@@ -1068,6 +1089,12 @@ const getOppositeSide = (side) => {
     //console.log(`moving to corner: ${cornerToMoveToward}`);
 
     // if corner to move to is null,
+    if (cornerToMoveToward === null && creaturePosition !== null) {
+      let otherCorner = getObjectCornerClosestToPosition(cornerA, cornerB, creaturePosition, obj);
+      if (otherCorner !== null) {
+        cornerToMoveToward = otherCorner === cornerA ? cornerB : cornerA;
+      }
+    }
   
     // now use the gathered info to find the direction
     return determineDirectionByAxisAndCorner(axis, cornerToMoveToward);

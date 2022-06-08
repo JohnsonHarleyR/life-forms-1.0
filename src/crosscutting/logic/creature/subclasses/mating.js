@@ -1,6 +1,6 @@
 import { isPotentialMate, getRandomGender, getCreatureInfoByType } from "../creatureLogic";
 import { LifeStage, Gender } from "../../../constants/creatureConstants";
-import { getRandomIntInRange, getRandomPositionInBounds, addItemToArray } from "../../universalLogic";
+import { getRandomIntInRange, getRandomPositionInBounds, addItemToArray, getCreatureIdentityString } from "../../universalLogic";
 import Creature from "../creature";
 import { getRandomShelterPosition } from "../creatureLogic";
 import { hasYoungChildren } from "./logic/needLogic";
@@ -113,7 +113,7 @@ export default class CreatureMating {
         return newChild;
     }
 
-    makeMate = (newMate) => {
+    makeMate = (newMate, creatures) => {
         // make sure they haven't already been given a mate 
         if (this.creature.family.mate === null) {
             // first make them each other's mate
@@ -126,32 +126,40 @@ export default class CreatureMating {
             if (this.genderOfShelterMaker === this.creature.gender) {
                 // first remove the mates shelter from the mate
                 let mateShelter = newMate.safety.shelter;
-                if (mateShelter !== null) {
+                if (mateShelter !== null && this.creature.safety.shelter !== null && 
+                mateShelter.id !== this.creature.safety.shelter.id) {
+
+                    mateShelter.putShelterFoodBackInInventory(newMate);
                     mateShelter.removeMemberFromShelter(newMate);
                     mateShelter.updateShelter();
                 }
 
                 // now add members to this creatures shelter
                 let shelter = this.creature.safety.shelter;
-                if (shelter !== null) {
+                if (shelter !== null && newMate.safety.shelter === null) {
                     shelter.addMemberToShelter(newMate);
                     shelter.updateShelter();
                 }
-            } else {
+
+                newMate.safety.updateSafety(creatures);
+            }
+             else {
                 // first remove creature from their shelter
                 let shelter = this.creature.safety.shelter;
-                if (shelter !== null) {
+                let mateShelter = newMate.safety.shelter;
+                if (shelter !== null && mateShelter !== null && shelter.id !== mateShelter.id) {
                     shelter.putShelterFoodBackInInventory(this.creature);
                     shelter.removeMemberFromShelter(this.creature);
                     shelter.updateShelter();
                 }
 
                 // now add members to this creatures shelter
-                let mateShelter = newMate.safety.shelter;
-                if (mateShelter !== null) {
+                if (mateShelter !== null && this.creature.safety.shelter === null) {
                     mateShelter.addMemberToShelter(this.creature);
                     mateShelter.updateShelter();
                 }
+
+                this.creature.safety.updateSafety(creatures);
             }
             
             // set is mating
@@ -161,6 +169,88 @@ export default class CreatureMating {
         }
 
     }
+
+    ensureMatesHaveSameShelter = (creatures) => {
+        if (this.creature.family.mate === null) {
+            throw `Error: creature ${getCreatureIdentityString(this.creature)} should have a mate when reaching this method.` +
+            `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
+        } else if (this.creature.safety.shelter === null) {
+            throw `Error: creature ${getCreatureIdentityString(this.creature)} should have a shelter when reaching this method.` +
+            `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
+        } else if (this.creature.family.mate.safety.shelter === null) {
+            throw `Error: creature ${getCreatureIdentityString(this.creature)}'s mate should have a shelter when reaching this method.` +
+            `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
+        }
+
+        let creature = this.creature;
+        let mate = this.creature.family.mate;
+        if (creature.safety.shelter.id !== mate.safety.shelter.id) {
+            console.log(`MATING: creature ${getCreatureIdentityString(this.creature)} has shelter ${this.creature.safety.shelter.id}; ` +
+                `mate: ${this.creature.family.mate !== null ? getCreatureIdentityString(this.creature.family.mate) : null}, ` + 
+                `mate has shelter ${this.creature.family.mate !== null && this.creature.family.mate.safety.shelter !== null ? this.creature.family.mate.safety.shelter.id : null}`);
+
+            this.combineShelterWithMate(creature, mate, creatures);
+        }
+    }
+
+    combineShelterWithMate = (creature, mate, creatures) => {
+        if (creature.mating.genderOfShelterMaker !== creature.gender) {
+            console.log(`Creature ${getCreatureIdentityString(creature)} is moving into mate's shelter now.`);
+            this.moveOutOfShelterForMate(creature, creatures);
+            this.moveIntoMateShelter(creature, mate, creatures);
+        }
+    }
+
+    moveIntoMateShelter = (creature, mate, creatures) => {
+        let mateShelter = mate.safety.shelter;
+        mateShelter.addMemberToShelter(creature);
+        mateShelter.updateShelter();
+        creature.safety.updateSafety(creatures);
+    }
+
+    moveOutOfShelterForMate = (creature, creatures) => {
+        // remove creature from their shelter
+        let shelter = creature.safety.shelter;
+        if (shelter !== null) {
+            shelter.putShelterFoodBackInInventory(creature);
+            shelter.removeMemberFromShelter(creature);
+            shelter.updateShelter();
+            creature.safety.updateSafety(creatures);
+        }
+    }
+
+    // combineShelterWithMate = (newMate) => {
+    //     if (this.genderOfShelterMaker === this.creature.gender) {
+    //         // first remove the mates shelter from the mate
+    //         let mateShelter = newMate.safety.shelter;
+    //         if (mateShelter !== null) {
+    //             mateShelter.removeMemberFromShelter(newMate);
+    //             mateShelter.updateShelter();
+    //         }
+
+    //         // now add members to this creatures shelter
+    //         let shelter = this.creature.safety.shelter;
+    //         if (shelter !== null) {
+    //             shelter.addMemberToShelter(newMate);
+    //             shelter.updateShelter();
+    //         }
+    //     } else {
+    //         // first remove creature from their shelter
+    //         let shelter = this.creature.safety.shelter;
+    //         if (shelter !== null) {
+    //             shelter.putShelterFoodBackInInventory(this.creature);
+    //             shelter.removeMemberFromShelter(this.creature);
+    //             shelter.updateShelter();
+    //         }
+
+    //         // now add members to this creatures shelter
+    //         let mateShelter = newMate.safety.shelter;
+    //         if (mateShelter !== null) {
+    //             mateShelter.addMemberToShelter(this.creature);
+    //             mateShelter.updateShelter();
+    //         }
+    //     }
+    // }
 
     makeMateTarget = (newMate) => {
         this.hasMateTarget = true;

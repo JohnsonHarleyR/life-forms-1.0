@@ -48,18 +48,33 @@ export default class CreatureSafety {
             });
             this.isBeingChased = result;
         } else { // otherwise check if prey is still in a position to be chased or if predator chasing is no longer targeting them
-            if (this.isInShelter || this.predatorChasing.currentTarget !== this.creature) { // TODO add possibility of being in unreachable spot
+            if ((this.isInShelter || this.predatorChasing.currentTarget !== this.creature) &&
+                !this.isPredatorDetected(this.predatorChasing)) { // TODO add possibility of being in unreachable spot
                 this.isBeingChased = false;
                 this.predatorChasing = null;
             }
         }
     }
 
-    isPredatorDetected = () => {
+    isAnyPredatorDetected = () => {
         if (this.predatorsDetected.length > 0) {
             return true;
         }
         return false;
+    }
+
+    isPredatorDetected = (predator) => {
+        if (!predator || this.predatorsDetected.length === 0) {
+            return false;
+        }
+
+        let isDetected = false;
+        this.predatorsDetected.forEach(d => {
+            if (d.id === predator.id) {
+                isDetected = true;
+            }
+        })
+        return isDetected;
     }
 
     scanForPredators = (creatures) => {

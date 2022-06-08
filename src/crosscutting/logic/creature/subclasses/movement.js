@@ -117,7 +117,7 @@ export default class CreatureMovement {
             y: null
         };
         this.sideOfCollision = null;
-        this.previousSide = null;
+        //this.previousSide = null;
         this.newDirection = null;
         //this.previousDirection = null;
         this.intervalCount = 0;
@@ -233,19 +233,19 @@ export default class CreatureMovement {
             this.moveMode = MoveMode.SEARCH;
             break;
           case ActionType.FEED_SELF:
-            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_SELF`);
+            //console.log(`creature ${this.creature.id} determineModeByPriority: FEED_SELF`);
               this.creature.targetType = NeedType.FOOD_FOR_SELF;
               this.moveMode = MoveMode.SEARCH;
               break;
           case ActionType.FEED_FAMILY:
-            console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY` + 
-              `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
-              `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
+            // console.log(`creature ${this.creature.id} determineModeByPriority: FEED_FAMILY` + 
+            //   `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+            //   `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
               this.creature.targetType = NeedType.FOOD_FOR_FAMILY;
               this.moveMode = MoveMode.SEARCH;
               break;
           case ActionType.GATHER_FOOD_TO_MATE:
-            console.log(`creature ${this.creature.id} determineModeByPriority: GATHER_FOOD_TO_MATE`);
+            //console.log(`creature ${this.creature.id} determineModeByPriority: GATHER_FOOD_TO_MATE`);
             this.creature.targetType = NeedType.FOOD_TO_MATE;
             this.moveMode = MoveMode.SEARCH;
             break;
@@ -254,6 +254,9 @@ export default class CreatureMovement {
                 this.creature.family.mate.mating.isMating = true;
               }
             if (this.creature.safety.shelter) {
+              console.log(`MATING: creature ${getCreatureIdentityString(this.creature)} has shelter ${this.creature.safety.shelter.id}; ` +
+              `mate: ${this.creature.family.mate !== null ? getCreatureIdentityString(this.creature.family.mate) : null}, ` + 
+              `mate has shelter ${this.creature.family.mate !== null && this.creature.family.mate.safety.shelter !== null ? this.creature.family.mate.safety.shelter.id : null}`);
               this.creature.targetType = NeedType.MATE;
               let centerPosition = this.creature.safety.shelter.getCenterPosition();
               if (isInPosition(this.creature.position, centerPosition) && 
@@ -268,7 +271,7 @@ export default class CreatureMovement {
 
             break;
           case ActionType.HAVE_CHILD:
-            console.log(`creature ${this.creature.id} HAVE_CHILD`);
+            //console.log(`creature ${this.creature.id} HAVE_CHILD`);
             this.moveMode = MoveMode.STAND_STILL;
             break;
           case ActionType.LEAVE_SHELTER:
@@ -884,7 +887,7 @@ export default class CreatureMovement {
         let newPosition = this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters, canvasInfo);
         if (isInPosition(newPosition, this.creature.targetPosition) && this.doPause(6)) {
           let newMate = this.creature.mating.mateTarget;
-          this.creature.mating.makeMate(newMate);
+          this.creature.mating.makeMate(newMate, creatures);
           // also change the move mode to think for both creatures so they can proceed to mate
           // this.moveMode = MoveMode.THINK;
           // newMate.movement.moveMode = MoveMode.THINK;
@@ -954,7 +957,7 @@ export default class CreatureMovement {
     }
 
     goToShelter = (plants, creatures, objects, shelters, canvasInfo) => {
-      console.log(`goToShelter: Creature ${getCreatureIdentityString(this.creature)} going to shelter - ${this.moveMode} ${this.creature.targetType}`);
+      //console.log(`goToShelter: Creature ${getCreatureIdentityString(this.creature)} going to shelter - ${this.moveMode} ${this.creature.targetType}`);
       if (this.creature.targetType === NeedType.SLEEP && isInPosition(this.creature.position, this.creature.targetPosition)) {
         makeCreatureSleep(this.creature);
         return this.creature.position;
@@ -964,7 +967,7 @@ export default class CreatureMovement {
         // Do something different than normal if the creature is escaping
         if (this.creature.targetType === NeedType.ESCAPE) {
           this.creature.targetPosition = this.creature.safety.shelter.getCenterPosition();
-          console.log(`goToShelter: Creature ${getCreatureIdentityString(this.creature)} going to shelter at position: ${this.creature.targetPosition}`);
+          //console.log(`goToShelter: Creature ${getCreatureIdentityString(this.creature)} going to shelter at position: ${this.creature.targetPosition}`);
           return this.moveToPoint(this.creature.targetPosition, objects, creatures, shelters);
         }
 

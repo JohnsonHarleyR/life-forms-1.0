@@ -46,6 +46,8 @@ export default class CreatureNeeds {
             percent: this.determineNeedPercent(creature.life.lifeStage !== LifeStage.CHILD ? this.maxMating / 2 : this.maxMating, this.maxMating)
         } 
 
+        this.isTechnicalAdult = false;
+
         this.priority = this.determinePriority();
         this.previousPriority = null;
         this.priorityComplete = true;
@@ -245,8 +247,8 @@ export default class CreatureNeeds {
                 // }
                 break;
             case ActionType.FIND_SAFETY:
-                if ((!this.creature.safety.isBeingChased && !this.creature.safety.isPredatorDetected())
-                || this.creature.safety.isInShelter) {
+                if (this.creature.safety.isInShelter &&
+                    (!this.creature.safety.isBeingChased && !this.creature.safety.isPredatorDetected())) {
                     return true;
                 }
                 break;
@@ -296,9 +298,9 @@ export default class CreatureNeeds {
 
     getPriorityOrder = () => {
 
-        if (this.creature.life.lifeStage === LifeStage.DECEASED) {
-            console.log(`creature ${getCreatureIdentityString(this.creature)} is deceased`);
-        }
+        // if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+        //     console.log(`creature ${getCreatureIdentityString(this.creature)} is deceased`);
+        // }
         
         // first check if priority is complete - if it's not then get from the shortened list to continue the priority
         if (!this.priorityComplete) {
@@ -378,8 +380,7 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // TODO also search for threat
-                    if (!this.creature.safety.isInShelter &&
-                        (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected())) {
+                    if (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected()) {
                         return  true;
                     }
                     return false;
@@ -426,17 +427,6 @@ export default class CreatureNeeds {
                 priority: ActionType.SLEEP_IN_SHELTER
             },
             {
-                meetsCondition: (creatures) => {
-                    if((this.creature.family.mate === null || 
-                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
-                        && doesPotentialMateExist(this.creature, creatures)) {
-                            return true;
-                        }
-                        return false;
-                },
-                priority: ActionType.FIND_MATE
-            },
-            {
                 meetsCondition: () => {
                     if (this.foodLevel.percent > 15 &&
                         this.familyFoodPercent <= 20) {
@@ -446,6 +436,17 @@ export default class CreatureNeeds {
                         return false;
                 },
                 priority: ActionType.FEED_FAMILY
+            },
+            {
+                meetsCondition: (creatures) => {
+                    if((this.creature.family.mate === null || 
+                        this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
+                        && doesPotentialMateExist(this.creature, creatures)) {
+                            return true;
+                        }
+                        return false;
+                },
+                priority: ActionType.FIND_MATE
             },
             {
                 meetsCondition: () => {
@@ -581,6 +582,91 @@ export default class CreatureNeeds {
         ];
     }
 
+    getShortenedPriorityOrder = () => {
+        return [
+            {
+                // TODO write if statement for if creature is eaten
+                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
+                    if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.BE_DEAD
+            },
+            {
+                // TODO write if statement for if creature is eaten
+                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
+                    if ((this.creature.safety.isBeingEaten)
+                        || this.foodLevel.percent <= 0) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.DIE
+            },
+            {
+                meetsCondition: () => { // if sleep is less than 5%, they are going to sleep no matter what...
+                    if (this.sleepLevel.percent < 5 && this.priority !== ActionType.SLEEP_IN_SPOT) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.SLEEP_IN_SPOT
+            },
+            {
+                meetsCondition: () => { // TODO also search for threat
+                    if (this.priority !== ActionType.FIND_SAFETY &&
+                        (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected())) {
+                        return  true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
+            },
+            {
+                meetsCondition: () => { // food less than 15%;
+                    if (this.foodLevel.percent <= 15 && 
+                        this.priority !== ActionType.FEED_SELF) {
+                            this.foodPercentGoal = 40;
+                            return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FEED_SELF
+            },
+            {
+                meetsCondition: () => { // food less than 20%;
+                    if ((this.creature.life.lifeStage === LifeStage.CHILD && !this.isTechnicalAdult) ||
+                        this.priority === ActionType.FEED_FAMILY 
+                        // || 
+                        // this.priority === ActionType.FIND_MATE ||
+                        // this.priority === ActionType.GATHER_FOOD_TO_MATE || 
+                        // this.priority === ActionType.HAVE_CHILD
+                        ) {
+                        return false;
+                    }
+                    if (this.foodLevel.percent > 15 &&
+                        this.familyFoodPercent <= 20 && 
+                        this.creature.safety.shelter !== null && 
+                        this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
+                            this.foodPercentGoal = 40;
+                            return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.FEED_FAMILY
+            },
+            {
+                meetsCondition: () => {
+                    // if it gets to this point
+                    return true;
+                },
+                priority: this.priority
+            }
+        ]
+    }
+
     getChildPriorityOrder = () => {
         return [
             {
@@ -672,85 +758,6 @@ export default class CreatureNeeds {
                     return true;
                 },
                 priority: ActionType.NONE
-            }
-        ]
-    }
-
-    getShortenedPriorityOrder = () => {
-        return [
-            {
-                // TODO write if statement for if creature is eaten
-                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
-                    if (this.creature.life.lifeStage === LifeStage.DECEASED) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.BE_DEAD
-            },
-            {
-                // TODO write if statement for if creature is eaten
-                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
-                    if ((this.creature.safety.isBeingEaten)
-                        || this.foodLevel.percent <= 0) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.DIE
-            },
-            {
-                meetsCondition: () => { // if sleep is less than 5%, they are going to sleep no matter what...
-                    if (this.sleepLevel.percent < 5 && this.priority !== ActionType.SLEEP_IN_SPOT) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.SLEEP_IN_SPOT
-            },
-            {
-                meetsCondition: () => { // TODO also search for threat
-                    if (!this.creature.safety.isInShelter && this.priority !== ActionType.FIND_SAFETY &&
-                        (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected())) {
-                        return  true;
-                    }
-                    return false;
-                },
-                priority: ActionType.FIND_SAFETY // in this case, if there is no shelter find it first!
-            },
-            {
-                meetsCondition: () => { // food less than 15%;
-                    if (this.foodLevel.percent <= 15 && 
-                        this.priority !== ActionType.FEED_SELF) {
-                            this.foodPercentGoal = 40;
-                            return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.FEED_SELF
-            },
-            {
-                meetsCondition: () => { // food less than 20%;
-                    if (this.creature.life.lifeStage === LifeStage.CHILD || this.priority === ActionType.FEED_FAMILY) {
-                        return false;
-                    }
-                    if (this.foodLevel.percent > 15 &&
-                        this.familyFoodPercent <= 20 && 
-                        this.creature.safety.shelter !== null && 
-                        this.creature.safety.shelter.inventory.food.length > 0) { // also check that there is food in shelter - a child should always have a shelter, otherwise they will die
-                            this.foodPercentGoal = 40;
-                            return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.FEED_FAMILY
-            },
-            {
-                meetsCondition: () => {
-                    // if it gets to this point
-                    return true;
-                },
-                priority: this.priority
             }
         ]
     }
