@@ -1,5 +1,41 @@
 import { AmountNeeded, AddOrSubtract, SleepProps, LifeStage } from "../../../../constants/creatureConstants";
 
+// technical adult logic
+
+// the technical adult is the sibling responsible for feeding the family in case the parents are dead
+export const determineIfTechnicalAdult = (creature) => {
+    if (creature.life.lifeStage !== LifeStage.CHILD) {
+        return false;
+    }
+    
+    return isOldestInShelter(creature);
+
+}
+
+const isOldestInShelter = (creature) => {
+    if (creature.safety.shelter === null || creature.life.lifeStage === LifeStage.DECEASED) {
+        return false;
+    }
+
+    let members = creature.safety.shelter.members;
+
+    let oldestAge = 0;
+    let oldestId = null;
+    members.forEach(m => {
+        if (m.life.age > oldestAge) {
+            oldestAge = m.life.age;
+            oldestId = m.id;
+        }
+    });
+
+    if (creature.id === oldestId) {
+        return true;
+    }
+    return false;
+}
+
+// ----------------------
+
 export const getAmountNeededDecimal = (amountNeeded) => {
     switch (amountNeeded) {
         default:
