@@ -11,7 +11,8 @@ import {
     hasYoungChildren,
     isStarving,
     hasStarvingChildren,
-    hasHungryChildren
+    hasHungryChildren,
+    determineIfTechnicalAdult
 } from "./logic/needLogic";
 
 export default class CreatureNeeds {
@@ -46,7 +47,7 @@ export default class CreatureNeeds {
             percent: this.determineNeedPercent(creature.life.lifeStage !== LifeStage.CHILD ? this.maxMating / 2 : this.maxMating, this.maxMating)
         } 
 
-        this.isTechnicalAdult = false;
+        this.isTechnicalAdult = determineIfTechnicalAdult(this.creature);
 
         this.priority = this.determinePriority();
         this.previousPriority = null;
@@ -67,6 +68,13 @@ export default class CreatureNeeds {
 
         // TODO determine how much the points have decayed
         let timeLapsed = newUpdate - this.lastUpdate;
+
+        // update whether this creature is responsible for the family as a child
+        let prevStatus = this.isTechnicalAdult;
+        this.isTechnicalAdult = determineIfTechnicalAdult(this.creature);
+        if (this.isTechnicalAdult && !prevStatus) {
+            console.log(`Creature ${getCreatureIdentityString(this.creature)} is now the TECHNICAL ADULT in the family.`);
+        }
 
         this.updateFoodRates(); // this can change after the creature is no longer a child
 
@@ -320,7 +328,7 @@ export default class CreatureNeeds {
                     priority: ActionType.BE_DEAD
                 }
             ]
-        } else if (this.creature.life.lifeStage === LifeStage.CHILD) {
+        } else if (this.creature.life.lifeStage === LifeStage.CHILD && !this.isTechnicalAdult) {
             //console.log(`getting child priority order for creature ${getCreatureIdentityString(this.creature)}`);
             return this.getChildPriorityOrder();
         }
@@ -338,27 +346,6 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.DIE
-            },
-            { // if the creature is mating, make that the priority
-                meetsCondition: () => {
-                    if (this.creature.family.mate !== null && this.creature.lifeStage !== LifeStage.DECEASED && 
-                        this.creature.mating.isMating === true) {
-                            //console.log(`creature ${this.creature.id} is mating with ${this.creature.family.mate.id}`);
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.MATE
-            },
-            { // if the creature is pregnant, have a child
-                meetsCondition: () => {
-                    if (this.creature.mating.isPregnant) {
-                        console.log(`creature ${this.creature.id} is having a child`);
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.HAVE_CHILD
             },
             {
                 meetsCondition: () => { // if sleep is less than 5%, they are going to sleep no matter what...
@@ -389,7 +376,8 @@ export default class CreatureNeeds {
             },
             { // check if they're a target of a mate or they have a mating target - then prioritize finding that mate
                 meetsCondition: () => {
-                    if(this.creature.family.mate === null && 
+                    if(this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        this.creature.family.mate === null && 
                         this.creature.life.lifeStage !== LifeStage.DECEASED
                         && (this.creature.mating.hasMateTarget || this.creature.mating.isMateTarget)) {
                             return true;
@@ -400,6 +388,15 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
+                    if (this.creature.safety.shelter === null) {
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.CREATE_SHELTER
+            },
+            {
+                meetsCondition: () => {
                     if (this.foodLevel.percent <= 15) {
                         this.foodPercentGoal = 40;
                         return true;
@@ -407,15 +404,6 @@ export default class CreatureNeeds {
                     return false;
                 },
                 priority: ActionType.FEED_SELF
-            },
-            {
-                meetsCondition: () => {
-                    if (this.creature.safety.shelter === null) {
-                        return true;
-                    }
-                    return false;
-                },
-                priority: ActionType.CREATE_SHELTER
             },
             {
                 meetsCondition: () => { // if sleep is less than 10%
@@ -439,7 +427,8 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: (creatures) => {
-                    if((this.creature.family.mate === null || 
+                    if(this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        (this.creature.family.mate === null || 
                         this.creature.family.mate.life.lifeStage === LifeStage.DECEASED)
                         && doesPotentialMateExist(this.creature, creatures)) {
                             return true;
@@ -448,9 +437,33 @@ export default class CreatureNeeds {
                 },
                 priority: ActionType.FIND_MATE
             },
+            { // if the creature is mating, make that the priority
+                meetsCondition: () => {
+                    if (this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        this.creature.family.mate !== null && this.creature.lifeStage !== LifeStage.DECEASED && 
+                        this.creature.mating.isMating === true) {
+                            //console.log(`creature ${this.creature.id} is mating with ${this.creature.family.mate.id}`);
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.MATE
+            },
+            { // if the creature is pregnant, have a child
+                meetsCondition: () => {
+                    if (this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        this.creature.mating.isPregnant) {
+                        console.log(`creature ${this.creature.id} is having a child`);
+                        return true;
+                    }
+                    return false;
+                },
+                priority: ActionType.HAVE_CHILD
+            },
             {
                 meetsCondition: () => {
-                    if ( this.creature.safety.shelter && this.creature.family.mate && 
+                    if (this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        this.creature.safety.shelter && this.creature.family.mate && 
                         this.matingLevel.percent <= 20 &&
                         !this.creature.mating.canMate()) {
                         return true;
@@ -470,7 +483,8 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if ( this.matingLevel.percent <= 20 && 
+                    if (this.creature.life.lifeStage !== LifeStage.CHILD &&
+                        this.matingLevel.percent <= 20 && 
                         this.creature.mating.canMate()) {
                         return true;
                     }

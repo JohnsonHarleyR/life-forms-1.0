@@ -688,7 +688,7 @@ export default class CreatureMovement {
 
     searchForFoodForSelf = (plants, creatures, objects, shelters, canvasInfo) => {
       // check first if creature is a child - if they are then do different steps
-      if (this.creature.lifeStage === LifeStage.CHILD) {
+      if (this.creature.lifeStage === LifeStage.CHILD && !this.creature.needs.isTechnicalAdult) {
         // if there's food, go eat the food
         if (creatureHasFoodInShelter(this.creature)) {
           this.changeTargetPosition(this.getShelterCornerPosition());
@@ -731,7 +731,7 @@ export default class CreatureMovement {
         this.creature.currentTarget = null;
         return this.creature.position;
         
-      } else if (this.creature.life.lifeStage === LifeStage.CHILD) { // if child there's not much else to do but be hungry
+      } else if (this.creature.life.lifeStage === LifeStage.CHILD && !this.creature.needs.isTechnicalAdult) { // if child there's not much else to do but be hungry
         //console.log(`creature ${this.creature.id} is child`);
         return this.creature.position; // TODO change to moving to random position in shelter
 
