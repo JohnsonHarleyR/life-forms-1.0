@@ -77,6 +77,7 @@ export const NeedType = {
     FOOD_FOR_FAMILY: "FOOD_FOR_FAMILY",
     FOOD_TO_MATE: "FOOD_TO_MATE",
     SHELTER: "SHELTER",
+    ESCAPE: "ESCAPE",
     SLEEP: "SLEEP",
     MATE: "MATE",
     NONE: "NONE"

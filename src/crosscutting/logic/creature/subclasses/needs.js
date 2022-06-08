@@ -207,7 +207,6 @@ export default class CreatureNeeds {
                 break;
             case ActionType.BE_DEAD:
                 return false;
-                break;
             case ActionType.GATHER_FOOD_TO_MATE:
                 if (!this.creature.safety.shelter || this.creature.safety.shelter.totalFoodEnergy >= this.foodRequiredToMate) {
                     this.foodPercentGoal = null;
@@ -247,7 +246,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.FIND_SAFETY:
                 if ((!this.creature.safety.isBeingChased && !this.creature.safety.isPredatorDetected())
-                || (this.creature.safety.shelter !== null && this.creature.safety.shelter.isPositionInsideThisShelter(this.creature.position))) {
+                || this.creature.safety.isInShelter) {
                     return true;
                 }
                 break;
@@ -379,7 +378,8 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // TODO also search for threat
-                    if (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected()) {
+                    if (!this.creature.safety.isInShelter &&
+                        (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected())) {
                         return  true;
                     }
                     return false;
@@ -691,7 +691,7 @@ export default class CreatureNeeds {
             {
                 // TODO write if statement for if creature is eaten
                 meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
-                    if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
+                    if ((this.creature.safety.isBeingEaten)
                         || this.foodLevel.percent <= 0) {
                         return true;
                     }
@@ -710,8 +710,8 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => { // TODO also search for threat
-                    if (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected() && 
-                        this.priority !== ActionType.FIND_SAFETY) {
+                    if (!this.creature.safety.isInShelter && this.priority !== ActionType.FIND_SAFETY &&
+                        (this.creature.safety.isBeingChased || this.creature.safety.isPredatorDetected())) {
                         return  true;
                     }
                     return false;

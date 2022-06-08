@@ -1,3 +1,4 @@
+import { LifeStage } from "../../../constants/creatureConstants";
 import { getListOfPredators, isPredatorInSight, isPredatorChasing } from "./logic/safetyLogic";
 
 export default class CreatureSafety {
@@ -9,17 +10,48 @@ export default class CreatureSafety {
         this.isLeavingShelter = false;
 
         this.predatorsDetected = [];
+        this.predatorChasing = null;
         this.isBeingChased = isBeingChased;
         this.isBeingEaten = false;
     }
 
     updateSafety = (creatures) => {
         // scan for predators 
+        this.updateIfInShelter();
         this.scanForPredators(creatures);
+        this.updateIfBeingChased(creatures);
 
         // update shelter is there is a shelter
         if (this.shelter !== null) {
             this.shelter.updateShelter();
+        }
+    }
+
+    updateIfInShelter = () => { // will be set to false if creature is deceased - allow predators to eat
+        if (this.shelter !== null && this.shelter.isPositionInsideThisShelter(this.creature.position)
+            && this.creature.life.lifeStage !== LifeStage.DECEASED) {
+            this.isInShelter = true;
+        } else {
+            this.isInShelter = false;
+        }
+    }
+
+    updateIfBeingChased = () => {
+        // if the creature doesn't already see it's being chased, check any detected predators for whether they are chasing
+        if (this.predatorChasing === null) {
+            let result = false;
+            this.predatorsDetected.forEach(d => {
+                if (d.currentTarget === this.creature) {
+                    this.predatorChasing = d;
+                    result = true;
+                }
+            });
+            this.isBeingChased = result;
+        } else { // otherwise check if prey is still in a position to be chased or if predator chasing is no longer targeting them
+            if (this.isInShelter || this.predatorChasing.currentTarget !== this.creature) { // TODO add possibility of being in unreachable spot
+                this.isBeingChased = false;
+                this.predatorChasing = null;
+            }
         }
     }
 
@@ -31,26 +63,13 @@ export default class CreatureSafety {
     }
 
     scanForPredators = (creatures) => {
-        // if creature is inside shelter then they are safe
-        if (this.shelter !== null && this.shelter.isPositionInsideThisShelter(this.creature.position)) {
-            this.predatorsDetected = [];
-            this.isBeingChased = false;
-        } else {
-
-            let possiblePredators = getListOfPredators(this.creature.type, creatures);
-            this.isBeingChased = this.isBeingChased ? true : false;
-            this.predatorsDetected = [];
-            possiblePredators.forEach(p => {
-                if (isPredatorInSight(this.creature, p)) {
-                    this.predatorsDetected.push(p);
-                    if (isPredatorChasing(this.creature, p)) {
-                        this.isBeingChased = true;
-                    }
-                }
-            });
-        }
-
-
+        let possiblePredators = getListOfPredators(this.creature.type, creatures);
+        this.predatorsDetected = [];
+        possiblePredators.forEach(p => {
+            if (isPredatorInSight(this.creature, p)) {
+                this.predatorsDetected.push(p);
+            }
+        });
     }
 
 }
