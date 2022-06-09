@@ -109,6 +109,12 @@ export const CreatureType = {
     BIDDY: "BIDDY"
 };
 
+export const CreatureTypeList = [
+    CreatureType.BOOP,
+    CreatureType.BLEEP,
+    CreatureType.BIDDY
+];
+
 export const Boop = {
     type: CreatureType.BOOP,
     color: "#A020F0",

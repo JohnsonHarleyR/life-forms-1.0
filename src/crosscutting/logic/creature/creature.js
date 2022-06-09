@@ -69,7 +69,7 @@ export default class Creature {
         this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed);
     
         
-        this.showLines = true;
+        this.showLines = false;
         this.emojis = new Emojis(this);
     
         this.setPlants = setPlants;

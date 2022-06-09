@@ -10,7 +10,7 @@ export const Bud = {
     color: "#AD6687",
     width: 4,
     height: 6,
-    growInterval: 10,
+    growInterval: 20,
     energy: 10
 }
 

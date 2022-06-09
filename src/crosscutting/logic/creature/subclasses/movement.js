@@ -408,16 +408,16 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo, allowCloseToObject = false) => {
-      // let isPattern = this.testWithMovementPatterns();
+      let isPattern = this.testWithMovementPatterns();
 
-      // if (isPattern 
-      //   && 
-      //   (this.creature.needs.priority === ActionType.FEED_FAMILY || 
-      //     this.creature.needs.priority === ActionType.FEED_SELF)
-      //     ) {
-      //   console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
-      //   this.escapeCorner(creatures, objects, shelters);
-      // }
+      if (isPattern 
+        && 
+        (this.creature.needs.priority === ActionType.FEED_FAMILY || 
+          this.creature.needs.priority === ActionType.FEED_SELF)
+          ) {
+        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
+        this.escapeCorner(creatures, objects, shelters);
+      }
 
       // if (isPattern) {
       //   this.resetMovementProperties();
