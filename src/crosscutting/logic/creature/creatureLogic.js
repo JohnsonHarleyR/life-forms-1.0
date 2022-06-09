@@ -5,13 +5,51 @@ import {
     isAnyCollision,
     checkAnyArrayCollision,
     getRandomIntInRange,
-    findArrayPatterns
+    findArrayPatterns,
+    getCreatureIdentityString
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
-    CreatureType, Bleep, Boop, CreatureDefaults, Biddy } from "../../constants/creatureConstants";
+    CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType, Side } from "../../constants/objectConstants";
 import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
+
+// dying
+export const assessCauseOfDeath = (creature) => {
+    let cause = CauseOfDeath.UNKNOWN;
+
+    if (creature.safety.isBeingChased && creature.safety.isBeingEaten) {
+        cause = CauseOfDeath.WAS_EATEN;
+    } else if (creature.needs.foodLevel.points <= 0) {
+        cause = CauseOfDeath.STARVATION;
+    } else if (this.creature.life.LifeStage === LifeStage.DECEASED || 
+        creature.life.age > creature.life.lifeSpan) {
+            cause = CauseOfDeath.OLD_AGE;
+    }
+
+    console.log(`==========================================================================\n` +
+        `CREATURE ${getCreatureIdentityString(creature)} HAS DIED DUE TO: ${cause}\n` +
+        `==========================================================================`);
+}
+
+export const prepareForDeath = (creature) => {
+    if (creature.safety.isBeingEaten) {
+        creature.isEaten = true;
+    }
+    creature.safety.isBeingChased = false;
+    creature.safety.isBeingEaten = false;
+    creature.life.isDead = true;
+    creature.life.lifeStage = LifeStage.DECEASED;
+
+    if (creature.safety.shelter !== null) {
+        creature.safety.shelter.removeMemberFromShelter(creature);
+    }
+
+    if (creature.family.mate !== null) {
+        creature.family.mate.family.mate = null;
+        creature.family.mate = null;
+    }
+}
 
 // creature collision fixes
 export const getNecessaryCollisionPadding = () => {

@@ -1,7 +1,8 @@
 import { LifeStage, InventoryLocation } from "../../../../constants/creatureConstants"
 import { getTargetFromArea } from "../../creatureLogic";
 import { FoodType } from "../../../../constants/objectConstants";
-import { shuffleArray } from "../../../universalLogic";
+import { getCreatureIdentityString, shuffleArray } from "../../../universalLogic";
+import { isPrey } from "./safetyLogic";
 
 export const makeCreatureDie = (creature) => {
     creature.life.lifeStage = LifeStage.DECEASED;
@@ -16,7 +17,9 @@ export const makeCreatureSleep = (creature) => {
 // food
 export const eatFood = (food, creature, location) => {
     // make the food say it has been eaten
-    food.isEaten = true;
+    if (!isPrey(creature, food)) {
+        food.isEaten = true;
+    }
     // add energy from food to the creature
     addFoodEnergyToCreature(food.energy, creature);
     // remove food item from energy, depending on location
@@ -123,7 +126,11 @@ export const findFoodTargetInArea = (creature, plants, creatures, canvasInfo) =>
 export const putTargetInFoodInventory = (creature) => {
     if (creature.currentTarget !== null) {
         creature.inventory.food.push(creature.currentTarget);
-        creature.currentTarget.isEaten = true;
+        if (!isPrey(creature, creature.currentTarget)) {
+            creature.currentTarget.isEaten = true;
+        } else {
+            console.log(`***CREATURE ${getCreatureIdentityString(creature)} IS EATING ${getCreatureIdentityString(creature.currentTarget)}`);
+        }
         creature.currentTarget = null;
     }
 }

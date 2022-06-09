@@ -1,6 +1,6 @@
 import { LifeStage, ActionType, AmountNeeded, AddOrSubtract } from "../../../constants/creatureConstants";
 import { roundToPlace, getCreatureIdentityString, isInPosition } from "../../universalLogic";
-import { doesPotentialMateExist } from "../creatureLogic";
+import { assessCauseOfDeath, doesPotentialMateExist } from "../creatureLogic";
 import { 
     getAmountNeededDecimal,
     calculateAmountLostPerMs,
@@ -156,7 +156,11 @@ export default class CreatureNeeds {
         }
 
         // if it was a shortened list and different from last priority, prepare for new priority and return new priority
-        if (isShortenedList && newPriority !== lastPriority) {
+        // if (isShortenedList && newPriority !== lastPriority) {
+        //     this.prepareForNextPriority();
+        //     return newPriority;
+        // }
+        if (isShortenedList && this.didPriorityChange(newPriority, lastPriority, true)) {
             this.prepareForNextPriority();
             return newPriority;
         }
@@ -198,9 +202,11 @@ export default class CreatureNeeds {
         this.startNewAction = true;
     }
 
-    didPriorityChange = () => {
-        if (this.priority !== this.previousPriority) {
-            console.log(`Priority changed for creature ${getCreatureIdentityString(this.creature)} from ${this.previousPriority} to ${this.priority}.`);
+    didPriorityChange = (newPriority, oldPriority, showLog = false) => {
+        if (newPriority !== oldPriority) {
+            if (showLog) {
+                console.log(`Priority changed for creature ${getCreatureIdentityString(this.creature)} from ${oldPriority} to ${newPriority}.`);
+            }
             return true;
         }
         return false;
@@ -209,8 +215,8 @@ export default class CreatureNeeds {
     isPriorityComplete = (priority, creatures) => {
         switch (priority) {
             case ActionType.DIE:
-                if (this.creature.life.LifeStage === LifeStage.DECEASED) {
-                    console.log(`creature ${getCreatureIdentityString(this.creature)} is dead.`);
+                if (this.creature.life.isDead === true) {
+                    console.log(`creature ${getCreatureIdentityString(this.creature)} is officially dead.`);
                     this.displayCreatureNeedLevels();
                     return true;
                 }
@@ -319,7 +325,7 @@ export default class CreatureNeeds {
         this.prepareForNextPriority();
 
         // special priorities for  child and deceased
-        if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+        if (this.creature.life.isDead) {
             return [
                 {
                     meetsCondition: () => {
@@ -341,6 +347,7 @@ export default class CreatureNeeds {
                     if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
                         || this.foodLevel.points <= 0 || (this.creature.life.age > this.creature.life.lifeSpan)
                         || this.creature.life.LifeStage === LifeStage.DECEASED) {
+                            assessCauseOfDeath(this.creature);
                         return true;
                     }
                     return false;
@@ -464,6 +471,7 @@ export default class CreatureNeeds {
                 meetsCondition: () => {
                     if (this.creature.life.lifeStage !== LifeStage.CHILD &&
                         this.creature.safety.shelter && this.creature.family.mate && 
+                        !this.creature.family.mate.life.isDead &&
                         this.matingLevel.percent <= 20 &&
                         !this.creature.mating.canMate()) {
                         return true;
@@ -599,20 +607,20 @@ export default class CreatureNeeds {
     getShortenedPriorityOrder = () => {
         return [
             {
-                // TODO write if statement for if creature is eaten
-                meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
-                    if (this.creature.life.lifeStage === LifeStage.DECEASED) {
+                meetsCondition: () => {
+                    if (this.creature.life.isDead) {
                         return true;
                     }
-                    return false;
                 },
                 priority: ActionType.BE_DEAD
             },
             {
                 // TODO write if statement for if creature is eaten
                 meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
-                    if ((this.creature.safety.isBeingEaten)
-                        || this.foodLevel.percent <= 0) {
+                    if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
+                        || this.foodLevel.points <= 0 || (this.creature.life.age > this.creature.life.lifeSpan)
+                        || this.creature.life.LifeStage === LifeStage.DECEASED) {
+                            assessCauseOfDeath(this.creature);
                         return true;
                     }
                     return false;
@@ -684,10 +692,20 @@ export default class CreatureNeeds {
     getChildPriorityOrder = () => {
         return [
             {
+                meetsCondition: () => {
+                    if (this.creature.life.isDead) {
+                        return true;
+                    }
+                },
+                priority: ActionType.BE_DEAD
+            },
+            {
                 // TODO write if statement for if creature is eaten
                 meetsCondition: () => { // death condition - old age, hunger 0, or gets eaten
                     if ((this.creature.safety.isBeingChased && this.creature.safety.isBeingEaten)
-                        || this.foodLevel.percent <= 0) {
+                        || this.foodLevel.points <= 0 || (this.creature.life.age > this.creature.life.lifeSpan)
+                        || this.creature.life.LifeStage === LifeStage.DECEASED) {
+                            assessCauseOfDeath(this.creature);
                         return true;
                     }
                     return false;

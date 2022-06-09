@@ -48,6 +48,13 @@ export const LifeStage = {
     DECEASED: "DECEASED"
 }
 
+export const CauseOfDeath = {
+    OLD_AGE: "OLD_AGE",
+    STARVATION: "STARVATION",
+    WAS_EATEN: "WAS_EATEN",
+    UNKNOWN: "UNKNOWN"
+}
+
 export const AmountNeeded = {
     MIN: "MIN",
     AVG: "AVG",
@@ -157,7 +164,8 @@ export const Bleep = {
     size: 8,
     sightRadius: 30,
     sightDistance: 60,
-    speed: 5,
+    //speed: 5,
+    speed: 6,
     lifeSpanRange: {
         low: 15,
         high: 20

@@ -10,7 +10,8 @@ import { determineSightCoordinates,
     searchAreaForMate,
   addMovementRecord,
   checkForMovementPattern,
-  isCreatureInRangeOfTargetPosition} from "../creatureLogic";
+  isCreatureInRangeOfTargetPosition,
+  prepareForDeath} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
 import { ShelterLine } from "../../../constants/canvasConstants";
@@ -195,8 +196,7 @@ export default class CreatureMovement {
           case ActionType.DIE:
             this.creature.targetType = NeedType.NONE;
             this.moveMode = MoveMode.STAND_STILL;
-            this.creature.safety.isBeingChased = false;
-            this.creature.safety.isBeingEaten = false;
+            prepareForDeath(this.creature);
             break;
           case ActionType.BE_DEAD:
             this.creature.targetType = NeedType.NONE;
@@ -408,16 +408,16 @@ export default class CreatureMovement {
     }
 
     moveToPoint = (endPosition, objects, creatures, shelters, canvasInfo, allowCloseToObject = false) => {
-      let isPattern = this.testWithMovementPatterns();
+      // let isPattern = this.testWithMovementPatterns();
 
-      if (isPattern 
-        && 
-        (this.creature.needs.priority === ActionType.FEED_FAMILY || 
-          this.creature.needs.priority === ActionType.FEED_SELF)
-          ) {
-        console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
-        this.escapeCorner(creatures, objects, shelters);
-      }
+      // if (isPattern 
+      //   && 
+      //   (this.creature.needs.priority === ActionType.FEED_FAMILY || 
+      //     this.creature.needs.priority === ActionType.FEED_SELF)
+      //     ) {
+      //   console.log(`creature ${getCreatureIdentityString(this.creature)} is escaping corner to ${this.creature.needs.priority}`);
+      //   this.escapeCorner(creatures, objects, shelters);
+      // }
 
       // if (isPattern) {
       //   this.resetMovementProperties();

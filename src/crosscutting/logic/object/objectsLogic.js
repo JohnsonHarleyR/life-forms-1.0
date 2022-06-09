@@ -155,33 +155,39 @@ const checkIfPreviousRelativePlacementWasCollision = (objects, creature, padding
 const breakCornerTieToGetObjectSide = (objCorner, obj, creature) => {
   let objSides = getSidesOfCorner(objCorner);
 
-  let didPriorityChange = creature.needs.didPriorityChange();
+  let didPriorityChange = creature.needs.didPriorityChange(creature.needs.priority, creature.needs.previousPriority, false);
 
   // first, if one of the sides was the previous collision side, return the other one?
   // NOTE: actually, perhaps it would be better to return the same side until there's no longer a collision?
   // consider circumstances - ok, I'm choosing the side with opposite closest to target in this case
   let prevSide = creature.movement.previousSide;
+  let checkedPreviousSide = false;
   if (!didPriorityChange && prevSide === objSides[0] || prevSide === objSides[1]) {
+    checkedPreviousSide = true;
     let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
-    console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
-    `New side determined by checking previousSide and using getObjectSideWithOppositeClosestToTarget: ${side}`);
     //let change = creature.needs.didPriorityChange();
     if (side !== CornerSideResult.TIE) {
       return side;
     }
+    //  else {
+    //   console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id},\n` + 
+    //   `New side determined by checking previousSide and using getObjectSideWithOppositeClosestToTarget: ${side}`);
+    // }
   }
 
   // try to break by shortest length
   let shortestSide = getObjectSideWithShortestLength(objSides, obj);
-  console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
-  `New side determined by getObjectSideWithShortestLength: ${shortestSide}`);
+  if (checkedPreviousSide) {
+    console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+    `New side determined by getObjectSideWithShortestLength: ${shortestSide}`);
+  }
   if (shortestSide !== CornerSideResult.TIE) {
     return shortestSide;
   }
 
   // otherwise, try to break with side opposite closest to target again
   let side = getObjectSideWithOppositeClosestToTarget(objSides, obj, creature.targetPosition);
-  console.log(`There is still a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
+  console.log(`There is a corner tie for ${getCreatureIdentityString(creature)} near obj ${obj.id}.\n` + 
   `New side determined by getObjectSideWithOppositeClosestToTarget: ${side}`);
   //didPriorityChange = creature.needs.didPriorityChange();
   if (side !== CornerSideResult.TIE) {
