@@ -3,6 +3,7 @@ import { Corner, Side, RelativeToObject, RelativeToObjectCases } from "../consta
 import { Direction, CreatureDefaults } from "../constants/creatureConstants";
 import { checkIfCreatureCollidesWithAnyObjects, isNewCreaturePositionInsideAnyObject } from "./object/objectsLogic";
 import { getNecessaryCollisionPadding } from "./creature/creatureLogic";
+import { ColorType } from "../constants/geneticConstants";
 
 // display methods
 export const getCreatureIdentityString = (creature) => {
@@ -118,6 +119,38 @@ export const blendColors = (colorA, colorB, amount) => {
     const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
     const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
     return '#' + r + g + b;
+}
+
+// amount should be positive or negative
+export const alterColorByAmount = (color, colorType, amount) => {
+    const [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+    switch(colorType) {
+        case ColorType.R:
+            rI = ensureColorValueInRange(rI + amount);
+            break;
+        case ColorType.G:
+            gI = ensureColorValueInRange(gI + amount);
+            break;
+        case ColorType.B:
+            gI = ensureColorValueInRange(bI + amount);
+            break;
+    }
+    const r = rI.toString(16).padStart(2, '0');
+    const g = gI.toString(16).padStart(2, '0');
+    const b = bI.toString(16).padStart(2, '0');
+    return '#' + r + g + b;
+}
+
+const ensureColorValueInRange = (value) => {
+    let newValue = value;
+    if (value < 0) {
+        let alterAmount = Math.abs(value);
+        newValue = 255 - alterAmount;
+    }
+    if (value > 255) {
+        newValue = value - 255;
+    }
+    return newValue;
 }
 
 // adding and removing items
