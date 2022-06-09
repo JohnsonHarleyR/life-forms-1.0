@@ -292,7 +292,7 @@ export default class CreatureMovement {
         case ActionType.SLEEP_IN_SPOT:
           return this.creature.position;
         case ActionType.SLEEP_IN_SHELTER:
-          console.log('getting random sleep position');
+          //console.log('getting random sleep position');
           return this.getRandomPositionInsideShelter();
         case ActionType.LEAVE_SHELTER:
           return getRandomCreatureTargetPosition(this.creature, objects, shelters);

@@ -160,7 +160,7 @@ export default class CreatureNeeds {
         //     this.prepareForNextPriority();
         //     return newPriority;
         // }
-        if (isShortenedList && this.didPriorityChange(newPriority, lastPriority, true)) {
+        if (isShortenedList && this.didPriorityChange(newPriority, lastPriority, false)) {
             this.prepareForNextPriority();
             return newPriority;
         }
@@ -282,9 +282,9 @@ export default class CreatureNeeds {
                 if (this.foodPercentGoal === null || 
                     (this.familyFoodPercent >= this.foodPercentGoal &&
                         this.foodLevel.percent >= this.foodPercentGoal)) {
-                    console.log(`creature ${this.creature.id} feed family is complete` + 
-                    `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
-                    `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
+                    // console.log(`creature ${this.creature.id} feed family is complete` + 
+                    // `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+                    // `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
                     
                     this.foodPercentGoal = null;
                     return true;
@@ -292,7 +292,7 @@ export default class CreatureNeeds {
                 break;
             case ActionType.SLEEP_IN_SHELTER:
                 if (this.creature.safety.shelter !== null && this.creature.safety.shelter.isInsideShelter(this.creature) && this.sleepLevel.percent > 95) {
-                    console.log(`sleep in shelter complete for ${this.creature.id}`);
+                    //console.log(`sleep in shelter complete for ${this.creature.id}`);
                     return true;
                 }
                 break;
@@ -528,9 +528,9 @@ export default class CreatureNeeds {
                     if (this.foodLevel.percent <= 60 || 
                         this.familyFoodPercent <= 60) {
                             this.foodPercentGoal = 80;
-                            console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
-                            `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
-                            `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
+                            // console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
+                            // `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+                            // `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
                             return true;
                         }
                         return false;

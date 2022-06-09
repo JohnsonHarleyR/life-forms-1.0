@@ -109,9 +109,9 @@ export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) =
       }
     });
 
-    if (newTarget !== null && newTarget.type === CreatureType.BIDDY) {
-        console.log(`targeting biddy`);
-    }
+    // if (newTarget !== null && newTarget.type === CreatureType.BIDDY) {
+    //     console.log(`targeting biddy`);
+    // }
 
     return newTarget;
   }
