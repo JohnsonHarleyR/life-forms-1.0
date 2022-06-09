@@ -8,3 +8,5 @@ export const Dominance = {
     DOMINANT: "DOMINANT",
     RECESSIVE: "RECESSIVE"
 }
+
+// genes and accompanying traits
