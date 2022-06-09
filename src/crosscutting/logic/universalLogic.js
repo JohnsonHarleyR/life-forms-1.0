@@ -27,6 +27,9 @@ export const shuffleArray = (array) => {
     return newArray;
 }
 
+// random
+
+
 // time and rounding methods
 export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
     return maxLifeSpan / maxYears;
@@ -57,6 +60,12 @@ export const roundToPlace = (number, decimalPlaces) => {
 
 export const getRandomIntInRange = (min, max) => {
     let result = Math.floor((Math.random() * max) + min)
+    return result;
+}
+
+export const getRandomItemInArray = (array) => {
+    let length = array.length;
+    let result = Math.floor(Math.random() * length);
     return result;
 }
 
