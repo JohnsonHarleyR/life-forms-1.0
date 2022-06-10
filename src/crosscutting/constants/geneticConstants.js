@@ -2,7 +2,8 @@ import { alterColorByAmount, getRandomIntInRange } from "../logic/universalLogic
 
 
 export const GeneticDefaults = {
-    GENERATIONS_TO_BECOME_DOMINANT: 4
+    GENERATIONS_TO_BECOME_DOMINANT: 4,
+    ATTEMPTS_TO_MUTATE_ALLOWED: 15
 }
 
 export const Dominance = {
@@ -19,6 +20,16 @@ export const ColorType = {
 
 // genes and accompanying traits
 
+export const GeneType = {
+    COLOR: "COLOR"
+}
+
+export const LIST_OF_GENES = [
+    {
+        geneType: GeneType.COLOR,
+        constant: COLOR_GENE
+    }
+]
 
 // COLOR
 // --gene
@@ -36,6 +47,7 @@ export const ColorTrait = {
 export const COLOR_DEFAULT = {
     name: "DEFAULT",
     dominance: Dominance.DOMINANT,
+    isMutation: false,
     alter: (creature) => {
         return {...creature};
     }
@@ -43,6 +55,7 @@ export const COLOR_DEFAULT = {
 export const MORE_RED = {
     name: "MORE_RED",
     dominance: Dominance.RECESSIVE,
+    isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
         let changeAmount = getRandomIntInRange(10, 20);
