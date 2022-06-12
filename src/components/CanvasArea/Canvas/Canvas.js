@@ -14,6 +14,7 @@ import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 import { Plants } from '../../../crosscutting/constants/plantConstants';
 import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogic';
 import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/creatureConstants';
+import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const Canvas = () => {
     
@@ -76,6 +77,11 @@ const Canvas = () => {
             generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);
+
+    // to run tests, uncomment this out
+    useEffect(() => {
+        runAllGeneticTests();
+    }, []);
 
 
     const showMousePos = (evt) => {
