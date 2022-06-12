@@ -1,4 +1,8 @@
-import { Dominance, GeneticDefaults } from "../../../constants/geneticConstants";
+import { 
+    Dominance,
+    GeneticDefaults,
+    LIST_OF_GENES
+} from "../../../constants/geneticConstants";
 import { getRandomItemInArray } from "../../universalLogic";
 import { createDefaultGeneticProfile, createNewGeneFromConstant, createNewGeneFromParentGenes, getGeneFromProfile, setProfileProperty } from "./logic/geneticLogic";
 

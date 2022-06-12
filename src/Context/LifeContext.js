@@ -1,4 +1,5 @@
 import React, {useState, useEffect, createContext} from 'react';
+import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const LifeContext = createContext({creatures: [], plants: [], objects: []});
 
@@ -11,6 +12,11 @@ const LifeProvider = ({children}) => {
 
     const [chosenCreature, setChosenCreature] = useState(null);
     const [largestCreatureSize, setLargestCreatureSize] = useState(0);
+
+    // to run tests, uncomment this out
+    useEffect(() => {
+        runAllGeneticTests();
+    }, []);
 
     // when creatures is updated, update the largest size
     useEffect(() => { 
