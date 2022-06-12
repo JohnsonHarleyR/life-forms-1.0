@@ -217,6 +217,10 @@ const getTraitsWithHighestGenerationCount = (traits) => {
     let highestCount = 0;
     let highest = [];
     for (let i = 0; i < traits.length; i++) {
+        if (traits[i] === null) {
+            continue;
+        }
+        
         if (traits[i].generationCount > highestCount) {
             highestCount = traits[i].generationCount;
             highest = [traits[i]];
