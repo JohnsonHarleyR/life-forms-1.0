@@ -3,6 +3,7 @@ import { getRandomItemInArray } from "../../../universalLogic";
 import GeneticProfile from "../geneticProfile";
 import Gene from "../subclasses/gene";
 import Trait from "../subclasses/trait";
+import { CreatureDefaults } from "../../../../constants/creatureConstants";
 
 // testing
 export const getPrivateGeneticMethodsForTesting = () => {
@@ -15,9 +16,20 @@ export const getPrivateGeneticMethodsForTesting = () => {
     };
 }
 
+// deep copy methods
+export const getDeepTraitCopy = (trait) => {
+    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter);
+    return newTrait;
+}
+
 // genetic profile logic
+export const createGeneticProfileForCreature = (creature, doSetUpGenes = CreatureDefaults.SET_UP_GENES, mutateRandomGene = CreatureDefaults.MUTATE_GENES) => {
+    let newProfile = new GeneticProfile(creature, doSetUpGenes, mutateRandomGene);
+    return newProfile;
+}
+
 export const createDefaultGeneticProfile = () => {
-    let newProfile = new GeneticProfile(null, null, false, false);
+    let newProfile = new GeneticProfile(null, false, false);
 
     let geneConstantList = LIST_OF_GENES;
     geneConstantList.forEach(c => {
@@ -76,19 +88,24 @@ const combineRecessiveTraits = (xRecessive, yRecessive) => {
             }
         });
         if (canCombine) {
-            combined.push(x);
+            combined.push(getDeepTraitCopy(x));
         }
     });
+    return combined;
 }
 
 // inclusive - use all traits even if only in one set
 const combineDominantTraits = (xDominant, yDominant) => {
-    let combined = [...xDominant];
+    let combined = [];
+    xDominant.forEach(x => {
+        combined.push(getDeepTraitCopy(x));
+    });
+
     let traitsToAdd = [];
-    yDominant.forEach(x => {
+    yDominant.forEach(y => {
         combined.forEach(c => {
-            if (c.name !== x.name) {
-                traitsToAdd.push(x);
+            if (c.name !== y.name) {
+                traitsToAdd.push(getDeepTraitCopy(y));
             }
         })
     });
@@ -123,7 +140,7 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose) => {
 
 // NOTE: When using this method, it will assume generation 1
 export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, isMutation}) => {
-    let newTrait = new Trait(name, dominance, 1, alter);
+    let newTrait = new Trait(name, dominance, 0, isMutation, alter);
     return newTrait;
 }
 

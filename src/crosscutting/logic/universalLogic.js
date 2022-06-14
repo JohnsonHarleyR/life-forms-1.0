@@ -66,7 +66,7 @@ export const getRandomIntInRange = (min, max) => {
 export const getRandomItemInArray = (array) => {
     let length = array.length;
     let result = Math.floor(Math.random() * length);
-    return result;
+    return array[result];
 }
 
 // object collision - v2

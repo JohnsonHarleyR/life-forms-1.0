@@ -19,6 +19,7 @@ import {
 import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
 import Emojis from "./subclasses/emojis/emojis";
 import { getFoodTargetType } from "./subclasses/logic/safetyLogic";
+import { createDefaultGeneticProfile, createGeneticProfileForCreature } from "./genetics/logic/geneticLogic";
 
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
@@ -71,6 +72,8 @@ export default class Creature {
         
         this.showLines = false;
         this.emojis = new Emojis(this);
+
+        this.geneticProfile = createGeneticProfileForCreature(this);
     
         this.setPlants = setPlants;
         this.setCreatures = setCreatures;

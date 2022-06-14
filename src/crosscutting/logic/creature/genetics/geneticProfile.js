@@ -5,23 +5,32 @@ import {
 } from "../../../constants/geneticConstants";
 import { getRandomItemInArray } from "../../universalLogic";
 import { createDefaultGeneticProfile, createNewGeneFromConstant, createNewGeneFromParentGenes, getGeneFromProfile, setProfileProperty } from "./logic/geneticLogic";
-
+import { getProfileLogString } from "./tests/testHelpers/resultLogging";
 
 export default class GeneticProfile {
-    constructor(xProfile = null, yProfile = null, doSetUpGenes = true, mutateRandomGene = true) {
+    constructor(creature = null, doSetUpGenes = true, mutateRandomGene = true) {
+        this.creature = creature;
         this.colorGene = null;
 
         if (doSetUpGenes) {
-            this.setUpGenes(xProfile, yProfile, mutateRandomGene);
+            this.setUpGenes(mutateRandomGene);
         }
     }
 
-    setUpGenes = (xProfile, yProfile, mutateRandomGene) => {
+    setUpGenes = (mutateRandomGene) => {
         // if xProfile and yProfile are null, then create default values for them
+        let xProfile = null;
+        if (this.creature !== null && this.creature.family.mother !== null) {
+            xProfile = this.creature.family.mother.GeneticProfile;
+        }
         if (xProfile === null) {
             xProfile = createDefaultGeneticProfile();
         }
 
+        let yProfile = null;
+        if (this.creature !== null && this.creature.family.father !== null) {
+            yProfile = this.creature.family.father.GeneticProfile;
+        }
         if (yProfile === null) {
             yProfile = createDefaultGeneticProfile();
         }
@@ -45,6 +54,9 @@ export default class GeneticProfile {
                 setProfileProperty(this, geneToMutate.geneType, replacementGene);
             }
         }
+
+        //console.log(`Profile: ${JSON.stringify(this)}`);
+        console.log(getProfileLogString(this));
     }
 
     selectGeneToMutateFromList = (geneConstantList) => {

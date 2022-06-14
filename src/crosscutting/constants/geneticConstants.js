@@ -24,26 +24,9 @@ export const GeneType = {
     COLOR: "COLOR"
 }
 
-export const LIST_OF_GENES = [
-    {
-        geneType: GeneType.COLOR,
-        constant: COLOR_GENE
-    }
-]
-
 // COLOR
-// --gene
-export const COLOR_GENE = {
-    name: "COLOR_GENE",
-    dominantTraits: [COLOR_DEFAULT],
-    recessiveTraits: [MORE_RED]
-}
 
 // --traits
-export const ColorTrait = {
-    DEFAULT: COLOR_DEFAULT,
-    MORE_RED: MORE_RED
-}
 export const COLOR_DEFAULT = {
     name: "DEFAULT",
     dominance: Dominance.DOMINANT,
@@ -65,3 +48,26 @@ export const MORE_RED = {
         creature.color = creature.life.determineColor();
     }
 }
+
+// bringing traits together
+export const ColorTrait = {
+    DEFAULT: COLOR_DEFAULT,
+    MORE_RED: MORE_RED
+}
+
+// --gene
+export const COLOR_GENE = {
+    name: "COLOR_GENE",
+    dominantTraits: [COLOR_DEFAULT],
+    recessiveTraits: [MORE_RED]
+}
+
+
+
+// List of all genes
+export const LIST_OF_GENES = [
+    {
+        geneType: GeneType.COLOR,
+        constant: COLOR_GENE
+    }
+]

@@ -15,8 +15,8 @@ export const runAllGeneticTests = () => {
 // TRAIT TESTS
 const test_getTraitsWithHighestGenerationCount = (testCases = cases_getTraitsWithHighestGenerationCount) => {
     let logString = `**************************************\n` +
-    `TEST getTraitsWithHighestGenerationCount\n` +
-    `**************************************\n`;
+    `TEST: getTraitsWithHighestGenerationCount\n` +
+    `**************************************`;
     console.log(logString);
 
     let caseIndex;
@@ -41,4 +41,5 @@ const test_getTraitsWithHighestGenerationCount = (testCases = cases_getTraitsWit
     }
 
     logTestCaseCompareResult(caseIndex, description, isSame, reason);
+    console.log(``);
 }
