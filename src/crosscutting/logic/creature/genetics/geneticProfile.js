@@ -10,11 +10,30 @@ import { getProfileLogString } from "./tests/testHelpers/resultLogging";
 export default class GeneticProfile {
     constructor(creature = null, doSetUpGenes = true, mutateRandomGene = true) {
         this.creature = creature;
+
         this.colorGene = null;
+
+        this.allGenes = [this.colorGene];
+
+        //this.permanentChanges = []; // these will be determined from dominant traits before mutating anything
 
         if (doSetUpGenes) {
             this.setUpGenes(mutateRandomGene);
         }
+
+        this.applyGenesToCreature();
+    }
+
+    applyGenesToCreature = () => {
+        if (this.creature === null) {
+            return;
+        }
+
+        this.allGenes.forEach(g => {
+            if (g !== null) {
+                g.chosenTrait.alter(this.creature);
+            }
+        })
     }
 
     setUpGenes = (mutateRandomGene) => {
@@ -48,6 +67,7 @@ export default class GeneticProfile {
         // until we find one that isn't mutated. If we do, then replace that
         // gene with random recessive traits.
         if (mutateRandomGene) {
+
             let geneToMutate = this.selectGeneToMutateFromList(geneConstantList);
             if (geneToMutate !== null) {
                 let replacementGene = createNewGeneFromConstant(geneToMutate.constant, Dominance.RECESSIVE);
@@ -63,11 +83,16 @@ export default class GeneticProfile {
         let listItem = null;
         let itemsTried = [];
         let attemptCount = 0;
+        // let permanentNames = [];
+        // this.permanentChanges.forEach(p => {
+        //     permanentNames.push(p.name);
+        // });
 
         do {
-            let possibleItem = getRandomItemInArray(geneConstantList);
+            let possibleItem = getRandomItemInArray(this.allGenes);
             if (!itemsTried.includes(possibleItem.geneType) && 
-            !possibleItem.xTrait.isMutated && !possibleItem.xTrait.isMutated) {
+            //(permanentNames.includes(possibleItem.chosenTrait.name) ||
+            (!possibleItem.xTrait.isMutation && !possibleItem.xTrait.isMutation)) {
                 listItem = possibleItem;
             }
             itemsTried.push(possibleItem.geneType);

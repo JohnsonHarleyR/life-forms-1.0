@@ -3,6 +3,7 @@ import { alterColorByAmount, getRandomIntInRange } from "../logic/universalLogic
 
 export const GeneticDefaults = {
     GENERATIONS_TO_BECOME_DOMINANT: 4,
+    GENERATIONS_TO_BECOME_PERMANENT: 8,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15
 }
 

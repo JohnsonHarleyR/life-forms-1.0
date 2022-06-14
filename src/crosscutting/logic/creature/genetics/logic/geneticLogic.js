@@ -66,10 +66,10 @@ export const getGeneFromProfile = (profile, geneType) => {
 
 export const createNewGeneFromParentGenes = (xGene, yGene) => {
     let name = xGene.name;
-    let dominantTraits = combineDominantTraits(xGene.dominantTraits, yGene.dominantTraits);
-    let recessiveTraits = combineRecessiveTraits(xGene.recessiveTraits, yGene.recessiveTraits);
     let xTrait = xGene.getRandomTraitToPass();
     let yTrait = yGene.getRandomTraitToPass();
+    let dominantTraits = combineDominantTraits(xGene.dominantTraitsToPass, yGene.dominantTraitsToPass);
+    let recessiveTraits = combineRecessiveTraits(xGene.recessiveTraitsToPass, yGene.recessiveTraitsToPass);
     
     let newGene = new Gene(name, dominantTraits, recessiveTraits,
         xTrait, yTrait);
@@ -176,7 +176,7 @@ export const determineChosenTrait = (xTrait, yTrait) => {
     }
 
     // the generation count should already be increased while creating the gene - so it should be the same
-    let newTrait = {...chosen};
+    let newTrait = getDeepTraitCopy(chosen);
 
     // determine whether to make a trait dominant
     if (newTrait.Dominance === Dominance.RECESSIVE &&
@@ -186,9 +186,11 @@ export const determineChosenTrait = (xTrait, yTrait) => {
         // NOTE: if traits were the same, then alter both traits
         if (!areTraitsIdentical(traits)) {
             chosen.dominance = Dominance.DOMINANT;
+            chosen.isMutation = false; // set to false so it is ignored in trait changes
         } else {
             traits.forEach(t => {
                 t.dominance = Dominance.DOMINANT;
+                chosen.isMutation = false;
             });
         }
     }
