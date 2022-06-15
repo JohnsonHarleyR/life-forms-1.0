@@ -71,6 +71,7 @@ export default class CreatureMovement {
         this.movementRecords = [];
 
         this.intervalCount = 0;
+        this.hasMoved = false;
     }
 
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
@@ -106,6 +107,7 @@ export default class CreatureMovement {
 
         // now move
         this.move(objects, plants, creatures, shelters, CanvasInfo, targetPos);
+        this.hasMoved = true;
 
         // now check if creature is in shelter again - update their safety
         this.creature.safety.updateSafety(creatures);
@@ -821,7 +823,13 @@ export default class CreatureMovement {
             this.creature.targetPosition = this.creature.currentTarget.position;
             //console.log(`creature ${this.creature.id} has food target, moving toward target`);
             newPosition = this.moveToPoint(this.creature.currentTarget.position, objects, creatures, shelters, canvasInfo);
-            if (isInPosition(newPosition, this.creature.currentTarget.position)) {
+            let preyHasMoved = this.creature.currentTarget.movement.hasMoved;
+            let preyPosition = this.creature.currentTarget.position;
+            if (!preyHasMoved) {
+              let newPreyPosition = this.moveToPoint(this.creature.currentTarget.targetPosition, objects, creatures, shelters, canvasInfo);
+              preyPosition = newPreyPosition;
+            }
+            if (isInPosition(newPosition, preyPosition)) {
               //console.log(`creature ${this.creature.id} has captured food target`);
               this.creature.currentTarget.safety.isBeingEaten = true;
               putTargetInFoodInventory(this.creature);
@@ -894,7 +902,14 @@ export default class CreatureMovement {
         }
         return newPosition;
       } else if (this.creature.mating.isMateTarget) { // if they are a target, just stay in the same position
-        return this.creature.position;
+        // try also moving toward the mate to meet half way
+        if (this.creature.mating.mateTargetOf !== null) {
+          let newPosition = this.moveToPoint(this.creature.mating.mateTargetOf.position, objects, creatures, shelters, canvasInfo);
+          return newPosition;
+        } else {
+          return this.creature.position;
+        }
+        //return this.creature.position;
       } else {
 
         // check for a mate in search area

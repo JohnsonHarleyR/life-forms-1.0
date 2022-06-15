@@ -4,7 +4,6 @@ import { alterColorByAmount,
     getRandomDecimalInRange,
     getRandomIntInRange, 
     roundToPlace} from "../logic/universalLogic"
-import { CreatureDefaults } from "./creatureConstants"
 
 
 export const GeneticDefaults = {
@@ -12,8 +11,13 @@ export const GeneticDefaults = {
     GENERATIONS_TO_BECOME_PERMANENT: 8,
     
     CHANCE_OF_MUTATION: .75,
-    POSSIBLE_MUTATIONS_AT_BIRTH: 2,
+    POSSIBLE_MUTATIONS: 2,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15,
+
+    MIN_SPEED: 1,
+    MAX_SPEED: 14,
+    SPEED_CHANGE_MIN: .10,
+    SPEED_CHANGE_MAX: .20,
 
     MIN_SIZE: 4,
     MAX_SIZE: 14,
@@ -50,8 +54,58 @@ export const AddOrSubtract = {
 
 export const GeneType = {
     COLOR: "COLOR",
-    SIZE: "SIZE"
+    SIZE: "SIZE",
+    SPEED: "SPEED"
 }
+
+// SPEED
+// --traits
+export const SPEED_DEFAULT = {
+    name: "DEFAULT",
+    dominance: Dominance.DOMINANT,
+    isMutation: false,
+    alter: () => {
+        return;
+    },
+    canHaveTrait: () => {
+        return true;
+    }
+}
+
+export const FASTER = {
+    name: "FASTER",
+    dominance: Dominance.RECESSIVE,
+    isMutation: true,
+    alter: (creature) => {
+        let changePercent = 1 + getRandomDecimalInRange(
+            GeneticDefaults.SPEED_CHANGE_MIN,
+            GeneticDefaults.SPEED_CHANGE_MAX);
+        let newSpeed = creature.movement.speed * changePercent;
+        if (newSpeed > GeneticDefaults.MAX_SPEED) {
+            newSpeed = GeneticDefaults.MAX_SPEED;
+        }
+        creature.movement.speed = roundToPlace(newSpeed, 2);
+    },
+    canHaveTrait: (creature) => {
+        let minNewSpeed = (1 + GeneticDefaults.SPEED_CHANGE_MIN) * creature.movement.speed;
+        if (minNewSpeed > GeneticDefaults.MAX_SPEED) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+// --gene
+export const SPEED_GENE = {
+    name: "SPEED_GENE",
+    geneType: GeneType.SPEED,
+    dominantTraits: [SPEED_DEFAULT],
+    recessiveTraits: [
+        FASTER
+    ]
+}
+
 
 // SIZE
 // --traits
@@ -360,5 +414,9 @@ export const LIST_OF_GENES = [
     {
         geneType: GeneType.SIZE,
         constant: SIZE_GENE
+    },
+    {
+        geneType: GeneType.SPEED,
+        constant: SPEED_GENE
     }
 ]

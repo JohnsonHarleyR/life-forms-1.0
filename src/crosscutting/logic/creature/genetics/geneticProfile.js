@@ -14,6 +14,7 @@ export default class GeneticProfile {
 
         this.colorGene = null;
         this.sizeGene = null;
+        this.speedGene = null;
 
         //this.permanentChanges = []; // these will be determined from dominant traits before mutating anything
 
@@ -25,7 +26,7 @@ export default class GeneticProfile {
     }
 
     getAllGenes = () => {
-        return [this.colorGene, this.sizeGene];
+        return [this.colorGene, this.sizeGene, this.speedGene];
     }
 
     applyGenesToCreature = () => {

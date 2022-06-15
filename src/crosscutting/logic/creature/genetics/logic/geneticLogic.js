@@ -55,6 +55,9 @@ export const setProfileProperty = (profile, geneType, newValue) => {
         case GeneType.SIZE:
             profile.sizeGene = newValue;
             break;
+        case GeneType.SPEED:
+            profile.speedGene = newValue;
+            break;
     }
 }
 
@@ -66,6 +69,8 @@ export const getGeneFromProfile = (profile, geneType) => {
             return profile.colorGene;
         case GeneType.SIZE:
             return profile.sizeGene;
+        case GeneType.SPEED:
+            return profile.speedGene;
     }
 }
 

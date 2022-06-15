@@ -129,6 +129,7 @@ export const putTargetInFoodInventory = (creature) => {
         if (!isPrey(creature, creature.currentTarget)) {
             creature.currentTarget.isEaten = true;
         } else {
+            creature.inventory.food.push(creature.currentTarget);
             console.log(`***CREATURE ${getCreatureIdentityString(creature)} IS EATING ${getCreatureIdentityString(creature.currentTarget)}`);
         }
         creature.currentTarget = null;

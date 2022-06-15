@@ -33,11 +33,18 @@ export const assessCauseOfDeath = (creature) => {
 }
 
 export const prepareForDeath = (creature) => {
+    // give everything a chance to be drawn
+    // if (creature.safety.isBeingEaten && !creature.safety.isDrawnBeforeEaten) {
+    //     creature.safety.isDrawnBeforeEaten = true;
+    //     return;
+    // }
+
     if (creature.safety.isBeingEaten) {
         creature.isEaten = true;
     }
     creature.safety.isBeingChased = false;
     creature.safety.isBeingEaten = false;
+    creature.safety.isDrawnBeforeEaten = false;
     creature.life.isDead = true;
     creature.life.lifeStage = LifeStage.DECEASED;
 

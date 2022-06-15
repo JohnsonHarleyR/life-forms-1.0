@@ -119,19 +119,26 @@ export const updateCreatures = (creatures, setCreatures) => {
     let newCreatures = [];
     let creatureNames = [];
     creatures.forEach(c => {
-        if (!c.isEaten && !creatureNames.includes(c.id)) {
+        if ((!c.isEaten || !c.life.isDead) && !creatureNames.includes(c.id)) {
             newCreatures.push(c);
             creatureNames.push(c.id);
         }
         c.family.children.forEach(ch => {
-            if (!ch.isEaten && !isInArray(ch.id, creatureNames)) {
+            if ((!c.isEaten || !c.life.isDead) && !isInArray(ch.id, creatureNames)) {
                 newCreatures.push(ch);
                 creatureNames.push(ch.id);
             }
         })
     });
+    resetHasMovedForCreatures(newCreatures);
     //console.log(`number of creatures: ${newCreatures.length}`);
     setCreatures(newCreatures);
+}
+
+const resetHasMovedForCreatures = (creatures) => {
+    creatures.forEach(c => {
+        c.movement.hasMoved = false;
+    });
 }
 
 const isInArray = (str, array) => {
