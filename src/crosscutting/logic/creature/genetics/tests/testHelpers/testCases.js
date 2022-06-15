@@ -10,16 +10,16 @@ export const cases_getTraitsWithHighestGenerationCount = [
             traits:
             [
                 new Trait('TEST_TRAIT1', Dominance.RECESSIVE, 5, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
         
                 new Trait('TEST_TRAIT2', Dominance.RECESSIVE, 4, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
             ],
         },
         expected: 
         [
             new Trait('TEST_TRAIT1', Dominance.RECESSIVE, 5, true, 
-            () => {console.log('alteration method run')})        
+            () => {console.log('alteration method run')}, () => {return true})        
         ]
     },
     {
@@ -29,22 +29,22 @@ export const cases_getTraitsWithHighestGenerationCount = [
             traits:
             [
                 new Trait('TEST_TRAIT1', Dominance.RECESSIVE, 5, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
         
                 new Trait('TEST_TRAIT2', Dominance.RECESSIVE, 4, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
     
                 new Trait('TEST_TRAIT3', Dominance.RECESSIVE, 5, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
             ]
         },
         expected: 
         [
             new Trait('TEST_TRAIT1', Dominance.RECESSIVE, 5, true, 
-            () => {console.log('alteration method run')}),
+            () => {console.log('alteration method run')}, () => {return true}),
             
             new Trait('TEST_TRAIT3', Dominance.RECESSIVE, 5, true, 
-            () => {console.log('alteration method run')}),
+            () => {console.log('alteration method run')}, () => {return true}),
         ]
     },
     {
@@ -56,16 +56,16 @@ export const cases_getTraitsWithHighestGenerationCount = [
                 null,
         
                 new Trait('TEST_TRAIT1', Dominance.RECESSIVE, 4, true, 
-                () => {console.log('alteration method run')}),
+                () => {console.log('alteration method run')}, () => {return true}),
     
                 new Trait('TEST_TRAIT2', Dominance.RECESSIVE, 5, true, 
-                () => {console.log('alteration method run')})
+                () => {console.log('alteration method run')}, () => {return true})
             ]
         },
         expected: 
         [
             new Trait('TEST_TRAIT2', Dominance.RECESSIVE, 5, true, 
-            () => {console.log('alteration method run')})
+            () => {console.log('alteration method run')}, () => {return true})
         ]
     },
 ];

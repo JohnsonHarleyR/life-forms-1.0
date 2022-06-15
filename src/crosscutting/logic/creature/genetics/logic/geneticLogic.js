@@ -18,14 +18,19 @@ export const getPrivateGeneticMethodsForTesting = () => {
 
 // deep copy methods
 export const getDeepTraitCopy = (trait) => {
-    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter);
+    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait);
     return newTrait;
 }
 
 // genetic profile logic
 export const createGeneticProfileForCreature = (creature, doSetUpGenes = CreatureDefaults.SET_UP_GENES, mutateRandomGene = CreatureDefaults.MUTATE_GENES) => {
-    let newProfile = new GeneticProfile(creature, doSetUpGenes, mutateRandomGene);
-    return newProfile;
+    if (!creature.geneticProfile) {
+        let newProfile = new GeneticProfile(creature, doSetUpGenes, mutateRandomGene);
+        return newProfile;
+    } else {
+        return creature.geneticProfile;
+    }
+
 }
 
 export const createDefaultGeneticProfile = () => {
@@ -77,6 +82,21 @@ export const createNewGeneFromParentGenes = (xGene, yGene) => {
     return newGene;
 }
 
+export const geneHasValidRecessiveTraitForCreature = (creature, gene) => {
+    let hasValidTrait = false;
+    let recessiveTraits = gene.recessiveTraits;
+
+    for (let i = 0; i < recessiveTraits.length; i++) {
+        let canHaveTrait = recessiveTraits[i].canHaveTrait(creature);
+        if (canHaveTrait) {
+            hasValidTrait = true;
+            break;
+        }
+    }
+
+    return hasValidTrait;
+}
+
 // exclusive (for when a recessive trait gets moved to dominant)
 // do not include any traits that are not included in both sets
 const combineRecessiveTraits = (xRecessive, yRecessive) => {
@@ -121,12 +141,17 @@ const combineDominantTraits = (xDominant, yDominant) => {
 // NOTE: the below is for creating a default gene - if you pass in Dominance.DOMINANT,
 // it will select the dominant trait... If you want a random mutation to take place
 // for this gene, then choose Dominance.RECESSIVE
-export const createNewGeneFromConstant = (constant, dominanceToChoose) => {
+export const createNewGeneFromConstant = (constant, dominanceToChoose, creature = null) => {
     let traitDefault = null;
     if (dominanceToChoose === Dominance.DOMINANT) {
-        traitDefault = getRandomItemInArray(constant.dominantTraits);
+        traitDefault = chooseValidTraitForCreature(constant.dominantTraits, creature);
     } else {
-        traitDefault = getRandomItemInArray(constant.recessiveTraits);
+        traitDefault = chooseValidTraitForCreature(constant.recessiveTraits, creature);
+    }
+
+    if (traitDefault === null) {
+        console.log(`ERROR: traitDefault value is null This should not happen.`);
+        return null;
     }
 
     let xTrait = createFirstGenerationTraitFromConstant(traitDefault);
@@ -139,9 +164,42 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose) => {
     return newGene;
 }
 
+const chooseValidTraitForCreature = (traits, creature) => {
+    if (creature === null) {
+        return getRandomItemInArray(traits);
+    }
+
+    let traitStartLength = traits.length;
+    let traitsToTry = [...traits];
+
+    let count = 0;
+    let chosen = null;
+    do {
+        let possible = getRandomItemInArray(traitsToTry);
+        if (!possible.canHaveTrait(creature)) {
+            traitsToTry = removeTraitFromArray(possible, traitsToTry);
+        } else {
+            chosen = possible;
+        }
+        count++;
+    } while (chosen === null && count < traitStartLength);
+
+    return chosen;
+}
+
+const removeTraitFromArray = (trait, array) => {
+    let newArray = [];
+    array.forEach(a => {
+        if (a.name !== trait.name) {
+            newArray.push(a);
+        }
+    });
+    return newArray;
+}
+
 // NOTE: When using this method, it will assume generation 1
-export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, isMutation}) => {
-    let newTrait = new Trait(name, dominance, 0, isMutation, alter);
+export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, isMutation, canHaveTrait}) => {
+    let newTrait = new Trait(name, dominance, 1, isMutation, alter, canHaveTrait);
     return newTrait;
 }
 

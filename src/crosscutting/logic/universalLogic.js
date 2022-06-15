@@ -59,7 +59,7 @@ export const roundToPlace = (number, decimalPlaces) => {
 }
 
 export const getRandomIntInRange = (min, max) => {
-    let result = Math.floor((Math.random() * max) + min)
+    let result = Math.floor(Math.random() * (max - min) + min);
     return result;
 }
 
@@ -141,13 +141,15 @@ export const alterColorByAmount = (color, colorType, amount) => {
             gI = ensureValueInRange(gI + amount);
             break;
         case ColorType.B:
-            gI = ensureValueInRange(bI + amount);
+            bI = ensureValueInRange(bI + amount);
             break;
     }
     const r = rI.toString(16).padStart(2, '0');
     const g = gI.toString(16).padStart(2, '0');
     const b = bI.toString(16).padStart(2, '0');
-    return '#' + r + g + b;
+
+    let result = '#' + r + g + b;;
+    return result;
 }
 
 // positive indicates lighter, negative indicates darker
@@ -161,7 +163,8 @@ export const alterColorDarkOrLight = (color, amount) => {
     const r = rI.toString(16).padStart(2, '0');
     const g = gI.toString(16).padStart(2, '0');
     const b = bI.toString(16).padStart(2, '0');
-    return '#' + r + g + b;
+    let result = '#' + r + g + b;
+    return result;
 }
 
 const ensureValueInRange = (value) => {

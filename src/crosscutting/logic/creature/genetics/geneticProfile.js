@@ -4,12 +4,13 @@ import {
     LIST_OF_GENES
 } from "../../../constants/geneticConstants";
 import { getRandomItemInArray } from "../../universalLogic";
-import { createDefaultGeneticProfile, createNewGeneFromConstant, createNewGeneFromParentGenes, getGeneFromProfile, setProfileProperty } from "./logic/geneticLogic";
+import { createDefaultGeneticProfile, createNewGeneFromConstant, createNewGeneFromParentGenes, geneHasValidRecessiveTraitForCreature, getGeneFromProfile, setProfileProperty } from "./logic/geneticLogic";
 import { getProfileLogString } from "./tests/testHelpers/resultLogging";
 
 export default class GeneticProfile {
     constructor(creature = null, doSetUpGenes = true, mutateRandomGene = true) {
         this.creature = creature;
+        this.traitsAreApplied = false;
 
         this.colorGene = null;
 
@@ -27,7 +28,7 @@ export default class GeneticProfile {
     }
 
     applyGenesToCreature = () => {
-        if (this.creature === null) {
+        if (this.traitsAreApplied || this.creature === null) {
             return;
         }
 
@@ -36,7 +37,8 @@ export default class GeneticProfile {
             if (g !== null) {
                 g.chosenTrait.alter(this.creature);
             }
-        })
+        });
+        this.traitsAreApplied = true;
     }
 
     setUpGenes = (mutateRandomGene) => {
@@ -73,8 +75,10 @@ export default class GeneticProfile {
 
             let geneToMutate = this.selectGeneToMutate();
             if (geneToMutate !== null) {
-                let replacementGene = createNewGeneFromConstant(geneToMutate, Dominance.RECESSIVE);
-                setProfileProperty(this, geneToMutate.geneType, replacementGene);
+                let replacementGene = createNewGeneFromConstant(geneToMutate, Dominance.RECESSIVE, this.creature);
+                if (replacementGene !== null) {
+                    setProfileProperty(this, geneToMutate.geneType, replacementGene);
+                }
             }
         }
 
@@ -98,7 +102,8 @@ export default class GeneticProfile {
             //let possibleItem = getRandomItemInArray(possibleGene.recessiveTraits);
             if (!itemsTried.includes(possibleGene.name) && 
             //(permanentNames.includes(possibleItem.chosenTrait.name) ||
-            (!possibleGene.xTrait.isMutation && !possibleGene.xTrait.isMutation)) {
+            (!possibleGene.xTrait.isMutation && !possibleGene.xTrait.isMutation &&
+            geneHasValidRecessiveTraitForCreature(this.creature, possibleGene))) {
                 listItem = possibleGene;
             }
             itemsTried.push(possibleGene.name);
