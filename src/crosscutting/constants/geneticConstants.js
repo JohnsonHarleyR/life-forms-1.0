@@ -8,7 +8,12 @@ export const GeneticDefaults = {
     GENERATIONS_TO_BECOME_DOMINANT: 4,
     GENERATIONS_TO_BECOME_PERMANENT: 8,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15,
-    COLOR_DIFFERENCE_REQUIREMENT: 10
+
+    COLOR_DIFFERENCE_REQUIREMENT: 10,
+    COLOR_CHANGE_MIN: 10,
+    COLOR_CHANGE_MAX: 20,
+    VALUE_CHANGE_MIN: 15,
+    VALUE_CHANGE_MAX: 25
 }
 
 export const Dominance = {
@@ -56,7 +61,7 @@ export const MORE_RED = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(10, 20);
+        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
         
         creature.adultColor = newColor;
@@ -66,7 +71,8 @@ export const MORE_RED = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.R,
-            AddOrSubtract.ADD);
+            AddOrSubtract.ADD,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -77,7 +83,7 @@ export const LESS_RED = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(10, 20);
+        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
         
         creature.adultColor = newColor;
@@ -87,7 +93,8 @@ export const LESS_RED = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.R,
-            AddOrSubtract.SUBTRACT);
+            AddOrSubtract.SUBTRACT,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -98,7 +105,7 @@ export const MORE_GREEN = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(10, 20);
+        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
         
         creature.adultColor = newColor;
@@ -108,7 +115,8 @@ export const MORE_GREEN = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.G,
-            AddOrSubtract.ADD);
+            AddOrSubtract.ADD,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -119,7 +127,7 @@ export const LESS_GREEN = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(10, 20);
+        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
         
         creature.adultColor = newColor;
@@ -129,7 +137,8 @@ export const LESS_GREEN = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.G,
-            AddOrSubtract.SUBTRACT);
+            AddOrSubtract.SUBTRACT,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -140,7 +149,7 @@ export const MORE_BLUE = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(10, 20);
+        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
         
         creature.adultColor = newColor;
@@ -150,7 +159,8 @@ export const MORE_BLUE = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.B,
-            AddOrSubtract.ADD);
+            AddOrSubtract.ADD,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -161,7 +171,7 @@ export const LESS_BLUE = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(10, 20);
+        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
         let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
         
         creature.adultColor = newColor;
@@ -171,7 +181,8 @@ export const LESS_BLUE = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.B,
-            AddOrSubtract.SUBTRACT);
+            AddOrSubtract.SUBTRACT,
+            GeneticDefaults.COLOR_CHANGE_MIN);
         return result;
     }
 }
@@ -182,7 +193,7 @@ export const LIGHTER = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(15, 25);
+        let changeAmount = getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
         let newColor = alterColorDarkOrLight(originalColor, changeAmount);
         
         creature.adultColor = newColor;
@@ -192,7 +203,8 @@ export const LIGHTER = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.LIGHTER,
-            AddOrSubtract.ADD);
+            AddOrSubtract.ADD,
+            GeneticDefaults.VALUE_CHANGE_MIN);
         return result;
     }
 }
@@ -203,7 +215,7 @@ export const DARKER = {
     isMutation: true,
     alter: (creature) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(15, 25);
+        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
         let newColor = alterColorDarkOrLight(originalColor, changeAmount);
         
         creature.adultColor = newColor;
@@ -213,7 +225,8 @@ export const DARKER = {
         let result = canColorChangeRequirementBeMet(
             creature.adultColor,
             ColorType.DARKER,
-            AddOrSubtract.SUBTRACT);
+            AddOrSubtract.SUBTRACT,
+            GeneticDefaults.VALUE_CHANGE_MIN);
         return result;
     }
 }
