@@ -96,13 +96,38 @@ export const FASTER = {
     }
 }
 
+export const SLOWER = {
+    name: "SLOWER",
+    dominance: Dominance.RECESSIVE,
+    isMutation: true,
+    alter: (creature) => {
+        let changePercent = 1 - getRandomDecimalInRange(
+            GeneticDefaults.SPEED_CHANGE_MIN,
+            GeneticDefaults.SPEED_CHANGE_MAX);
+        let newSpeed = creature.movement.speed * changePercent;
+        if (newSpeed < GeneticDefaults.MIN_SPEED) {
+            newSpeed = GeneticDefaults.MIN_SPEED;
+        }
+        creature.movement.speed = roundToPlace(newSpeed, 2);
+    },
+    canHaveTrait: (creature) => {
+        let maxNewSpeed = (1 - GeneticDefaults.SPEED_CHANGE_MIN) * creature.movement.speed;
+        if (maxNewSpeed < GeneticDefaults.MIN_SPEED) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
 // --gene
 export const SPEED_GENE = {
     name: "SPEED_GENE",
     geneType: GeneType.SPEED,
     dominantTraits: [SPEED_DEFAULT],
     recessiveTraits: [
-        FASTER
+        FASTER,
+        SLOWER
     ]
 }
 
