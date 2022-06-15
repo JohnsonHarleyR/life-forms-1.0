@@ -9,6 +9,54 @@ export const Wall = {
     type: ObjectType.WALL
 };
 
+export const DefaultObjects = [
+    {
+        name: `w1`,
+        type: ObjectType.WALL,
+        color: "black",
+        xStart: 65,
+        yStart: 50,
+        width: 15,
+        height: 200
+    },
+    {
+        name: `w2`,
+        type: ObjectType.WALL,
+        color: "black",
+        xStart: 160,
+        yStart: 140,
+        width: 80,
+        height: 20
+    },
+    {
+        name: `w3`,
+        type: ObjectType.WALL,
+        color: "black",
+        xStart: 320,
+        yStart: 50,
+        width: 15,
+        height: 15
+    },
+    {
+        name: `w4`,
+        type: ObjectType.WALL,
+        color: "black",
+        xStart: 320,
+        yStart: 95,
+        width: 15,
+        height: 110
+    },
+    {
+        name: `w5`,
+        type: ObjectType.WALL,
+        color: "black",
+        xStart: 320,
+        yStart: 235,
+        width: 15,
+        height: 15
+    },
+]
+
 export const FoodType = {
     PLANT: "PLANT",
     PREY: "PREY",

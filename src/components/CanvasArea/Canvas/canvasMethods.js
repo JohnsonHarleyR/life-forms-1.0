@@ -1,4 +1,4 @@
-import { ObjectType } from "../../../crosscutting/constants/objectConstants";
+import { DefaultObjects, ObjectType } from "../../../crosscutting/constants/objectConstants";
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
 import { Gender, LifeStage, Boop, Bleep, Biddy } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
@@ -16,12 +16,14 @@ import Creature from "../../../crosscutting/logic/creature/creature";
 // Creating and generating functions
 
 export const createObjects = () => { // TODO create object class so that this will work
+    let constants = DefaultObjects;
+
     let objs = [];
-    objs.push(new NewObject("w1", ObjectType.WALL, "black", 65, 50, 15, 200));
-    objs.push(new NewObject("w2", ObjectType.WALL, "black", 160, 140, 80, 20));
-    objs.push(new NewObject("w3", ObjectType.WALL, "black", 320, 50, 15, 15));
-    objs.push(new NewObject("w4", ObjectType.WALL, "black", 320, 95, 15, 110));
-    objs.push(new NewObject("w5", ObjectType.WALL, "black", 320, 235, 15, 15));
+    constants.forEach(c => {
+        let newObj = new NewObject(c.name, c.type, c.color, c.xStart, c.yStart, c.width, c.height);
+        objs.push(newObj);
+    })
+
     return objs;
 };
 
