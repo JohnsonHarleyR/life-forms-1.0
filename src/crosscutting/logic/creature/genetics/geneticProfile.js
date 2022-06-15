@@ -13,8 +13,6 @@ export default class GeneticProfile {
 
         this.colorGene = null;
 
-        this.allGenes = [this.colorGene];
-
         //this.permanentChanges = []; // these will be determined from dominant traits before mutating anything
 
         if (doSetUpGenes) {
@@ -24,12 +22,17 @@ export default class GeneticProfile {
         this.applyGenesToCreature();
     }
 
+    getAllGenes = () => {
+        return [this.colorGene];
+    }
+
     applyGenesToCreature = () => {
         if (this.creature === null) {
             return;
         }
 
-        this.allGenes.forEach(g => {
+        let allGenes = this.getAllGenes();
+        allGenes.forEach(g => {
             if (g !== null) {
                 g.chosenTrait.alter(this.creature);
             }
@@ -66,11 +69,11 @@ export default class GeneticProfile {
         // if this is set to mutate a random gene, run through the genes
         // until we find one that isn't mutated. If we do, then replace that
         // gene with random recessive traits.
-        if (mutateRandomGene) {
+        if (mutateRandomGene && this.creature !== null) {
 
-            let geneToMutate = this.selectGeneToMutateFromList(geneConstantList);
+            let geneToMutate = this.selectGeneToMutate();
             if (geneToMutate !== null) {
-                let replacementGene = createNewGeneFromConstant(geneToMutate.constant, Dominance.RECESSIVE);
+                let replacementGene = createNewGeneFromConstant(geneToMutate, Dominance.RECESSIVE);
                 setProfileProperty(this, geneToMutate.geneType, replacementGene);
             }
         }
@@ -79,7 +82,9 @@ export default class GeneticProfile {
         console.log(getProfileLogString(this));
     }
 
-    selectGeneToMutateFromList = (geneConstantList) => {
+    selectGeneToMutate = () => {
+        let allGenes = this.getAllGenes();
+
         let listItem = null;
         let itemsTried = [];
         let attemptCount = 0;
@@ -89,15 +94,16 @@ export default class GeneticProfile {
         // });
 
         do {
-            let possibleItem = getRandomItemInArray(this.allGenes);
-            if (!itemsTried.includes(possibleItem.geneType) && 
+            let possibleGene = getRandomItemInArray(allGenes);
+            //let possibleItem = getRandomItemInArray(possibleGene.recessiveTraits);
+            if (!itemsTried.includes(possibleGene.name) && 
             //(permanentNames.includes(possibleItem.chosenTrait.name) ||
-            (!possibleItem.xTrait.isMutation && !possibleItem.xTrait.isMutation)) {
-                listItem = possibleItem;
+            (!possibleGene.xTrait.isMutation && !possibleGene.xTrait.isMutation)) {
+                listItem = possibleGene;
             }
-            itemsTried.push(possibleItem.geneType);
+            itemsTried.push(possibleGene.name);
             attemptCount++;
-        } while (listItem === null && itemsTried.length < geneConstantList.length
+        } while (listItem === null && itemsTried.length < allGenes.length
         && attemptCount < GeneticDefaults.ATTEMPTS_TO_MUTATE_ALLOWED);
 
         // return result

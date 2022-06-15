@@ -22,7 +22,7 @@ export const MoveMode = {
 };
 
 export const CreatureDefaults = {
-    MUTATE_GENES: false,
+    MUTATE_GENES: true,
     SET_UP_GENES: true,
     MOVE_MODE:  MoveMode.THINK,
     LARGEST_SIZE: 11,

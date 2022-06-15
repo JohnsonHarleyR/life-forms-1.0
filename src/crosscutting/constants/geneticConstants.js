@@ -50,17 +50,33 @@ export const MORE_RED = {
     }
 }
 
+export const MORE_GREEN = {
+    name: "MORE_GREEN",
+    dominance: Dominance.RECESSIVE,
+    isMutation: true,
+    alter: (creature) => {
+        let originalColor = creature.adultColor;
+        let changeAmount = getRandomIntInRange(10, 20);
+        let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
+        
+        creature.adultColor = newColor;
+        creature.color = creature.life.determineColor();
+    }
+}
+
 // bringing traits together
 export const ColorTrait = {
     DEFAULT: COLOR_DEFAULT,
-    MORE_RED: MORE_RED
+    MORE_RED: MORE_RED,
+    MORE_GREEN: MORE_GREEN
 }
 
 // --gene
 export const COLOR_GENE = {
     name: "COLOR_GENE",
+    geneType: GeneType.COLOR,
     dominantTraits: [COLOR_DEFAULT],
-    recessiveTraits: [MORE_RED]
+    recessiveTraits: [MORE_RED, MORE_GREEN]
 }
 
 

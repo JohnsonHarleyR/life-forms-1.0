@@ -5,8 +5,9 @@ import { determineChosenTrait, getDeepTraitCopy } from "../logic/geneticLogic";
 
 // TODO figure out logic for permanent changes
 export default class Gene {
-    constructor(name, dominantTraits, recessiveTraits, xTrait, yTrait, permanentChanges = []) {
+    constructor(name, geneType, dominantTraits, recessiveTraits, xTrait, yTrait, permanentChanges = []) {
         this.name = name;
+        this.geneType = geneType;
         this.dominantTraits = dominantTraits;
         this.recessiveTraits = recessiveTraits;
         this.xTrait = xTrait;

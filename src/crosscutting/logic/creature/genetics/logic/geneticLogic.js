@@ -66,12 +66,13 @@ export const getGeneFromProfile = (profile, geneType) => {
 
 export const createNewGeneFromParentGenes = (xGene, yGene) => {
     let name = xGene.name;
+    let geneType = xGene.geneType;
     let xTrait = xGene.getRandomTraitToPass();
     let yTrait = yGene.getRandomTraitToPass();
     let dominantTraits = combineDominantTraits(xGene.dominantTraitsToPass, yGene.dominantTraitsToPass);
     let recessiveTraits = combineRecessiveTraits(xGene.recessiveTraitsToPass, yGene.recessiveTraitsToPass);
     
-    let newGene = new Gene(name, dominantTraits, recessiveTraits,
+    let newGene = new Gene(name, geneType, dominantTraits, recessiveTraits,
         xTrait, yTrait);
     return newGene;
 }
@@ -132,7 +133,7 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose) => {
     let yTrait = createFirstGenerationTraitFromConstant(traitDefault);
 
 
-    let newGene = new Gene(constant.name, constant.dominantTraits, constant.recessiveTraits,
+    let newGene = new Gene(constant.name, constant.geneType, constant.dominantTraits, constant.recessiveTraits,
         xTrait, yTrait);
     
     return newGene;

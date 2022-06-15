@@ -132,7 +132,7 @@ export const blendColors = (colorA, colorB, amount) => {
 
 // amount should be positive or negative
 export const alterColorByAmount = (color, colorType, amount) => {
-    const [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+    let [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
     switch(colorType) {
         case ColorType.R:
             rI = ensureColorValueInRange(rI + amount);
