@@ -28,7 +28,16 @@ export const shuffleArray = (array) => {
 }
 
 // random
-
+export const isTrueByChance = (chancePercent = 0.5) => {
+    let divider = chancePercent * 100;
+    let random = Math.random() * 100;
+    
+    if (random <= divider) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 // time and rounding methods
 export const calculateMsPerYear = (maxLifeSpan, maxYears) => {
@@ -60,6 +69,12 @@ export const roundToPlace = (number, decimalPlaces) => {
 
 export const getRandomIntInRange = (min, max) => {
     let result = Math.floor(Math.random() * (max - min) + min);
+    return result;
+}
+
+export const getRandomDecimalInRange = (min, max) => {
+    let result = Math.random() * (max - min) + min;
+    result = roundToPlace(result, 2);
     return result;
 }
 

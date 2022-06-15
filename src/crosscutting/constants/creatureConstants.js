@@ -25,7 +25,7 @@ export const CreatureDefaults = {
     MUTATE_GENES: true,
     SET_UP_GENES: true,
     MOVE_MODE:  MoveMode.THINK,
-    LARGEST_SIZE: 11,
+    LARGEST_SIZE: 14,
     MAX_MOVE_RECORDINGS: 50,
     PATTERN_DETECTION_SIZE: 5,
     CHILD_MIN_FRACTION: .2,

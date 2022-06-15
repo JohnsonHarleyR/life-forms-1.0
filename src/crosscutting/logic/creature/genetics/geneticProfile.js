@@ -13,6 +13,7 @@ export default class GeneticProfile {
         this.traitsAreApplied = false;
 
         this.colorGene = null;
+        this.sizeGene = null;
 
         //this.permanentChanges = []; // these will be determined from dominant traits before mutating anything
 
@@ -24,7 +25,7 @@ export default class GeneticProfile {
     }
 
     getAllGenes = () => {
-        return [this.colorGene];
+        return [this.colorGene, this.sizeGene];
     }
 
     applyGenesToCreature = () => {

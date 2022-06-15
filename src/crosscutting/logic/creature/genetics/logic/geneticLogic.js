@@ -52,6 +52,9 @@ export const setProfileProperty = (profile, geneType, newValue) => {
         case GeneType.COLOR:
             profile.colorGene = newValue;
             break;
+        case GeneType.SIZE:
+            profile.sizeGene = newValue;
+            break;
     }
 }
 
@@ -61,6 +64,8 @@ export const getGeneFromProfile = (profile, geneType) => {
             throw `No valid geneType was passed into getGeneFromProfile. This should not happen. (GeneticLogic.js)`;
         case GeneType.COLOR:
             return profile.colorGene;
+        case GeneType.SIZE:
+            return profile.sizeGene;
     }
 }
 

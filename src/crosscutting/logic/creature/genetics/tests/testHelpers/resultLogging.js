@@ -23,6 +23,7 @@ export const getProfileLogString = (profile) => {
     `None specified` : `${getCreatureIdentityString(profile.creature)}`;
     profileString += `\n\tcreature: ${creatureString}`;
     // for each gene
+    profileString += `\n\tsizeGene: \n${getGeneLogString(profile.sizeGene, 2)}`;
     profileString += `\n\tcolorGene: \n${getGeneLogString(profile.colorGene, 2)}`;
     
     return profileString;

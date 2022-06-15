@@ -1,7 +1,14 @@
 import { XMark, PathLine, SightLine, ShelterLine, SleepIndicator } from "../constants/canvasConstants";
 import { getStartAndEndPoints } from "./universalLogic";
 
-// TODO drawCreature, drawSightBox
+// mouse position
+export const getMousePos = (canvas, evt) => {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
 
 // basic drawing
 

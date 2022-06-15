@@ -15,6 +15,7 @@ import { Plants } from '../../../crosscutting/constants/plantConstants';
 import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogic';
 import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/creatureConstants';
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
+import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 
 const Canvas = () => {
     
@@ -85,7 +86,8 @@ const Canvas = () => {
 
 
     const showMousePos = (evt) => {
-
+        let mousePos = getMousePos(canvasRef.current, evt);
+        console.log(`Mouse pos: {x: ${Math.round(mousePos.x)}, y: ${Math.round(mousePos.y)}}`);
     }
 
     return (

@@ -1,7 +1,10 @@
 import { alterColorByAmount,
     alterColorDarkOrLight,
     canColorChangeRequirementBeMet,
-    getRandomIntInRange } from "../logic/universalLogic"
+    getRandomDecimalInRange,
+    getRandomIntInRange, 
+    roundToPlace} from "../logic/universalLogic"
+import { CreatureDefaults } from "./creatureConstants"
 
 
 export const GeneticDefaults = {
@@ -11,6 +14,11 @@ export const GeneticDefaults = {
     CHANCE_OF_MUTATION: .75,
     POSSIBLE_MUTATIONS_AT_BIRTH: 2,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15,
+
+    MIN_SIZE: 4,
+    MAX_SIZE: 14,
+    SIZE_CHANGE_MIN: .10,
+    SIZE_CHANGE_MAX: .20,
 
     COLOR_CHANGE_MIN: 15,
     COLOR_CHANGE_MAX: 25,
@@ -41,7 +49,83 @@ export const AddOrSubtract = {
 // genes and accompanying traits
 
 export const GeneType = {
-    COLOR: "COLOR"
+    COLOR: "COLOR",
+    SIZE: "SIZE"
+}
+
+// SIZE
+// --traits
+export const SIZE_DEFAULT = {
+    name: "DEFAULT",
+    dominance: Dominance.DOMINANT,
+    isMutation: false,
+    alter: () => {
+        return;
+    },
+    canHaveTrait: () => {
+        return true;
+    }
+}
+
+export const LARGER = {
+    name: "LARGER",
+    dominance: Dominance.RECESSIVE,
+    isMutation: true,
+    alter: (creature) => {
+        let changePercent = 1 + getRandomDecimalInRange(
+            GeneticDefaults.SIZE_CHANGE_MIN,
+            GeneticDefaults.SIZE_CHANGE_MAX);
+        let newSize = creature.adultSize * changePercent;
+        if (newSize > GeneticDefaults.MAX_SIZE) {
+            newSize = GeneticDefaults.MAX_SIZE;
+        }
+        creature.adultSize = roundToPlace(newSize, 2);
+        creature.size = creature.life.determineSize();
+    },
+    canHaveTrait: (creature) => {
+        let minNewSize = (1 + GeneticDefaults.SIZE_CHANGE_MIN) * creature.adultSize;
+        if (minNewSize > GeneticDefaults.MAX_SIZE) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+export const SMALLER = {
+    name: "SMALLER",
+    dominance: Dominance.RECESSIVE,
+    isMutation: true,
+    alter: (creature) => {
+        let changePercent = 1 - getRandomDecimalInRange(
+            GeneticDefaults.SIZE_CHANGE_MIN,
+            GeneticDefaults.SIZE_CHANGE_MAX);
+        let newSize = creature.adultSize * changePercent;
+        if (newSize < GeneticDefaults.MIN_SIZE) {
+            newSize = GeneticDefaults.MIN_SIZE;
+        }
+        creature.adultSize = roundToPlace(newSize, 2);
+        creature.size = creature.life.determineSize();
+    },
+    canHaveTrait: (creature) => {
+        let maxNewSize = (1 - GeneticDefaults.SIZE_CHANGE_MIN) * creature.adultSize;
+        if (maxNewSize < GeneticDefaults.MIN_SIZE) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+// --gene
+export const SIZE_GENE = {
+    name: "SIZE_GENE",
+    geneType: GeneType.SIZE,
+    dominantTraits: [SIZE_DEFAULT],
+    recessiveTraits: [
+        LARGER,
+        SMALLER
+    ]
 }
 
 // COLOR
@@ -51,13 +135,14 @@ export const COLOR_DEFAULT = {
     name: "DEFAULT",
     dominance: Dominance.DOMINANT,
     isMutation: false,
-    alter: (creature) => {
-        return {...creature};
+    alter: () => {
+        return;
     },
     canHaveTrait: () => {
         return true;
     }
 }
+
 export const MORE_RED = {
     name: "MORE_RED",
     dominance: Dominance.RECESSIVE,
@@ -234,18 +319,18 @@ export const DARKER = {
     }
 }
 
-// bringing traits together
-export const ColorTrait = {
-    DEFAULT: COLOR_DEFAULT,
-    MORE_RED: MORE_RED,
-    LESS_RED: LESS_RED,
-    MORE_GREEN: MORE_GREEN,
-    LESS_GREEN: LESS_GREEN,
-    MORE_BLUE: MORE_BLUE,
-    LESS_BLUE: LESS_BLUE,
-    LIGHTER: LIGHTER,
-    DARKER: DARKER,
-}
+// // bringing traits together
+// export const ColorTrait = {
+//     DEFAULT: COLOR_DEFAULT,
+//     MORE_RED: MORE_RED,
+//     LESS_RED: LESS_RED,
+//     MORE_GREEN: MORE_GREEN,
+//     LESS_GREEN: LESS_GREEN,
+//     MORE_BLUE: MORE_BLUE,
+//     LESS_BLUE: LESS_BLUE,
+//     LIGHTER: LIGHTER,
+//     DARKER: DARKER,
+// }
 
 // --gene
 export const COLOR_GENE = {
@@ -271,5 +356,9 @@ export const LIST_OF_GENES = [
     {
         geneType: GeneType.COLOR,
         constant: COLOR_GENE
+    },
+    {
+        geneType: GeneType.SIZE,
+        constant: SIZE_GENE
     }
 ]
