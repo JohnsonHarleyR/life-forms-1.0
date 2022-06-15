@@ -1,9 +1,9 @@
 import { CanvasInfo, Axis } from "../constants/canvasConstants";
 import { Corner, Side, RelativeToObject, RelativeToObjectCases } from "../constants/objectConstants";
-import { Direction, CreatureDefaults } from "../constants/creatureConstants";
+import { Direction, CreatureDefaults, AddOrSubtract } from "../constants/creatureConstants";
 import { checkIfCreatureCollidesWithAnyObjects, isNewCreaturePositionInsideAnyObject } from "./object/objectsLogic";
 import { getNecessaryCollisionPadding } from "./creature/creatureLogic";
-import { ColorType } from "../constants/geneticConstants";
+import { ColorType, GeneticDefaults } from "../constants/geneticConstants";
 
 // display methods
 export const getCreatureIdentityString = (creature) => {
@@ -135,13 +135,13 @@ export const alterColorByAmount = (color, colorType, amount) => {
     let [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
     switch(colorType) {
         case ColorType.R:
-            rI = ensureColorValueInRange(rI + amount);
+            rI = ensureValueInRange(rI + amount);
             break;
         case ColorType.G:
-            gI = ensureColorValueInRange(gI + amount);
+            gI = ensureValueInRange(gI + amount);
             break;
         case ColorType.B:
-            gI = ensureColorValueInRange(bI + amount);
+            gI = ensureValueInRange(bI + amount);
             break;
     }
     const r = rI.toString(16).padStart(2, '0');
@@ -150,17 +150,134 @@ export const alterColorByAmount = (color, colorType, amount) => {
     return '#' + r + g + b;
 }
 
-const ensureColorValueInRange = (value) => {
-    let newValue = value;
-    if (value < 0) {
-        let alterAmount = Math.abs(value);
-        newValue = 255 - alterAmount;
-    }
-    if (value > 255) {
-        newValue = value - 255;
-    }
-    return newValue;
+// positive indicates lighter, negative indicates darker
+export const alterColorDarkOrLight = (color, amount) => {
+    let [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+    
+    rI = ensureValueInRange(rI + amount);
+    gI = ensureValueInRange(gI + amount);
+    bI = ensureValueInRange(bI + amount);
+
+    const r = rI.toString(16).padStart(2, '0');
+    const g = gI.toString(16).padStart(2, '0');
+    const b = bI.toString(16).padStart(2, '0');
+    return '#' + r + g + b;
 }
+
+const ensureValueInRange = (value) => {
+    if (value < 0) {
+        return 0;
+    } else if (value > 255) {
+        return 255;
+    } else {
+        return value;
+    }
+}
+
+export const canColorChangeRequirementBeMet = (color, colorType, addOrSubtract,
+    minDifference = GeneticDefaults.COLOR_DIFFERENCE_REQUIREMENT) => {
+        const [r, g, b] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
+        let amount = 0;
+        switch(addOrSubtract) {
+            default:
+            case AddOrSubtract.ADD:
+                amount = minDifference;
+                break;
+            case AddOrSubtract.SUBTRACT:
+                amount = -1 * minDifference;
+        }
+        
+        switch(colorType) {
+            case ColorType.R:
+                let rC = r + amount;
+                if (rC < 0 || rC > 255) {
+                    return false;
+                }
+                return true;
+            case ColorType.G:
+                let gC = g + amount;
+                if (gC < 0 || gC > 255) {
+                    return false;
+                }
+                return true;
+            case ColorType.B:
+                let bC = b + amount;
+                if (bC < 0 || bC > 255) {
+                    return false;
+                }
+                return true;
+            case ColorType.LIGHTER:
+                return meetsLighterRequirement(r, g, b, amount, minDifference);
+            case ColorType.DARKER:
+                return meetsDarkerRequirement(r, g, b, amount, minDifference);
+            default:
+                return false;
+        }
+}
+
+const meetsDarkerRequirement = (rValue, gValue, bValue,
+    addAmount, minDifference = GeneticDefaults.COLOR_DIFFERENCE_REQUIREMENT) => {
+        let rC = rValue + addAmount;
+        let gC = gValue + addAmount;
+        let bC = bValue + addAmount;
+        
+        let allValues = [rC, gC, bC];
+        let min = minDifference;
+
+        let over0Count = 0;
+        let overMinCount = 0;
+        allValues.forEach(v => {
+            if (v >= min) {
+                overMinCount++;
+            } else if (v > 0) {
+                over0Count++;
+            }
+        });
+
+        if ((overMinCount >= 2) ||
+            (over0Count >= 2 && overMinCount >= 1)) {
+                return true;
+        }
+        return false;
+}
+
+const meetsLighterRequirement = (rValue, gValue, bValue,
+    addAmount, minDifference = GeneticDefaults.COLOR_DIFFERENCE_REQUIREMENT) => {
+        let rC = rValue + addAmount;
+        let gC = gValue + addAmount;
+        let bC = bValue + addAmount;
+        
+        let allValues = [rC, gC, bC];
+        let max = 255 - minDifference;
+
+        let under255Count = 0;
+        let underMaxCount = 0;
+        allValues.forEach(v => {
+            if (v <= max) {
+                underMaxCount++;
+            } else if (v < 255) {
+                under255Count++;
+            }
+        });
+
+        if ((underMaxCount >= 2) ||
+            (under255Count >= 2 && underMaxCount >= 1)) {
+                return true;
+        }
+        return false;
+}
+
+// const ensureColorValueInRange = (value) => {
+//     let newValue = value;
+//     if (value < 0) {
+//         let alterAmount = Math.abs(value);
+//         newValue = 255 - alterAmount;
+//     }
+//     if (value > 255) {
+//         newValue = value - 255;
+//     }
+//     return newValue;
+// }
 
 // adding and removing items
 export const addItemToArray = (item, array, setFunction) => {
