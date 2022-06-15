@@ -831,7 +831,11 @@ export default class CreatureMovement {
             }
             if (isInPosition(newPosition, preyPosition)) {
               //console.log(`creature ${this.creature.id} has captured food target`);
-              this.creature.currentTarget.safety.isBeingEaten = true;
+              if (this.creature.currentTarget.life.isDead) {
+                this.creature.currentTarget.isEaten = true;
+              } else {
+                this.creature.currentTarget.safety.isBeingEaten = true;
+              }
               putTargetInFoodInventory(this.creature);
 
             }

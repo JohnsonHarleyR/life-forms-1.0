@@ -70,7 +70,7 @@ export default class Creature {
         this.movement = new CreatureMovement(this, sightRadius, sightDistance, speed);
     
         
-        this.showLines = false;
+        this.showLines = CreatureDefaults.SHOW_LINES;
         this.emojis = new Emojis(this);
 
         this.geneticProfile = createGeneticProfileForCreature(this);
