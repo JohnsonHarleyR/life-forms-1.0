@@ -45,7 +45,7 @@ export default class GeneticProfile {
         // if xProfile and yProfile are null, then create default values for them
         let xProfile = null;
         if (this.creature !== null && this.creature.family.mother !== null) {
-            xProfile = this.creature.family.mother.GeneticProfile;
+            xProfile = this.creature.family.mother.geneticProfile;
         }
         if (xProfile === null) {
             xProfile = createDefaultGeneticProfile();
@@ -53,7 +53,7 @@ export default class GeneticProfile {
 
         let yProfile = null;
         if (this.creature !== null && this.creature.family.father !== null) {
-            yProfile = this.creature.family.father.GeneticProfile;
+            yProfile = this.creature.family.father.geneticProfile;
         }
         if (yProfile === null) {
             yProfile = createDefaultGeneticProfile();
