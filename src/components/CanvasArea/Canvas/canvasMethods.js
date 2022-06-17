@@ -119,12 +119,14 @@ export const updateCreatures = (creatures, setCreatures) => {
     let newCreatures = [];
     let creatureNames = [];
     creatures.forEach(c => {
-        if ((!c.isEaten || !c.life.isDead) && !creatureNames.includes(c.id)) {
+        if (( (c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead)) 
+        && !creatureNames.includes(c.id)) {
             newCreatures.push(c);
             creatureNames.push(c.id);
         }
         c.family.children.forEach(ch => {
-            if ((!c.isEaten || !c.life.isDead) && !isInArray(ch.id, creatureNames)) {
+            if (((c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead))
+            && !isInArray(ch.id, creatureNames)) {
                 newCreatures.push(ch);
                 creatureNames.push(ch.id);
             }
