@@ -18,7 +18,7 @@ export const getPrivateGeneticMethodsForTesting = () => {
 
 // deep copy methods
 export const getDeepTraitCopy = (trait) => {
-    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait);
+    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait, trait.variables);
     return newTrait;
 }
 

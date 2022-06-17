@@ -146,6 +146,22 @@ export const blendColors = (colorA, colorB, amount) => {
 }
 
 // amount should be positive or negative
+export const addToRGBValues = (colorHex, rAmount, gAmount, bAmount) => {
+    let [rI, gI, bI] = colorHex.match(/\w\w/g).map((c) => parseInt(c, 16));
+
+    rI = ensureValueInRange(rI + rAmount);
+    gI = ensureValueInRange(gI + gAmount);
+    bI = ensureValueInRange(bI + bAmount);
+    
+    const r = rI.toString(16).padStart(2, '0');
+    const g = gI.toString(16).padStart(2, '0');
+    const b = bI.toString(16).padStart(2, '0');
+
+    let result = '#' + r + g + b;;
+    return result;
+}
+
+// amount should be positive or negative
 export const alterColorByAmount = (color, colorType, amount) => {
     let [rI, gI, bI] = color.match(/\w\w/g).map((c) => parseInt(c, 16));
     switch(colorType) {

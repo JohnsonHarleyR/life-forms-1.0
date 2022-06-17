@@ -25,6 +25,7 @@ export const CreatureDefaults = {
     SHOW_LINES: false,
     MUTATE_GENES: true,
     SET_UP_GENES: true,
+    ALTER_COLOR_BY_GENDER: false,
     MOVE_MODE:  MoveMode.THINK,
     LARGEST_SIZE: 14,
     MAX_MOVE_RECORDINGS: 50,

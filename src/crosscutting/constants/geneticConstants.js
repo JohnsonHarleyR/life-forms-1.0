@@ -1,4 +1,4 @@
-import { alterColorByAmount,
+import { addToRGBValues, alterColorByAmount,
     alterColorDarkOrLight,
     canColorChangeRequirementBeMet,
     getRandomDecimalInRange,
@@ -25,9 +25,9 @@ export const GeneticDefaults = {
     SIZE_CHANGE_MAX: .20,
 
     COLOR_CHANGE_MIN: 15,
-    COLOR_CHANGE_MAX: 25,
+    COLOR_CHANGE_MAX: 50,
     VALUE_CHANGE_MIN: 15,
-    VALUE_CHANGE_MAX: 25,
+    VALUE_CHANGE_MAX: 50,
     COLOR_DIFFERENCE_REQUIREMENT: 15
 }
 
@@ -76,11 +76,18 @@ export const FASTER = {
     name: "FASTER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
-        let changePercent = 1 + getRandomDecimalInRange(
-            GeneticDefaults.SPEED_CHANGE_MIN,
-            GeneticDefaults.SPEED_CHANGE_MAX);
-        let newSpeed = creature.movement.speed * changePercent;
+    alter: (creature, variables) => {
+        if (variables === null) {
+            variables = {
+                changePercent: 1 + getRandomDecimalInRange(
+                    GeneticDefaults.SPEED_CHANGE_MIN,
+                    GeneticDefaults.SPEED_CHANGE_MAX)
+            }
+        }
+        // let changePercent = 1 + getRandomDecimalInRange(
+        //     GeneticDefaults.SPEED_CHANGE_MIN,
+        //     GeneticDefaults.SPEED_CHANGE_MAX);
+        let newSpeed = creature.movement.speed * variables.changePercent;
         if (newSpeed > GeneticDefaults.MAX_SPEED) {
             newSpeed = GeneticDefaults.MAX_SPEED;
         }
@@ -100,11 +107,18 @@ export const SLOWER = {
     name: "SLOWER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
-        let changePercent = 1 - getRandomDecimalInRange(
-            GeneticDefaults.SPEED_CHANGE_MIN,
-            GeneticDefaults.SPEED_CHANGE_MAX);
-        let newSpeed = creature.movement.speed * changePercent;
+    alter: (creature, variables) => {
+        if (variables === null) {
+            variables = {
+                changePercent: 1 - getRandomDecimalInRange(
+                    GeneticDefaults.SPEED_CHANGE_MIN,
+                    GeneticDefaults.SPEED_CHANGE_MAX)
+            }
+        }
+        // let changePercent = 1 - getRandomDecimalInRange(
+        //     GeneticDefaults.SPEED_CHANGE_MIN,
+        //     GeneticDefaults.SPEED_CHANGE_MAX);
+        let newSpeed = creature.movement.speed * variables.changePercent;
         if (newSpeed < GeneticDefaults.MIN_SPEED) {
             newSpeed = GeneticDefaults.MIN_SPEED;
         }
@@ -150,11 +164,18 @@ export const LARGER = {
     name: "LARGER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
-        let changePercent = 1 + getRandomDecimalInRange(
-            GeneticDefaults.SIZE_CHANGE_MIN,
-            GeneticDefaults.SIZE_CHANGE_MAX);
-        let newSize = creature.adultSize * changePercent;
+    alter: (creature, variables) => {
+        if (variables === null) {
+            variables = {
+                changePercent: 1 + getRandomDecimalInRange(
+                    GeneticDefaults.SIZE_CHANGE_MIN,
+                    GeneticDefaults.SIZE_CHANGE_MAX)
+            }
+        }
+        // let changePercent = 1 + getRandomDecimalInRange(
+        //     GeneticDefaults.SIZE_CHANGE_MIN,
+        //     GeneticDefaults.SIZE_CHANGE_MAX);
+        let newSize = creature.adultSize * variables.changePercent;
         if (newSize > GeneticDefaults.MAX_SIZE) {
             newSize = GeneticDefaults.MAX_SIZE;
         }
@@ -175,11 +196,18 @@ export const SMALLER = {
     name: "SMALLER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
-        let changePercent = 1 - getRandomDecimalInRange(
-            GeneticDefaults.SIZE_CHANGE_MIN,
-            GeneticDefaults.SIZE_CHANGE_MAX);
-        let newSize = creature.adultSize * changePercent;
+    alter: (creature, variables) => {
+        if (variables === null) {
+            variables = {
+                changePercent: 1 - getRandomDecimalInRange(
+                    GeneticDefaults.SIZE_CHANGE_MIN,
+                    GeneticDefaults.SIZE_CHANGE_MAX)
+            }
+        }
+        // let changePercent = 1 - getRandomDecimalInRange(
+        //     GeneticDefaults.SIZE_CHANGE_MIN,
+        //     GeneticDefaults.SIZE_CHANGE_MAX);
+        let newSize = creature.adultSize * variables.changePercent;
         if (newSize < GeneticDefaults.MIN_SIZE) {
             newSize = GeneticDefaults.MIN_SIZE;
         }
@@ -226,11 +254,22 @@ export const MORE_RED = {
     name: "MORE_RED",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
-        
+
+        if (variables === null) {
+            variables = {
+                changeAmount: getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
+            
+            }
+        }
+        //let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
+
+        //let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
+        let newColor = addToRGBValues(originalColor, variables.changeAmount, oppositeAmount, oppositeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -248,11 +287,22 @@ export const LESS_RED = {
     name: "LESS_RED",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
+
+            }
+        }
+        //let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
         
+        //let newColor = alterColorByAmount(originalColor, ColorType.R, changeAmount);
+        let newColor = addToRGBValues(originalColor, variables.changeAmount, oppositeAmount, oppositeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -270,11 +320,22 @@ export const MORE_GREEN = {
     name: "MORE_GREEN",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
         
+        if (variables === null) {
+            variables = {
+                changeAmount: getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
+        
+            }
+        }
+        //let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
+        
+        //let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
+        let newColor = addToRGBValues(originalColor, oppositeAmount, variables.changeAmount, oppositeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -292,11 +353,22 @@ export const LESS_GREEN = {
     name: "LESS_GREEN",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
         
+            }
+        }
+        //let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
+
+        //let newColor = alterColorByAmount(originalColor, ColorType.G, changeAmount);
+        let newColor = addToRGBValues(originalColor, oppositeAmount, variables.changeAmount, oppositeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -314,11 +386,22 @@ export const MORE_BLUE = {
     name: "MORE_BLUE",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
         
+            }
+        }
+        //let changeAmount = getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
+        
+        //let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
+        let newColor = addToRGBValues(originalColor, oppositeAmount, oppositeAmount, variables.changeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -336,11 +419,22 @@ export const LESS_BLUE = {
     name: "LESS_BLUE",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
-        let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX)
+    
+            }
+        }
+        //let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.COLOR_CHANGE_MIN, GeneticDefaults.COLOR_CHANGE_MAX);
+        //let halfAmount = -1 * Math.ceil(changeAmount / 2);
+        let oppositeAmount = -1 * variables.changeAmount;
         
+        //let newColor = alterColorByAmount(originalColor, ColorType.B, changeAmount);
+        let newColor = addToRGBValues(originalColor, oppositeAmount, oppositeAmount, variables.changeAmount);
+
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
     },
@@ -358,10 +452,17 @@ export const LIGHTER = {
     name: "LIGHTER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
-        let newColor = alterColorDarkOrLight(originalColor, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX)
+        
+            }
+        }
+        //let changeAmount = getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
+        let newColor = alterColorDarkOrLight(originalColor, variables.changeAmount);
         
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();
@@ -380,10 +481,16 @@ export const DARKER = {
     name: "DARKER",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
-    alter: (creature) => {
+    alter: (creature, variables) => {
         let originalColor = creature.adultColor;
-        let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
-        let newColor = alterColorDarkOrLight(originalColor, changeAmount);
+
+        if (variables === null) {
+            variables = {
+                changeAmount: -1 * getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX)
+            }
+        }
+        //let changeAmount = -1 * getRandomIntInRange(GeneticDefaults.VALUE_CHANGE_MIN, GeneticDefaults.VALUE_CHANGE_MAX);
+        let newColor = alterColorDarkOrLight(originalColor, variables.changeAmount);
         
         creature.adultColor = newColor;
         creature.color = creature.life.determineColor();

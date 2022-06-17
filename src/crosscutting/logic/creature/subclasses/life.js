@@ -123,15 +123,17 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
     determineColor = () => {
         let def = this.creature.adultColor;
 
-        switch(this.creature.gender) {
-            case Gender.MALE:
-                def = blendColors(def, CreatureDefaults.MALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
-                break;
-            case Gender.FEMALE:
-                def = blendColors(def, CreatureDefaults.FEMALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
-                break;
-            default:
-                break;
+        if (CreatureDefaults.ALTER_COLOR_BY_GENDER) {
+            switch(this.creature.gender) {
+                case Gender.MALE:
+                    def = blendColors(def, CreatureDefaults.MALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
+                    break;
+                case Gender.FEMALE:
+                    def = blendColors(def, CreatureDefaults.FEMALE_COLOR, CreatureDefaults.GENDER_BLEND_AMOUNT);
+                    break;
+                default:
+                    break;
+            }
         }
 
         switch (this.lifeStage) {
