@@ -38,7 +38,8 @@ export const CreatureDefaults = {
     DEATH_COLOR: "#808080",
     FEMALE_COLOR: "#F020D1",
     MALE_COLOR: "#001CDA",
-    GENDER_BLEND_AMOUNT: .15
+    GENDER_BLEND_AMOUNT: .15,
+    INTERVALS_BEFORE_NEW_TARGET_POSITION: 25
 }
 
 export const Gender = {

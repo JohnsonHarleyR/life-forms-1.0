@@ -28,7 +28,8 @@ export const isPrey = (creature, potentialPrey) => {
 
 export const canChasePrey = (creature, prey) => {
     let canChase = true;
-    if (prey.safety.shelter && prey.safety.shelter.isPositionInsideThisShelter(prey.position) && prey.life.lifeStage !== LifeStage.DECEASED) {
+    if ((prey.safety.shelter && prey.safety.shelter.isPositionInsideThisShelter(prey.position) && prey.life.lifeStage !== LifeStage.DECEASED)
+    || prey.isEaten) {
         canChase = false;
     }
     

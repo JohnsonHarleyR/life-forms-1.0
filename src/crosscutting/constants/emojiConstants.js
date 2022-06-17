@@ -8,6 +8,7 @@ export const EmojiInfo = {
     
     FEED_SELF: {y: 0, x: 0},
     FEED_FAMILY: {y: 0, x: 1},
+    FOUND_FOOD: {y: 3, x: 0},
     SLEEP_IN_SHELTER: {y: 0, x: 2},
     DIE: {y: 0, x: 3},
     BE_DEAD:  {y: 0, x: 3},

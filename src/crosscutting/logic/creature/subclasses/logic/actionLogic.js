@@ -1,7 +1,7 @@
-import { LifeStage, InventoryLocation } from "../../../../constants/creatureConstants"
+import { LifeStage, InventoryLocation, ActionType, CreatureDefaults } from "../../../../constants/creatureConstants"
 import { getTargetFromArea } from "../../creatureLogic";
 import { FoodType } from "../../../../constants/objectConstants";
-import { getCreatureIdentityString, shuffleArray } from "../../../universalLogic";
+import { getCreatureIdentityString, getRandomCreatureTargetPosition, shuffleArray } from "../../../universalLogic";
 import { isPrey } from "./safetyLogic";
 
 export const makeCreatureDie = (creature) => {
@@ -134,6 +134,78 @@ export const putTargetInFoodInventory = (creature) => {
         }
         creature.currentTarget = null;
     }
+}
+
+export const modifyFoodTargetIfStuck = (movement, objects, shelters) => {
+    let creature = movement.creature;
+    
+    let doTargetReset = checkForTargetPositionReset(movement);
+    if (doTargetReset) {
+        console.log(`Creature ${getCreatureIdentityString(creature)} is moving to new target position.`);
+        creature.targetPosition = getRandomCreatureTargetPosition(creature, objects, shelters);
+    }
+
+    let doFoodIntervalReset = checkForFoodIntervalReset(movement);
+    if (doFoodIntervalReset) {
+        if (movement.foodIntervals >= CreatureDefaults.INTERVALS_BEFORE_NEW_TARGET_POSITION) {
+            console.log(`Creature ${getCreatureIdentityString(creature)} has exceeded the number of intervals, resetting intervals.`);
+        } else if (creature.needs.priority === ActionType.FEED_FAMILY ||
+        creature.needs.priority === ActionType.FEED_SELF) {
+            console.log(`Moving to a new target position, resetting intervals.`);
+        }
+
+        movement.foodIntervals = 0;
+    }
+
+    movement.foodTargetPos = creature.targetPosition;
+}
+
+const checkForFoodIntervalReset = (movement) => {
+    let creature = movement.creature;
+
+    if (creature.needs.priority !== ActionType.FEED_FAMILY &&
+        creature.needs.priority !== ActionType.FEED_SELF) {
+            if (movement.foodIntervals !== 0) {
+                return true;
+            }
+            return false;
+    }
+
+    let areSameTargetPositions = arePositionsTheSame(creature.targetPosition, movement.foodTargetPos);
+    if (!areSameTargetPositions ||
+        movement.foodIntervals >= CreatureDefaults.INTERVALS_BEFORE_NEW_TARGET_POSITION) {
+            return true;
+    }
+    return false;
+
+}
+
+const checkForTargetPositionReset = (movement) => {
+    let creature = movement.creature;
+
+    // return false unless they are searching for food
+    if (creature.needs.priority !== ActionType.FEED_FAMILY &&
+        creature.needs.priority !== ActionType.FEED_SELF) {
+            return false;
+    }
+
+    // otherwise, check if current target position is the same as foodTargetPos
+    // and the interval count has not reached the limit
+    let areSameTargetPositions = arePositionsTheSame(creature.targetPosition, movement.foodTargetPos);
+    if (areSameTargetPositions &&
+        movement.foodIntervals >= CreatureDefaults.INTERVALS_BEFORE_NEW_TARGET_POSITION) {
+        // if it has not, tell them not to reset yet
+        return true;
+    } else {
+        return false;
+    }
+}
+
+export const arePositionsTheSame = (pos1, pos2) => {
+    if (pos1.x === pos2.x && pos1.y === pos2.y) {
+        return true;
+    }
+    return false;
 }
 
 const determineFamilyFoodPercentAverage = (creature) => {

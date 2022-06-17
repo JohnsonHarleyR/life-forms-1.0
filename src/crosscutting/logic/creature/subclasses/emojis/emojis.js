@@ -27,6 +27,7 @@ export default class Emojis {
             findSafety: this.createVisual('FIND_SAFETY', EmojiInfo.FIND_SAFETY),
             feedSelf: this.createVisual('FEED_SELF', EmojiInfo.FEED_SELF),
             feedFamily: this.createVisual('FEED_FAMILY', EmojiInfo.FEED_FAMILY),
+            foundFood: this.createVisual('FOUND_FOOD', EmojiInfo.FOUND_FOOD),
             createShelter: this.createVisual('CREATE_SHELTER', EmojiInfo.CREATE_SHELTER),
             leaveShelter: this.createVisual('LEAVE_SHELTER', EmojiInfo.LEAVE_SHELTER),
             sleepInShelter: this.createVisual('SLEEP_IN_SHELTER', EmojiInfo.SLEEP_IN_SHELTER),
@@ -81,8 +82,14 @@ export default class Emojis {
             case ActionType.FIND_SAFETY:
                 return this.emojis.findSafety;
             case ActionType.FEED_SELF:
+                if (this.creature.currentTarget !== null) {
+                    return this.emojis.foundFood;
+                }
                 return this.emojis.feedSelf;
             case ActionType.FEED_FAMILY:
+                if (this.creature.currentTarget !== null) {
+                    return this.emojis.foundFood;
+                }
                 return this.emojis.feedFamily;
             case ActionType.CREATE_SHELTER:
                 return this.emojis.createShelter;
@@ -95,6 +102,9 @@ export default class Emojis {
             case ActionType.FIND_MATE:
                 return this.emojis.findMate;
             case ActionType.GATHER_FOOD_TO_MATE:
+                if (this.creature.currentTarget !== null) {
+                    return this.emojis.foundFood;
+                }
                 return this.emojis.gatherFoodToMate;
             case ActionType.MATE:
                 return this.emojis.mate;
