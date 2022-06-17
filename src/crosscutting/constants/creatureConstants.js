@@ -1,5 +1,6 @@
 import { PlantSpecies } from "./plantConstants";
 import { minutesToMilliseconds } from "../logic/universalLogic";
+import { GeneticDefaults } from "./geneticConstants";
 
 export const Direction = {
     NORTH: "NORTH",
@@ -27,7 +28,7 @@ export const CreatureDefaults = {
     SET_UP_GENES: true,
     ALTER_COLOR_BY_GENDER: false,
     MOVE_MODE:  MoveMode.THINK,
-    LARGEST_SIZE: 14,
+    LARGEST_SIZE: GeneticDefaults.MAX_SIZE,
     MAX_MOVE_RECORDINGS: 50,
     PATTERN_DETECTION_SIZE: 5,
     CHILD_MIN_FRACTION: .2,
