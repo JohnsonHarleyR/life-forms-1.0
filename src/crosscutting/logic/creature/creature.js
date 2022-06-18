@@ -24,7 +24,7 @@ import { createDefaultGeneticProfile, createGeneticProfileForCreature } from "./
 export default class Creature {
     constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
         food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
-        genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring,
+        genderOfProvider, genderOfCaregiver, genderOfShelterMaker, canHaveMultipleLitters, minOffspring, maxOffspring,
         mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
 
         // do not touch the stuff in the next paragraph - as in don't refactor
@@ -51,7 +51,8 @@ export default class Creature {
             mother: mother,
             father: father
         };
-        this.mating = new CreatureMating(this, genderOfProvider, genderOfCaregiver, genderOfShelterMaker, pregnancyTerm, minOffspring, maxOffspring);
+        this.mating = new CreatureMating(this,genderOfProvider, genderOfCaregiver,
+            genderOfShelterMaker, minOffspring, maxOffspring, canHaveMultipleLitters);
     
         this.food = food; // what types of food does the creature eat? Two categories: plants and prey, both arrays
 

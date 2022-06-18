@@ -153,7 +153,7 @@ export const Boop = {
     genderOfProvider: Gender.FEMALE,
     genderOfCaregiver: Gender.MALE,
     genderOfShelterMaker: Gender.FEMALE,
-    pregnancyTerm: 1, // TODO determine quotient
+    canHaveMultipleLitters: true,
     minOffspring: 1,
     maxOffspring: 3
 };
@@ -185,7 +185,7 @@ export const Bleep = {
     genderOfProvider: Gender.MALE,
     genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,
-    pregnancyTerm: .7,  // TODO determine quotient
+    canHaveMultipleLitters: false,
     minOffspring: 2,
     maxOffspring: 5
 };
@@ -215,7 +215,7 @@ export const Biddy = {
     genderOfProvider: Gender.MALE,
     genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,
-    pregnancyTerm: .7,  // TODO determine quotient
+    canHaveMultipleLitters: false,
     minOffspring: 3,
     maxOffspring: 7
 };
