@@ -105,7 +105,7 @@ export default class CreatureMovement {
         let targetPos = null;
         if (this.moveMode === MoveMode.THINK) {
           //console.log(`Creature ${this.creature.id} thinking`);
-            this.determineModeByPriority();
+            this.determineModeByPriority(creatures);
             targetPos = this.getInitialTargetPosition(objects, creatures, plants, shelters);
             //this.creature.targetPosition = this.getInitialTargetPosition(objects, creatures, plants, shelters);
         }
@@ -183,7 +183,7 @@ export default class CreatureMovement {
       return this.moveToRandomPosition(objects, creatures, shelters, CanvasInfo);
     }
 
-    determineModeByPriority = () => {
+    determineModeByPriority = (creatures) => {
       switch(this.creature.needs.priority) {
           default:
           case ActionType.NONE:
@@ -264,6 +264,7 @@ export default class CreatureMovement {
                 this.creature.family.mate.mating.isMating = true;
               }
             if (this.creature.safety.shelter) {
+              this.creature.mating.ensureMatesHaveSameShelter(creatures);
               console.log(`MATING: creature ${getCreatureIdentityString(this.creature)} has shelter ${this.creature.safety.shelter.id}; ` +
               `mate: ${this.creature.family.mate !== null ? getCreatureIdentityString(this.creature.family.mate) : null}, ` + 
               `mate has shelter ${this.creature.family.mate !== null && this.creature.family.mate.safety.shelter !== null ? this.creature.family.mate.safety.shelter.id : null}`);

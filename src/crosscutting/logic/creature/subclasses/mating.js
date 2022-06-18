@@ -186,7 +186,9 @@ export default class CreatureMating {
 
         let creature = this.creature;
         let mate = this.creature.family.mate;
-        if (creature.safety.shelter.id !== mate.safety.shelter.id) {
+        if ((creature.safety.shelter.id !== mate.safety.shelter.id) ||
+            creature.safety.shelter.getCenterPosition() !==
+            mate.safety.shelter.getCenterPosition()) {
             console.log(`MATING: creature ${getCreatureIdentityString(this.creature)} has shelter ${this.creature.safety.shelter.id}; ` +
                 `mate: ${this.creature.family.mate !== null ? getCreatureIdentityString(this.creature.family.mate) : null}, ` + 
                 `mate has shelter ${this.creature.family.mate !== null && this.creature.family.mate.safety.shelter !== null ? this.creature.family.mate.safety.shelter.id : null}`);
