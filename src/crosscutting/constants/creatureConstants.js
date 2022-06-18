@@ -132,7 +132,12 @@ export const Boop = {
     type: CreatureType.BOOP,
     color: "#A020F0",
     food: {
-        plants: [PlantSpecies.SHRUB, PlantSpecies.WHEAT],
+        plants: [
+            PlantSpecies.SHRUB,
+            PlantSpecies.WHEAT,
+            // PlantSpecies.BUD,
+            PlantSpecies.WEED
+        ],
         prey: []
     },
     energy: 20,
