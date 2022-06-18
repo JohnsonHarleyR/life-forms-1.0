@@ -7,9 +7,9 @@ import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 const Clock = () => {
 
     const msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
-    const {startTime} = useContext(LifeContext);
+    const msToAdd = msPerHour * CanvasInfo.STARTING_HOUR;
 
-    //let startTime = Date.now();
+    const {startTime} = useContext(LifeContext);
     const [time, setTime] = useState(Date.now());
 
     const [msPassed, setMsPassed] = useState(0);
@@ -32,7 +32,7 @@ const Clock = () => {
 
     useEffect(() => { 
         if (time) {
-            let passed = getMsPassed(startTime, time);
+            let passed = getMsPassed(startTime, time) + msToAdd;
             setMsPassed(passed);
         }
     }, [time]);

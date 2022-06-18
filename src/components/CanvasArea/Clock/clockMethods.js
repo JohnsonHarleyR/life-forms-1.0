@@ -34,7 +34,7 @@ export const getTimeStringFromHoursToday = (hoursToday) => {
     let hour = 0;
     let amOrPm = null;
 
-    if (hoursToday === 0) {
+    if (hoursToday === 0 || hoursToday === 24) {
         hour = 12;
         amOrPm = "AM";
     } else if (hoursToday === 12) {

@@ -3,7 +3,8 @@ export const CanvasInfo = {
     HEIGHT: 400,
     BG_COLOR: "#D3D3D3",
     INTERVAL: 50,
-    OBJECT_PADDING: 2
+    OBJECT_PADDING: 2,
+    STARTING_HOUR: 14
 };
 
 export const XMark = {

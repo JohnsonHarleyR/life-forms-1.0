@@ -219,3 +219,37 @@ export const Biddy = {
     minOffspring: 3,
     maxOffspring: 7
 };
+
+
+export const StartingCreatures = [
+    {
+        type: Boop,
+        gender: Gender.FEMALE,
+        count: 2
+    },
+    {
+        type: Boop,
+        gender: Gender.MALE,
+        count: 2
+    },
+    {
+        type: Bleep,
+        gender: Gender.FEMALE,
+        count: 1
+    },
+    {
+        type: Bleep,
+        gender: Gender.MALE,
+        count: 1
+    },
+    {
+        type: Biddy,
+        gender: Gender.FEMALE,
+        count: 3
+    },
+    {
+        type: Biddy,
+        gender: Gender.MALE,
+        count: 3
+    }
+];
