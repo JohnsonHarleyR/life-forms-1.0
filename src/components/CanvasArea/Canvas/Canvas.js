@@ -16,6 +16,7 @@ import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogi
 import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/creatureConstants';
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
+import Clock from '../Clock/Clock';
 
 const Canvas = () => {
     
@@ -92,12 +93,18 @@ const Canvas = () => {
 
     return (
         <div>
-            <canvas
-            ref={canvasRef}
-            style={{ border: "2px solid black" }}
-            onClick={showMousePos}
-            />
+            <div>
+                <Clock />
+            </div>
+            <div>
+                <canvas
+                ref={canvasRef}
+                style={{ border: "2px solid black" }}
+                onClick={showMousePos}
+                />
+            </div>
         </div>
+
     );
 }
 

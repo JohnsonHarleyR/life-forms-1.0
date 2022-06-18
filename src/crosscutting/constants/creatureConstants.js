@@ -149,7 +149,7 @@ export const Boop = {
     foodToGatherAtOnce: 5,
     sleepNeeded: 8,
     foodNeeded: 3,
-    matingNeeded: 2, // how many days before it's needed again
+    matingNeeded: 1.5, // how many days before it's needed again
     genderOfProvider: Gender.FEMALE,
     genderOfCaregiver: Gender.MALE,
     genderOfShelterMaker: Gender.FEMALE,
