@@ -1,20 +1,25 @@
 import { Dominance, GeneticDefaults } from "../../../../constants/geneticConstants";
 import { getRandomItemInArray } from "../../../universalLogic";
-import { determineChosenTrait, getDeepTraitCopy } from "../logic/geneticLogic";
+import { createFirstGenerationTraitFromConstant, determineChosenTrait, doMakePermanentChange, findMainDefaultTrait, getDeepTraitCopy } from "../logic/geneticLogic";
 
 
 // TODO figure out logic for permanent changes
 export default class Gene {
-    constructor(name, geneType, dominantTraits, recessiveTraits, xTrait, yTrait, permanentChanges = []) {
+    constructor(name, geneType, dominantTraits, recessiveTraits,
+        xTrait, yTrait, xPermChanges, yPermChanges) {
         this.name = name;
         this.geneType = geneType;
         this.dominantTraits = dominantTraits;
         this.recessiveTraits = recessiveTraits;
         this.xTrait = xTrait;
         this.yTrait = yTrait;
-        //this.permanentChanges = permanentChanges;
+        
+        this.permanentChanges = getRandomItemInArray([xPermChanges, yPermChanges]);
 
-        this.dominantTraitsToPass = [...dominantTraits];
+        // TODO determine whether to add new permanent change
+        this.determineNewPermanentChanges();
+
+        this.dominantTraitsToPass = [...dominantTraits]; // TODO consider getting rid of this stuff...
         this.recessiveTraitsToPass = [...recessiveTraits];
         //this.permanentChangesToPass = [...permanentChanges]
 
@@ -32,13 +37,13 @@ export default class Gene {
         alteredCopy.generationCount++;
 
         // if the generation count is greater than that needed to become dominant, make it dominant
-        if (alteredCopy.dominance === Dominance.RECESSIVE &&
-            alteredCopy.generationCount >= GeneticDefaults.GENERATIONS_TO_BECOME_DOMINANT) {
-                alteredCopy.dominance = Dominance.DOMINANT;
-                this.moveFromRecessiveToDominantTraitsToPass(alteredCopy.name);
+        // if (alteredCopy.dominance === Dominance.RECESSIVE &&
+        //     alteredCopy.generationCount >= GeneticDefaults.GENERATIONS_TO_BECOME_DOMINANT) {
+        //         alteredCopy.dominance = Dominance.DOMINANT;
+        //         this.moveFromRecessiveToDominantTraitsToPass(alteredCopy.name);
 
-            // also check for making a trait permanent
-        } 
+        //     // also check for making a trait permanent
+        // } 
         // else if (alteredCopy.dominance === Dominance.DOMINANT && alteredCopy.name !== "DEFAULT" && 
         //     alteredCopy.generationCount >= GeneticDefaults.GENERATIONS_TO_BECOME_PERMANENT) {
 
@@ -47,9 +52,24 @@ export default class Gene {
         return alteredCopy;
     }
 
-    addPermanentChangeToPass = () => {
+    determineNewPermanentChanges = () => {
+        // See if the x and y traits qualify to make a change permanent
+        if (doMakePermanentChange(this.xTrait, this.yTrait)) {
+
+            // they're both the same name but may have different variables, so choose randomly.
+            let newPermTrait = getRandomItemInArray([this.xTrait, this.yTrait]);
+            // add to permanent changes
+            this.permanentChanges.push(newPermTrait);
+
+            // create new default traits for both x and y traits
+            let defaultTraitConstant = findMainDefaultTrait(this.geneType);
+            this.xTrait = createFirstGenerationTraitFromConstant(defaultTraitConstant);
+            this.yTrait = createFirstGenerationTraitFromConstant(defaultTraitConstant);
+        }
 
     }
+
+    
 
     moveFromRecessiveToDominantTraitsToPass = (traitName) => {
         let listOfRecessive = [];

@@ -482,7 +482,7 @@ export default class CreatureNeeds {
             },
             {
                 meetsCondition: () => {
-                    if (this.sleepLevel.percent <= 20) {
+                    if (this.sleepLevel.percent <= 30) {
                         return true;
                     }
                     return false;

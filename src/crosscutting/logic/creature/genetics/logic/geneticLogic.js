@@ -84,11 +84,13 @@ export const createNewGeneFromParentGenes = (xGene, yGene) => {
     let geneType = xGene.geneType;
     let xTrait = xGene.getRandomTraitToPass();
     let yTrait = yGene.getRandomTraitToPass();
+    let xPermChanges = xGene.permanentChanges;
+    let yPermChanges = yGene.permanentChanges;
     let dominantTraits = combineDominantTraits(xGene.dominantTraitsToPass, yGene.dominantTraitsToPass);
     let recessiveTraits = combineRecessiveTraits(xGene.recessiveTraitsToPass, yGene.recessiveTraitsToPass);
     
     let newGene = new Gene(name, geneType, dominantTraits, recessiveTraits,
-        xTrait, yTrait);
+        xTrait, yTrait, xPermChanges, yPermChanges);
     return newGene;
 }
 
@@ -159,17 +161,28 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose, creature 
         traitDefault = chooseValidTraitForCreature(constant.recessiveTraits, creature);
     }
 
+    // //test
+    // traitDefault = constant.recessiveTraits[0];
+    // ////////
+
     if (traitDefault === null) {
-        console.log(`ERROR: traitDefault value is null This should not happen.`);
+        console.log(`ERROR: traitDefault value is null. This should not happen.`);
         return null;
     }
 
     let xTrait = createFirstGenerationTraitFromConstant(traitDefault);
     let yTrait = createFirstGenerationTraitFromConstant(traitDefault);
 
+    // // test
+    // xTrait.generationCount = 6;
+    // yTrait.generationCount = 6;
+    // xTrait.dominance = Dominance.DOMINANT;
+    // yTrait.dominance = Dominance.DOMINANT;
+    /////////////
+
 
     let newGene = new Gene(constant.name, constant.geneType, constant.dominantTraits, constant.recessiveTraits,
-        xTrait, yTrait);
+        xTrait, yTrait, [], []);
     
     return newGene;
 }
@@ -215,6 +228,34 @@ export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, 
 
 
 // trait logic
+export const doMakePermanentChange = (xTrait, yTrait) => {
+    let xQualifies = false;
+    if (xTrait.dominance === Dominance.DOMINANT && xTrait.isMutation) {
+        xQualifies = true;
+    }
+
+    let yQualifies = false;
+    if (yTrait.dominance === Dominance.DOMINANT && yTrait.isMutation) {
+        yQualifies = true;
+    }
+
+    if (xQualifies && yQualifies && xTrait.name === yTrait.name) {
+        return true;
+    }
+
+    return false;
+}
+
+export const findMainDefaultTrait = (geneType) => {
+    let geneList = LIST_OF_GENES;
+    for (let i = 0; i < geneList.length; i++) {
+        if (geneList[i].geneType === geneType) {
+            return geneList[i].constant.dominantTraits[0];
+        }
+    }
+    return null;
+}
+
 export const determineChosenTrait = (xTrait, yTrait) => {
     let dominantTraitCount = 0;
 
@@ -251,6 +292,7 @@ export const determineChosenTrait = (xTrait, yTrait) => {
     if (newTrait.Dominance === Dominance.RECESSIVE &&
         newTrait.generationCount >= GeneticDefaults.GENERATIONS_TO_BECOME_DOMINANT) {
         newTrait.dominance = Dominance.DOMINANT;
+        chosen.dominance = Dominance.DOMINANT;
         // also change dominance of original trait - as it is now mutating!
         // NOTE: if traits were the same, then alter both traits
         if (!areTraitsIdentical(traits)) {

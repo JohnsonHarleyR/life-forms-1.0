@@ -67,7 +67,14 @@ export default class GeneticProfile {
             let xGene = getGeneFromProfile(xProfile, c.geneType);
             let yGene = getGeneFromProfile(yProfile, c.geneType);
             let newGene = createNewGeneFromParentGenes(xGene, yGene);
+
+            // apply all permanent changes in gene to creature
+            newGene.permanentChanges.forEach(pc => {
+                pc.alter(this.creature);
+            });
+
             setProfileProperty(this, c.geneType, newGene);
+
         });
 
         // if this is set to mutate a random gene, run through the genes
