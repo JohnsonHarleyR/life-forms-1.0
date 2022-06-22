@@ -15,8 +15,9 @@ import CreatureMating from "./subclasses/mating";
 import { 
     determineSightDirection,
     determineSightCoordinates,
+    determineGeneration,
 } from "./creatureLogic";
-import { roundToPlace, millisecondsToMinutes, blendColors } from "../universalLogic";
+import { roundToPlace, millisecondsToMinutes, blendColors, getCreatureIdentityString } from "../universalLogic";
 import Emojis from "./subclasses/emojis/emojis";
 import { getFoodTargetType } from "./subclasses/logic/safetyLogic";
 import { createDefaultGeneticProfile, createGeneticProfileForCreature } from "./genetics/logic/geneticLogic";
@@ -29,6 +30,8 @@ export default class Creature {
 
         // do not touch the stuff in the next paragraph - as in don't refactor
         this.id = id;
+        this.generation = determineGeneration(mother, father);
+
         this.type = type;
         this.adultSize = size;
         this.adultEnergy = energy;
@@ -36,7 +39,10 @@ export default class Creature {
         this.gender = gender;
         this.life = new CreatureLife(this, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder);
         this.energy = this.life.determineEnergy();
+        
         this.isEaten = false;
+        this.hasLeftWorld = false;
+
         this.size = this.life.determineSize();
         this.width = this.size; // Necessary?
         this.height = this.size; // Necessary?
@@ -79,6 +85,8 @@ export default class Creature {
         this.setPlants = setPlants;
         this.setCreatures = setCreatures;
         this.setShelters = setShelters;
+
+        console.log(`Generation ${this.generation}: ${getCreatureIdentityString(this)} is born`);
     }
 
     returnProperties = () => {

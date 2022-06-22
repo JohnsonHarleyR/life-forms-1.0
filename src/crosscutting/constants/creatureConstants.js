@@ -82,6 +82,7 @@ export const ActionType = {
     HAVE_CHILD: "HAVE_CHILD",
     DIE: "DIE",
     BE_DEAD: "BE_DEAD",
+    LEAVE_WORLD: "LEAVE_WORLD",
     NONE: "NONE"
 }
 

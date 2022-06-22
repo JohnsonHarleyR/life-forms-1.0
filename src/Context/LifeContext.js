@@ -8,6 +8,8 @@ const LifeProvider = ({children}) => {
     const [startTime, setStartTime] = useState(Date.now());
 
     const [creatures, setCreatures] = useState([]);
+    const [passedOn, setPassedOn] = useState([]);
+
     const [shelters, setShelters] = useState([]);
     const [plants, setPlants] = useState([]);
     const [objects, setObjects] = useState([]);
@@ -46,9 +48,9 @@ const LifeProvider = ({children}) => {
 
     return (
         <LifeContext.Provider value={{
-            creatures, shelters, plants, objects, chosenCreature,
+            creatures, passedOn, shelters, plants, objects, chosenCreature,
             largestCreatureSize, startTime,
-            setCreatures, setShelters, setPlants, setObjects, setChosenCreature
+            setCreatures, setPassedOn, setShelters, setPlants, setObjects, setChosenCreature
         }}>
             {children}
         </LifeContext.Provider>

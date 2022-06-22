@@ -54,7 +54,7 @@ export default class CreatureMating {
     }
 
     haveChild = (creatures) => {
-        console.log(`Creature ${this.creature.id} is giving birth. Offspring left: ${this.offspringCount}`);
+        //console.log(`Creature ${this.creature.id} is giving birth. Offspring left: ${this.offspringCount}`);
         if (this.isPregnant && this.offspringCount > 0) {
             let newChild = this.createChild(creatures);
             this.creature.family.children.push(newChild);
@@ -70,9 +70,9 @@ export default class CreatureMating {
             // this.creature.setCreatures(creaturesCopy);
             //addItemToArray(newChild, creatures, this.creature.setCreatures);
             this.offspringCount--;
-            console.log(`having child - ${this.offspringCount} left`);
+            //console.log(`having child - ${this.offspringCount} left`);
         } else if (this.isPregnant && this.offspringCount === 0) {
-            console.log(`creature ${this.creature.id} has 0 children left to birth - stopping pregnancy`);
+            //console.log(`creature ${this.creature.id} has 0 children left to birth - stopping pregnancy`);
             this.isPregnant = false;
             this.offspringCount = null;
             this.displayNewChildren(creatures);

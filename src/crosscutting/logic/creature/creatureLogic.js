@@ -9,10 +9,32 @@ import {
     getCreatureIdentityString
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
-    CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath } from "../../constants/creatureConstants";
+    CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath, TimeProps } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType, Side } from "../../constants/objectConstants";
 import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
+
+// birth
+export const determineGeneration = (mother, father) => {
+    if (mother === null && father === null) {
+        return 1;
+    }
+
+    if (mother === null) {
+        return father.generation + 1;
+    }
+
+    if (father === null) {
+        return mother.generation + 1;
+    }
+
+    if (mother.generation > father.generation) {
+        return mother.generation + 1;
+    } else {
+        return father.generation + 1;
+    }
+}
+
 
 // dying
 export const assessCauseOfDeath = (creature) => {
@@ -32,6 +54,23 @@ export const assessCauseOfDeath = (creature) => {
         `==========================================================================`);
 }
 
+export const isTimeToMoveOn = (creature) => {
+    if (!creature.life.isDead || creature.life.lifeStage !== LifeStage.DECEASED ||
+        creature.life.timeOfDeath === null) {
+        return false;
+    }
+
+    if (creature.isEaten) {
+        return true;
+    }
+
+    let timeDead = Date.now() - creature.life.timeOfDeath;
+    if (timeDead >= TimeProps.MS_PER_DAY) {
+        return true;
+    }
+    return false;
+}
+
 export const prepareForDeath = (creature) => {
     // give everything a chance to be drawn
     // if (creature.safety.isBeingEaten && !creature.safety.isDrawnBeforeEaten) {
@@ -46,6 +85,7 @@ export const prepareForDeath = (creature) => {
     creature.safety.isBeingEaten = false;
     creature.safety.isDrawnBeforeEaten = false;
     creature.life.isDead = true;
+    creature.life.timeOfDeath = Date.now();
     creature.life.lifeStage = LifeStage.DECEASED;
 
     if (creature.safety.shelter !== null) {

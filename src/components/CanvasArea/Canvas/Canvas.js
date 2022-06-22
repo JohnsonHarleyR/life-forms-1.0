@@ -27,8 +27,8 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {creatures, shelters, plants, objects, chosenCreature, largestCreatureSize,
-        setCreatures, setShelters, setPlants, setObjects, setChosenCreature} = useContext(LifeContext);
+    const {creatures, passedOn, shelters, plants, objects, chosenCreature, largestCreatureSize,
+        setCreatures, setPassedOn, setShelters, setPlants, setObjects, setChosenCreature} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
@@ -50,7 +50,7 @@ const Canvas = () => {
             const worker = () => {
                 setInterval(() => {
                     postMessage(Date.now());
-                }, 50);
+                }, 70);
             }
             
             let code = worker.toString();
@@ -78,7 +78,7 @@ const Canvas = () => {
             //console.log(JSON.stringify(creaturesCopy));
             setCreatures(creaturesCopy);
             // update shelters too
-            updateCreatures(creatures, setCreatures);
+            updateCreatures(creatures, setCreatures, setPassedOn);
             updateShelters(creatures, setShelters);
             updatePlants(plants, setPlants);
         }
@@ -87,8 +87,8 @@ const Canvas = () => {
 
     useEffect(() => {
         if (intervals) {
-            let numberOfPlants = plants.length;
-            console.log(`plant count: ${numberOfPlants}`);
+            //let numberOfPlants = plants.length;
+            //console.log(`plant count: ${numberOfPlants}`);
             generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);

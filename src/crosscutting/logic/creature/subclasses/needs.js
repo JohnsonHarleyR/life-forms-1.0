@@ -1,6 +1,6 @@
 import { LifeStage, ActionType, AmountNeeded, AddOrSubtract } from "../../../constants/creatureConstants";
 import { roundToPlace, getCreatureIdentityString, isInPosition } from "../../universalLogic";
-import { assessCauseOfDeath, doesPotentialMateExist } from "../creatureLogic";
+import { assessCauseOfDeath, doesPotentialMateExist, isTimeToMoveOn } from "../creatureLogic";
 import { 
     getAmountNeededDecimal,
     calculateAmountLostPerMs,
@@ -214,10 +214,15 @@ export default class CreatureNeeds {
 
     isPriorityComplete = (priority, creatures) => {
         switch (priority) {
+            case ActionType.LEAVE_WORLD:
+                if (this.creature.hasLeftWorld) {
+                    return true;
+                }
+                break;
             case ActionType.DIE:
                 if (this.creature.life.isDead === true) {
-                    console.log(`creature ${getCreatureIdentityString(this.creature)} is officially dead.`);
-                    this.displayCreatureNeedLevels();
+                    //console.log(`creature ${getCreatureIdentityString(this.creature)} is officially dead.`);
+                    //this.displayCreatureNeedLevels();
                     return true;
                 }
                 break;
@@ -327,6 +332,14 @@ export default class CreatureNeeds {
         // special priorities for  child and deceased
         if (this.creature.life.isDead) {
             return [
+                {
+                    meetsCondition: () => {
+                            if (!this.creature.hasLeftWorld && isTimeToMoveOn(this.creature)) {
+                                return true;
+                            }
+                        },
+                    priority: ActionType.LEAVE_WORLD
+                },
                 {
                     meetsCondition: () => {
                             return true;
@@ -460,7 +473,7 @@ export default class CreatureNeeds {
                 meetsCondition: () => {
                     if (this.creature.life.lifeStage !== LifeStage.CHILD &&
                         this.creature.mating.isPregnant) {
-                        console.log(`creature ${this.creature.id} is having a child`);
+                        //console.log(`creature ${this.creature.id} is having a child`);
                         return true;
                     }
                     return false;
@@ -505,9 +518,9 @@ export default class CreatureNeeds {
                     if (this.foodLevel.percent <= 40 || 
                         this.familyFoodPercent <= 40) {
                             this.foodPercentGoal = 60;
-                            console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
-              `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
-              `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
+            //                 console.log(`creature ${this.creature.id} will FEED_FAMILY` + 
+            //   `\nFamily food percent: ${this.creature.needs.familyFoodPercent}\n goal: ${this.creature.needs.foodPercentGoal}` + 
+            //   `\nCreature food percent: ${this.creature.needs.foodLevel.percent}`);
                             return true;
                         }
                         return false;

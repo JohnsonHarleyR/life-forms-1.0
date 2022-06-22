@@ -19,6 +19,7 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
         this.birthTime = Date.now() - this.age;
 
         this.isDead = false;
+        this.timeOfDeath = null;
 
         this.msPerYear = TimeProps.MS_PER_DAY; // it's like the sims where a day is one year but it still functions like one day with the same number of hours
         this.msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;

@@ -128,26 +128,45 @@ export const updatePlants = (plants, setPlants) => {
     setPlants(newPlants);
 }
 
-export const updateCreatures = (creatures, setCreatures) => {
+export const updateCreatures = (creatures, setCreatures, setPassedOn) => {
     let newCreatures = [];
     let creatureNames = [];
+    let newPassedOn = [];
+    let passedOnNames = [];
     creatures.forEach(c => {
-        if (( (c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead)) 
-        && !creatureNames.includes(c.id)) {
+        if (!c.hasLeftWorld && !creatureNames.includes(c.id)) {
             newCreatures.push(c);
             creatureNames.push(c.id);
+        } else if (!passedOnNames.includes(c.id)) {
+            newPassedOn.push(c);
+            passedOnNames.push(c.id);
         }
+        // if (( (c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead)) 
+        // && !creatureNames.includes(c.id)) {
+        //     newCreatures.push(c);
+        //     creatureNames.push(c.id);
+        // }
         c.family.children.forEach(ch => {
-            if (((c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead))
-            && !isInArray(ch.id, creatureNames)) {
+            if (!ch.hasLeftWorld && !creatureNames.includes(ch.id)) {
                 newCreatures.push(ch);
                 creatureNames.push(ch.id);
+            } else if (!passedOnNames.includes(ch.id)) {
+                newPassedOn.push(ch);
+                passedOnNames.push(ch.id);
             }
         })
+        // c.family.children.forEach(ch => {
+        //     if (((c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead))
+        //     && !isInArray(ch.id, creatureNames)) {
+        //         newCreatures.push(ch);
+        //         creatureNames.push(ch.id);
+        //     }
+        // })
     });
     resetHasMovedForCreatures(newCreatures);
     //console.log(`number of creatures: ${newCreatures.length}`);
     setCreatures(newCreatures);
+    setPassedOn(newPassedOn);
 }
 
 const resetHasMovedForCreatures = (creatures) => {

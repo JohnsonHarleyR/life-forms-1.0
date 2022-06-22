@@ -212,6 +212,10 @@ export default class CreatureMovement {
             this.creature.targetType = NeedType.NONE;
             this.moveMode = MoveMode.STAND_STILL;
             break;
+          case ActionType.LEAVE_WORLD:
+            this.creature.targetType = NeedType.NONE;
+            this.creature.hasLeftWorld = true;
+            break;
           case ActionType.SLEEP_IN_SPOT:
             this.creature.targetType = NeedType.SLEEP;
             this.moveMode = MoveMode.STAND_STILL;
@@ -353,7 +357,7 @@ export default class CreatureMovement {
         makeCreatureSleep(this.creature);
         break;
       case ActionType.HAVE_CHILD:
-        console.log(`having child`);
+        //console.log(`having child`);
         this.creature.mating.haveChild(creatures);
         break;
     }
