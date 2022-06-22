@@ -1,5 +1,6 @@
 export const PlantDefaults = {
-    MAX_PLANTS: 300
+    MAX_PLANTS: 300,
+    MAX_TOTAL_PLANTS: 1100
 }
 
 export const PlantSpecies = {

@@ -6,7 +6,8 @@ import {
     checkAnyArrayCollision,
     getRandomIntInRange,
     findArrayPatterns,
-    getCreatureIdentityString
+    getCreatureIdentityString,
+    getRandomItemInArray
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath, TimeProps } from "../../constants/creatureConstants";
@@ -515,15 +516,9 @@ export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
 // mating logic
 
 export const getRandomGender = () => {
-    let random = getRandomIntInRange(0, 1);
-    switch(random) {
-        case 0:
-            return Gender.MALE;
-        case 1:
-            return Gender.FEMALE;
-        default:
-            throw "Error inside of getRandomGender inside of CreatureLogic.js.";
-    }
+    let genders = [Gender.MALE, Gender.FEMALE];
+    let random = getRandomItemInArray(genders);
+    return random;
 }
 
 export const getCreatureInfoByType = (type) => {

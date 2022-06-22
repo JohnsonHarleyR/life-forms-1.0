@@ -136,7 +136,7 @@ export const Boop = {
         plants: [
             PlantSpecies.SHRUB,
             PlantSpecies.WHEAT,
-            // PlantSpecies.BUD,
+            PlantSpecies.BUD,
             PlantSpecies.WEED
         ],
         prey: []

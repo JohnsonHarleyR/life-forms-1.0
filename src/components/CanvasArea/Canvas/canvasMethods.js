@@ -54,15 +54,20 @@ export const generatePlants = (intervals, plants, creatures, objects, shelters, 
     if (creatures === null || creatures === undefined) {
         return;
     }
+    
+    if (plants.length > PlantDefaults.MAX_TOTAL_PLANTS) {
+        return;
+    }
 
-    let plantCounts = countPlants(plantConstants, plants);
+    //let plantCounts = countPlants(plantConstants, plants);
     
     let plantsCopy = [...plants];
     let index = plantsCopy.length;
     plantConstants.forEach(p => {
-        let count = plantCounts[`${p.type}`];
-        if (intervals % p.growInterval === 0 &&
-            count <= PlantDefaults.MAX_PLANTS) {
+        //let count = plantCounts[`${p.type}`];
+        if (intervals % p.growInterval === 0 
+            //&& count <= PlantDefaults.MAX_PLANTS
+        ) {
             let newPlant = generatePlant(index, p, plantsCopy, creatures, objects, shelters, largestCreatureSize);
             plantsCopy.push(newPlant);
             index++;

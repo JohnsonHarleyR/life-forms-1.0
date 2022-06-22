@@ -48,9 +48,17 @@ const Canvas = () => {
         if (time) {
             
             const worker = () => {
-                setInterval(() => {
-                    postMessage(Date.now());
+                let interval = setInterval(() => {
+                    postMessage({
+                        action: "setTime",
+                        time: Date.now()
+                    });
                 }, 70);
+
+                postMessage({
+                    action: "clearInterval",
+                    interval: interval
+                });
             }
             
             let code = worker.toString();
@@ -60,10 +68,36 @@ const Canvas = () => {
             const newWorker = new Worker(URL.createObjectURL(blob));
             
             newWorker.onmessage = (m) => {
-                setTime(m.data);
+                if (m.data.action === "setTime") {
+                    setTime(m.data.time);
+                } else {
+                    clearInterval(m.data.interval);
+                }
+
             };
         }
     }, []);
+
+    // useEffect(() => {
+    //     if (time) {
+            
+    //         const worker = () => {
+    //             setInterval(() => {
+    //                 postMessage(Date.now());
+    //             }, 70);
+    //         }
+            
+    //         let code = worker.toString();
+    //         code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+            
+    //         const blob = new Blob([code], {type: "application/javascript"});
+    //         const newWorker = new Worker(URL.createObjectURL(blob));
+            
+    //         newWorker.onmessage = (m) => {
+    //             setTime(m.data);
+    //         };
+    //     }
+    // }, []);
 
     // TODO refactor the below part after creating creature
     useEffect(() => {
