@@ -92,7 +92,7 @@ export default class GeneticProfile {
         }
 
         //console.log(`Profile: ${JSON.stringify(this)}`);
-        console.log(getProfileLogString(this));
+        //console.log(getProfileLogString(this));
     }
 
     selectGeneToMutate = () => {

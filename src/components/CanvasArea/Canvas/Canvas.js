@@ -24,6 +24,8 @@ const Canvas = () => {
 
     const canvasRef = useRef();
 
+    const [worker, setWorker] = useState(null);
+
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
@@ -46,12 +48,26 @@ const Canvas = () => {
 
     useEffect(() => {
         if (time) {
-          //console.log(time);
-        const interval = setInterval(
-            () => setTime(Date.now()),
-            CanvasInfo.INTERVAL
-        );
-        return () => clearInterval(interval);
+            
+            const work = () => {
+                setInterval(() => {
+                    postMessage(Date.now());
+                }, 75);
+            }
+            
+            let code = work.toString();
+            code = code.substring(code.indexOf("{")+1, code.lastIndexOf("}"));
+            
+            const blob = new Blob([code], {type: "application/javascript"});
+            const newWorker = new Worker(URL.createObjectURL(blob));
+            
+            newWorker.onmessage = (m) => {
+                //console.log("msg", m.data);
+                setTime(m.data);
+                //setTestTime(m.data);
+            };
+    
+            setWorker(newWorker);
         }
     }, []);
 
@@ -59,6 +75,9 @@ const Canvas = () => {
     useEffect(() => {
         setIntervals(intervals + 1);
         if (time && creatures && creatures.length !== 0) {
+            console.log(`worker worked`);
+            worker.postMessage('posting worker message');
+
             let creaturesCopy = [...creatures];
             creaturesCopy.forEach(c => {
                 let result = c.update(objects, plants, creatures, shelters, CanvasInfo);

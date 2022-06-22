@@ -835,7 +835,7 @@ export default class CreatureMovement {
       let newPosition = this.creature.position;
       // if there is a current target, move toward it and then check if in same position. If so, put target in inventory.
       if (this.creature.currentTarget !== null) {
-        console.log(`Creature ${getCreatureIdentityString(this.creature)} has a food target.`);
+        //console.log(`Creature ${getCreatureIdentityString(this.creature)} has a food target.`);
 
         if (!isPrey(this.creature, this.creature.currentTarget)) { // if it's a plant, simple
           this.creature.targetPosition = this.creature.currentTarget.position;
@@ -849,7 +849,7 @@ export default class CreatureMovement {
 
           // check if prey is still being chased, update the prey's safety and then only keep chasing if still being chased
           if (this.creature.currentTarget.safety.isBeingChased) {
-            console.log(`prey is being chased`);
+            //console.log(`prey is being chased`);
             this.creature.targetPosition = this.creature.currentTarget.position;
             //console.log(`creature ${this.creature.id} has food target, moving toward target`);
             newPosition = this.moveToPoint(this.creature.currentTarget.position, objects, creatures, shelters, canvasInfo);
@@ -870,7 +870,7 @@ export default class CreatureMovement {
 
             }
           } else { // otherwise, deselect the target and use recursion
-            console.log(`The target seems to have escaped.`);
+            //console.log(`The target seems to have escaped.`);
             this.creature.currentTarget = null;
             newPosition = this.searchForFoodTarget(plants, creatures, objects, shelters, canvasInfo);
           }

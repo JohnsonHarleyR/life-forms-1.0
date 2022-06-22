@@ -148,10 +148,10 @@ export const modifyFoodTargetIfStuck = (movement, objects, shelters) => {
     let doFoodIntervalReset = checkForFoodIntervalReset(movement);
     if (doFoodIntervalReset) {
         if (movement.foodIntervals >= CreatureDefaults.INTERVALS_BEFORE_NEW_TARGET_POSITION) {
-            console.log(`Creature ${getCreatureIdentityString(creature)} has exceeded the number of intervals, resetting intervals.`);
+            //console.log(`Creature ${getCreatureIdentityString(creature)} has exceeded the number of intervals, resetting intervals.`);
         } else if (creature.needs.priority === ActionType.FEED_FAMILY ||
         creature.needs.priority === ActionType.FEED_SELF) {
-            console.log(`Moving to a new target position, resetting intervals.`);
+            //console.log(`Moving to a new target position, resetting intervals.`);
         }
 
         movement.foodIntervals = 0;
