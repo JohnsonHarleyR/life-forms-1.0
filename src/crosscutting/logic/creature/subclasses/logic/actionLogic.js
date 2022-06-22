@@ -141,7 +141,7 @@ export const modifyFoodTargetIfStuck = (movement, objects, shelters) => {
     
     let doTargetReset = checkForTargetPositionReset(movement);
     if (doTargetReset) {
-        console.log(`Creature ${getCreatureIdentityString(creature)} is moving to new target position.`);
+        //console.log(`Creature ${getCreatureIdentityString(creature)} is moving to new target position.`);
         creature.targetPosition = getRandomCreatureTargetPosition(creature, objects, shelters);
     }
 

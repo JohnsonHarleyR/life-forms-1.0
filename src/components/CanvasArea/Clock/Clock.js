@@ -4,13 +4,12 @@ import { getDaysPassed, getHoursPassed, getHoursPassedToday, getMsPassed, getTim
 import { TimeProps } from '../../../crosscutting/constants/creatureConstants';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 
-const Clock = () => {
+const Clock = ({time}) => {
 
     const msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
     const msToAdd = msPerHour * CanvasInfo.STARTING_HOUR;
 
     const {startTime} = useContext(LifeContext);
-    const [time, setTime] = useState(Date.now());
 
     const [msPassed, setMsPassed] = useState(0);
     const [hoursPassed, setHoursPassed] = useState(0);
@@ -18,17 +17,6 @@ const Clock = () => {
     const [hoursPassedToday, setHoursPassedToday] = useState(0);
     const [timeString, setTimeString] = useState("12:00 AM");
 
-    useEffect(() => {
-        //startTime = Date.now();
-        if (time) {
-          //console.log(time);
-        const interval = setInterval(
-            () => setTime(Date.now()),
-            CanvasInfo.INTERVAL
-        );
-        return () => clearInterval(interval);
-        }
-    }, []);
 
     useEffect(() => { 
         if (time) {
