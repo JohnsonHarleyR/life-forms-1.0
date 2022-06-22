@@ -9,6 +9,7 @@ import { getRandomPlantStartPosition } from "../../../crosscutting/logic/object/
 import Plant from "../../../crosscutting/logic/object/plants/plant";
 import { getRandomCreatureStartPosition } from "../../../crosscutting/logic/creature/creatureLogic";
 import Creature from "../../../crosscutting/logic/creature/creature";
+import { PlantDefaults } from "../../../crosscutting/constants/plantConstants";
 
 // TODO generateCreature, generatePlant
 
@@ -53,17 +54,34 @@ export const generatePlants = (intervals, plants, creatures, objects, shelters, 
     if (creatures === null || creatures === undefined) {
         return;
     }
+
+    let plantCounts = countPlants(plantConstants, plants);
     
     let plantsCopy = [...plants];
     let index = plantsCopy.length;
     plantConstants.forEach(p => {
-        if (intervals % p.growInterval === 0) {
+        let count = plantCounts[`${p.type}`];
+        if (intervals % p.growInterval === 0 &&
+            count <= PlantDefaults.MAX_PLANTS) {
             let newPlant = generatePlant(index, p, plantsCopy, creatures, objects, shelters, largestCreatureSize);
             plantsCopy.push(newPlant);
             index++;
         }
     })
     setPlants(plantsCopy);
+}
+
+const countPlants = (plantConstants, plants) => {
+    let counts = new Object();
+    plantConstants.forEach(c => {
+        counts[`${c.type}`] = 0;
+    });
+
+    plants.forEach(p => {
+        counts[`${p.type}`]++;
+    });
+
+    return counts;
 }
 
 const generatePlant = (index, speciesInfo, plants, creatures, objects, shelters, largestCreatureSize) => { // TODO Be sure to include an id too - make it easier to pull out

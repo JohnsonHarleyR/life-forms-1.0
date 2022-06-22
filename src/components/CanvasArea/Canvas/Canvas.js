@@ -87,6 +87,8 @@ const Canvas = () => {
 
     useEffect(() => {
         if (intervals) {
+            let numberOfPlants = plants.length;
+            console.log(`plant count: ${numberOfPlants}`);
             generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);

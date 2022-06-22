@@ -1,3 +1,7 @@
+export const PlantDefaults = {
+    MAX_PLANTS: 300
+}
+
 export const PlantSpecies = {
     SHRUB: "SHRUB",
     WEED: "WEED",
