@@ -1,5 +1,4 @@
 import React, {useState, useEffect, createContext} from 'react';
-import worker_script from './worker';
 //import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const LifeContext = createContext({creatures: [], plants: [], objects: []});
@@ -7,7 +6,6 @@ const LifeContext = createContext({creatures: [], plants: [], objects: []});
 const LifeProvider = ({children}) => {
 
     const [startTime, setStartTime] = useState(Date.now());
-    //const [worker, setWorker] = useState(new Worker('worker_script'));
 
     const [creatures, setCreatures] = useState([]);
     const [shelters, setShelters] = useState([]);
@@ -34,11 +32,6 @@ const LifeProvider = ({children}) => {
             setLargestCreatureSize(largest);
             //showListOfCreatures();
         }
-
-        // worker.onmessage = (m) => {
-        //     console.log("msg from worker: ", m.data);
-        // };
-        // worker.postMessage('im from main');
 
     }, [creatures]);
 
