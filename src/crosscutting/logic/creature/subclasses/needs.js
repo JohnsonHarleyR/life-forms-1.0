@@ -237,7 +237,8 @@ export default class CreatureNeeds {
             case ActionType.MATE:
                 if (this.creature.safety.shelter && this.creature.safety.shelter.isInsideShelter(this.creature)
                 && this.creature.mating.isMating === false
-                && (!this.creature.family.mate || (this.creature.family.mate.safety.shelter.isInsideShelter(this.creature.family.mate) &&
+                && (!this.creature.family.mate || (this.creature.family.mate.safety.shelter &&
+                    this.creature.family.mate.safety.shelter.isInsideShelter(this.creature.family.mate) &&
                 this.creature.family.mate.mating.isMating === false))) {
                     return true;
                 }
