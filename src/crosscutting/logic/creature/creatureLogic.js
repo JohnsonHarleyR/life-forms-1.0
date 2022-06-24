@@ -15,7 +15,7 @@ import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType, Side } from "../../constants/objectConstants";
 import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
 
-// birth
+// #region birth
 export const determineGeneration = (mother, father) => {
     if (mother === null && father === null) {
         return 1;
@@ -35,9 +35,9 @@ export const determineGeneration = (mother, father) => {
         return father.generation + 1;
     }
 }
+//#endregion
 
-
-// dying
+//#region dying
 export const assessCauseOfDeath = (creature) => {
     let cause = CauseOfDeath.UNKNOWN;
 
@@ -98,8 +98,9 @@ export const prepareForDeath = (creature) => {
         creature.family.mate = null;
     }
 }
+//#endregion
 
-// creature collision fixes
+// #region creature collision fixes
 export const getNecessaryCollisionPadding = () => {
     let halfLargest = CreatureDefaults.LARGEST_SIZE / 2;
     let padding = halfLargest + CanvasInfo.OBJECT_PADDING;
@@ -144,7 +145,9 @@ export const moveCreatureToNearbyValidPosition = (creature, objects) => {
     this.creature.position = moveToPosition;
 }
 
-// search methods
+//#endregion
+
+// #region search methods
 export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) => {
     let newTarget = null;
     possibleTargets.forEach(t => {
@@ -164,18 +167,9 @@ export const getTargetFromArea = (sightCoords, possibleTypes, possibleTargets) =
     return newTarget;
   }
 
+//#endregion
 
-export const getSightLineInfo = (creature) => {
-    let lineInfo = {
-        xStart: creature.position.x,
-        yStart: creature.position.y,
-        xEnd: creature.targetPosition.x,
-        yEnd: creature.targetPosition.y
-    };
-    return lineInfo;
-}
-
-// position methods
+// #region position methods
 
 export const getRandomCreatureStartPosition = (info, creatures, objects, plants, shelters) => {
     let passInfo = {width: info.size, height: info.size};
@@ -485,9 +479,20 @@ const offsetValues = (offset, width, height, xStart, xEnd, yStart, yEnd) => {
     return result;
 }
 
+//#endregion
 
+// #region sight logic
 
-// sight logic
+export const getSightLineInfo = (creature) => {
+    let lineInfo = {
+        xStart: creature.position.x,
+        yStart: creature.position.y,
+        xEnd: creature.targetPosition.x,
+        yEnd: creature.targetPosition.y
+    };
+    return lineInfo;
+}
+
 export const isInSight = (sightCoords, item) => {
     let iPoints = getStartAndEndPoints(item.id, item.position, item.width, item.height);
     if ((iPoints.xStart >= sightCoords.xStart && iPoints.xEnd <= sightCoords.xEnd) &&
@@ -512,8 +517,9 @@ export const checkSightAreaForItemInArray = (creature, items, canvasInfo) => {
         targetsSeen: targetsSeen
     };
 }
+//#endregion
 
-// mating logic
+//#region mating logic
 
 export const getRandomGender = () => {
     let genders = [Gender.MALE, Gender.FEMALE];
@@ -587,7 +593,8 @@ export const isPotentialMate = (creature, otherCreature) => {
 }
 
 
-// shelter logic
+//#endregion
+//#region shelter logic
 export const getRandomShelterPosition = (creature, creatures, objects, shelters) => {
     let shelterSize = creature.size * ShelterLine.MULTIPLIER;
     let shelterInfo = {width: shelterSize, height: shelterSize};
@@ -625,3 +632,5 @@ export const canSetShelterInPosition = (position, creature, creatures, objects, 
     // if the result 
     return !collisionResult;
 }
+
+//#endregion

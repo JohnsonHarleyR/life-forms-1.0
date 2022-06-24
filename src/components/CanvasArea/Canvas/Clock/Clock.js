@@ -1,8 +1,8 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
-import { LifeContext } from '../../../Context/LifeContext';
+import { LifeContext } from '../../../../Context/LifeContext';
 import { getDaysPassed, getHoursPassed, getHoursPassedToday, getMsPassed, getTimeStringFromHoursToday } from './clockMethods';
-import { TimeProps } from '../../../crosscutting/constants/creatureConstants';
-import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
+import { TimeProps } from '../../../../crosscutting/constants/creatureConstants';
+import { CanvasInfo } from '../../../../crosscutting/constants/canvasConstants';
 
 const Clock = ({time}) => {
 

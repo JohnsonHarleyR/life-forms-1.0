@@ -1,4 +1,4 @@
-import { TimeProps } from "../../../crosscutting/constants/creatureConstants";
+import { TimeProps } from "../../../../crosscutting/constants/creatureConstants";
 
 
 export const getMsPassed = (startTime, currentTime) => {

@@ -1,3 +1,8 @@
+export const CanvasDefaults = {
+    USE_CREATE_MODE: false,
+    SIZE_FACTOR: 1
+}
+
 export const CanvasInfo = {
     WIDTH: 600,
     HEIGHT: 400,
