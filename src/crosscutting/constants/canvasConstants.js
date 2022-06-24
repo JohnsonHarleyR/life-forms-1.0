@@ -1,5 +1,6 @@
 export const CanvasDefaults = {
     USE_CREATE_MODE: false,
+    START_GAME_WITH_CANVAS: true,
     SIZE_FACTOR: 1
 }
 

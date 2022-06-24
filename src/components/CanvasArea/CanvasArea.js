@@ -22,10 +22,7 @@ const CanvasArea = () => {
         } else if (isGameOver) {
             return <GameOver />;
         } else {
-            <>
-            <Canvas />
-            <Controls />
-        </>
+            return <Canvas />;
         }
     }
 

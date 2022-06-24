@@ -9,7 +9,7 @@ const LifeProvider = ({children}) => {
     const [startTime, setStartTime] = useState(Date.now());
 
     const [isCreateMode, setIsCreateMode] = useState(CanvasDefaults.USE_CREATE_MODE);
-    const [isGameStarted, setIsGameStarted] = useState(false);
+    const [isGameStarted, setIsGameStarted] = useState(CanvasDefaults.START_GAME_WITH_CANVAS);
     const [isGameOver, setIsGameOver] = useState(false);
 
     const [creatures, setCreatures] = useState([]);
