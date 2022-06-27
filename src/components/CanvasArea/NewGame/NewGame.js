@@ -6,18 +6,19 @@ const NewGame = ({}) => {
 
   const {setIsGameStarted, startingCreatureTypes} = useContext(LifeContext);
 
+  const [creaturesIncludedDisplay, setCreaturesIncludedDisplay] = useState(<></>);
   const [startGameButton, setStartGameButton] = useState(<></>);
 
-  const determineStartGameDisplay = () => {
-    let display = <></>
+  const determineStartGameButtonDisplay = () => {
+    let buttonDisplay = <></>
     if (canStartGame()) {
-      display = <button onClick={handleStartGameClick}>Start Game</button>;
+      buttonDisplay = <button onClick={handleStartGameClick}>Start Game</button>;
     }
-    setStartGameButton(display);
+    setStartGameButton(buttonDisplay);
   }
 
   useEffect(() => {
-    determineStartGameDisplay();
+    determineStartGameButtonDisplay();
   }, [startingCreatureTypes]);
 
   const canStartGame = () => {
@@ -34,10 +35,9 @@ const NewGame = ({}) => {
 
   return (
     <>
-      New Game Area
       <AddCreatures
       />
-      <br></br>
+      <br></br><br></br>
       {startGameButton}
     </>
   );
