@@ -1,5 +1,6 @@
 import React, {useState, useEffect, createContext} from 'react';
 import { CanvasDefaults } from '../crosscutting/constants/canvasConstants';
+import { StartingCreatureDefaults } from '../crosscutting/constants/creatureConstants';
 //import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const LifeContext = createContext({creatures: [], plants: [], objects: []});
@@ -19,8 +20,9 @@ const LifeProvider = ({children}) => {
     const [plants, setPlants] = useState([]);
     const [objects, setObjects] = useState([]);
 
-    const [chosenCreature, setChosenCreature] = useState(null);
-    const [largestCreatureSize, setLargestCreatureSize] = useState(0);
+    const [startingCreatureTypes, setStartingCreatureTypes] = useState(StartingCreatureDefaults);
+
+
 
     // // to run tests, uncomment this out
     // useEffect(() => {
@@ -36,7 +38,6 @@ const LifeProvider = ({children}) => {
                     largest = c.size;
                 }
             });
-            setLargestCreatureSize(largest);
             //showListOfCreatures();
         }
 
@@ -52,9 +53,9 @@ const LifeProvider = ({children}) => {
 
     return (
         <LifeContext.Provider value={{
-            creatures, passedOn, shelters, plants, objects, chosenCreature,
-            largestCreatureSize, startTime, isCreateMode, isGameStarted, isGameOver,
-            setCreatures, setPassedOn, setShelters, setPlants, setObjects, setChosenCreature,
+            creatures, passedOn, shelters, plants, objects,
+            startTime, isCreateMode, isGameStarted, isGameOver,
+            setCreatures, setPassedOn, setShelters, setPlants, setObjects,
             setIsCreateMode, setIsGameStarted, setIsGameOver
         }}>
             {children}
