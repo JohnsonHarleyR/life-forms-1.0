@@ -1,20 +1,21 @@
 export const CanvasDefaults = {
     USE_CREATE_MODE: false,
     START_GAME_WITH_CANVAS: true,
-    SIZE_FACTOR: 1
+    RESIZE_FACTOR: 1, // TODO implement this into all sizing and such - use in any new sizing - keep as 1 until implemented fully
+
 }
 
 export const CanvasInfo = {
-    WIDTH: 600,
-    HEIGHT: 400,
+    WIDTH: 600 * CanvasDefaults.RESIZE_FACTOR,
+    HEIGHT: 400 * CanvasDefaults.RESIZE_FACTOR,
     BG_COLOR: "#D3D3D3",
     INTERVAL: 50,
-    OBJECT_PADDING: 2,
+    OBJECT_PADDING: 2 * CanvasDefaults.RESIZE_FACTOR,
     STARTING_HOUR: 14
 };
 
 export const XMark = {
-    SIZE: 10,
+    SIZE: 10 * CanvasDefaults.RESIZE_FACTOR,
     COLOR: "red",
     LINE_WIDTH: 2
 };
@@ -34,13 +35,13 @@ export const ShelterLine = {
     MULTIPLIER: 4,
     FONT: "10px serif",
     FONT_COLOR: "#000000",
-    X_TEXT_OFFSET: 2,
-    Y_TEXT_OFFSET: 9
+    X_TEXT_OFFSET: 2 * CanvasDefaults.RESIZE_FACTOR,
+    Y_TEXT_OFFSET: 9 * CanvasDefaults.RESIZE_FACTOR
 };
 
 export const SleepIndicator = {
-    X_OFFSET: 3,
-    Y_OFFSET: -10,
+    X_OFFSET: 3 * CanvasDefaults.RESIZE_FACTOR,
+    Y_OFFSET: -10 * CanvasDefaults.RESIZE_FACTOR,
     FONT: "7px serif",
     TEXT: "Z"
 }

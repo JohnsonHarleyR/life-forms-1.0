@@ -65,7 +65,7 @@ const drawXMark = (canvas, color, lineWidth, size, position) => {
     ctx.closePath();
 }
 
-const drawBox = (canvas, color, lineWidth, xStart, xEnd, yStart, yEnd) => {
+export const drawBox = (canvas, color, lineWidth, xStart, xEnd, yStart, yEnd) => {
     // Top
     drawLine(canvas, color, lineWidth, xStart, xEnd, yStart, yStart);
     // Bottom

@@ -1,13 +1,16 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
+import CreationCanvas from './subclasses/CreationCanvas';
+import { CreationDefaults } from '../../../crosscutting/constants/creationConstants';
 
 const CreateMode = ({}) => {
 
 
   return (
-    <>
-    Create Mode Area
-    </>
+    <CreationCanvas 
+      xTiles={CreationDefaults.X_TILES_DEFAULT} 
+      yTiles={CreationDefaults.Y_TILES_DEFAULT}
+    />
   );
 }
 
