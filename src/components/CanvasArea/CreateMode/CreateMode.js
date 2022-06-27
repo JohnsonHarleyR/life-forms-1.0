@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
-import CreationCanvas from './subclasses/CreationCanvas';
+import CreationCanvas from './subcomponents/CreationCanvas';
 import { CreationDefaults } from '../../../crosscutting/constants/creationConstants';
 
 const CreateMode = ({}) => {
