@@ -27,15 +27,16 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {creatures, passedOn, shelters, plants, objects, chosenCreature, largestCreatureSize,
-        setCreatures, setPassedOn, setShelters, setPlants, setObjects, setChosenCreature} = useContext(LifeContext);
+    const {creatures, passedOn, shelters, plants, objects, startingCreatureTypes,
+        setCreatures, setPassedOn, setShelters, setPlants, setObjects,
+        } = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
         let objs = createObjects();
         setObjects(objs);
-        let newCreatures = createCreatures(objs, plants, shelters, setCreatures, setPlants, setShelters);
+        let newCreatures = createCreatures(startingCreatureTypes, objs, plants, shelters, setCreatures, setPlants, setShelters);
         setCreatures(newCreatures);
         renderCanvas(canvasRef, newCreatures, plants, objs, shelters);
         //setInitialTargetRefValues();

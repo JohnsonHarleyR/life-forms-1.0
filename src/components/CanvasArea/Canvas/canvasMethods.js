@@ -1,6 +1,6 @@
 import { DefaultObjects, ObjectType } from "../../../crosscutting/constants/objectConstants";
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
-import { Gender, LifeStage, Boop, Bleep, Biddy, StartingCreatures } from "../../../crosscutting/constants/creatureConstants";
+import { Gender, LifeStage, Boop, Bleep, Biddy, StartingCreatureDefaults } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants,
     drawAllShelters, drawAllCreatureLines, drawAllShelterTexts } from "../../../crosscutting/logic/canvasLogic";
@@ -28,12 +28,12 @@ export const createObjects = () => { // TODO create object class so that this wi
     return objs;
 };
 
-export const createCreatures = (objects, plants, shelters, setCreatures, setPlants, setShelters) => {
+export const createCreatures = (startingCreatureTypes, objects, plants, shelters, setCreatures, setPlants, setShelters) => {
     
     let array = [];
     //array.push(creature); // HACK this is only while there is a main creature to test
 
-    StartingCreatures.forEach(sc => {
+    startingCreatureTypes.forEach(sc => {
         for (let i = 0; i < sc.count; i++) {
             array.push(generateCreature(sc.gender, LifeStage.ADULT, sc.type, null, null, array, objects, plants, shelters, setCreatures, setPlants, setShelters));
         }

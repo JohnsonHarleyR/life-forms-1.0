@@ -227,8 +227,14 @@ export const Biddy = {
     maxOffspring: 7
 };
 
+export const AllCreatureDefaults = [
+    Boop,
+    Bleep,
+    Biddy
+];
 
-export const StartingCreatures = [
+
+export const StartingCreatureDefaults = [
     {
         type: Boop,
         gender: Gender.FEMALE,
