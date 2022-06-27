@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
-import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
+import { AllCreatureDefaults, Gender } from '../../../../../crosscutting/constants/creatureConstants';
 import AddCreature from './AddCreature';
 
 const AddCreatures = ({}) => {
@@ -9,6 +9,27 @@ const AddCreatures = ({}) => {
 
   const [typesAlreadyAdded, setTypesAlreadyAdded] = useState([]);
   const [creatureOptions, setCreatureOptions] = useState([]);
+
+  useEffect(() => {
+    if (startingCreatureTypes) {
+      setStartingCreatureTypes([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (startingCreatureTypes && startingCreatureTypes.length > 0) {
+      let toJsonStrings = [];
+      startingCreatureTypes.forEach(c => {
+        let toStringify = {
+          type: c.type.type,
+          gender: c.gender,
+          count: c.count
+        };
+        toJsonStrings.push(`${JSON.stringify(toStringify)}\n`);
+      });
+      console.log(`starting creatures: \n${toJsonStrings}`);
+    }
+  }, [startingCreatureTypes]);
 
   const populateCreatureOptions = () => {
     let newOptions = [];
@@ -30,15 +51,37 @@ const AddCreatures = ({}) => {
     }
   }, [typesAlreadyAdded]);
 
-  const addCreatureType = (newOption) => {
-    AllCreatureDefaults.push(newOption);
-    populateCreatureOptions();
-  }
-
   const addTypeAlreadyAdded = (newType) => {
     let copy = [...typesAlreadyAdded];
     copy.push(newType);
     setTypesAlreadyAdded(copy);
+  }
+
+  const addStartingCreature = (type, maleCount, femaleCount) => {
+    let startingCopy = [...startingCreatureTypes];
+
+    if (maleCount > 0) {
+      startingCopy.push({
+        type: type,
+        gender: Gender.MALE,
+        count: maleCount
+      });
+    }
+
+    if (femaleCount > 0) {
+      startingCopy.push({
+        type: type,
+        gender: Gender.FEMALE,
+        count: femaleCount
+      });
+    }
+
+    setStartingCreatureTypes(startingCopy);
+  }
+
+  const addCreatureTypeToDefaults = (newOption) => { // for creating a new creature type
+    AllCreatureDefaults.push(newOption);
+    populateCreatureOptions();
   }
 
   return (
@@ -46,6 +89,7 @@ const AddCreatures = ({}) => {
       <AddCreature 
         creatureOptions={creatureOptions}
         addTypeAlreadyAdded={addTypeAlreadyAdded}
+        addStartingCreature={addStartingCreature}
         />
     </div>
   );

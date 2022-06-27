@@ -55,8 +55,10 @@ const LifeProvider = ({children}) => {
         <LifeContext.Provider value={{
             creatures, passedOn, shelters, plants, objects,
             startTime, isCreateMode, isGameStarted, isGameOver,
+            startingCreatureTypes,
             setCreatures, setPassedOn, setShelters, setPlants, setObjects,
-            setIsCreateMode, setIsGameStarted, setIsGameOver
+            setIsCreateMode, setIsGameStarted, setIsGameOver,
+            setStartingCreatureTypes
         }}>
             {children}
         </LifeContext.Provider>

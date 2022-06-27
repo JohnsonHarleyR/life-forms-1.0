@@ -2,7 +2,7 @@ import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
 import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
 
-const AddCreature = ({creatureOptions, addTypeAlreadyAdded}) => {
+const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}) => {
 
   // TODO add card to show creature info
 
@@ -78,6 +78,22 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded}) => {
     }
   }
 
+  const findChosenCreature = (typeName) => {
+    let chosen = chosenCreature;
+    AllCreatureDefaults.forEach(d => {
+      if (d.type === typeName) {
+        chosen = d;
+      }
+    });
+    return chosen;
+  }
+
+  const handleAddCreatureButton = (e) => {
+    addTypeAlreadyAdded(chosenCreature.type);
+    addStartingCreature(chosenCreature, maleCount, femaleCount);
+    setDataIsSent(true);
+  }
+
   const determineMaleCount = (e) => {
     let newValue = e.target.value;
     if (newValue >= 0 && newValue <= 10) {
@@ -100,21 +116,6 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded}) => {
     } else {
       setChosenCreature(null);
     }
-  }
-
-  const findChosenCreature = (typeName) => {
-    let chosen = chosenCreature;
-    AllCreatureDefaults.forEach(d => {
-      if (d.type === typeName) {
-        chosen = d;
-      }
-    });
-    return chosen;
-  }
-
-  const handleAddCreatureButton = (e) => {
-    addTypeAlreadyAdded(chosenCreature.type);
-    setDataIsSent(true);
   }
 
   return (
