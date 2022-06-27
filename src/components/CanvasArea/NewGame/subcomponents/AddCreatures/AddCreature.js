@@ -1,6 +1,7 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
 import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
+import CreatureCard from './CreatureCard';
 
 const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}) => {
 
@@ -17,6 +18,7 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
   ]);
   const [genderAreaDisplay, setGenderAreaDisplay] = useState(<></>);
   const [addButtonDisplay, setAddButtonDisplay] = useState(<></>);
+  const [creatureCardDisplay, setCreatureCardDisplay] = useState(<></>);
 
   const [dataIsSent, setDataIsSent] = useState(false);
 
@@ -44,7 +46,8 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
   useEffect(() => {
     if (chosenCreature) {
       console.log(`new chosen: ${chosenCreature.type}`);
-      setGenderAreaDisplay(getGenderSelectors)
+      setGenderAreaDisplay(getGenderSelectors);
+      setCreatureCardDisplay(<CreatureCard typeInfo={chosenCreature}/>);
     } else {
       setGenderAreaDisplay(<></>);
     }
@@ -119,19 +122,26 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
   }
 
   return (
-    <div ref={areaRef}>
-      <b>Add Creature Type</b>
-      <div>
-        <label>Type</label>
-        <select onChange={handleTypeSelectChange}>
-          {creatureTypeDisplayOptions}
-        </select>
+    <div className="add-creature-type">
+      <div ref={areaRef}>
+        <b>Add Creature Type</b>
+        <div>
+          <label>Type</label>
+          <select onChange={handleTypeSelectChange}>
+            {creatureTypeDisplayOptions}
+          </select>
+        </div>
+        <div>
+          {genderAreaDisplay}
+        </div>
+        {addButtonDisplay}
       </div>
+
       <div>
-        {genderAreaDisplay}
+        {creatureCardDisplay}
       </div>
-      {addButtonDisplay}
     </div>
+    
   );
 }
 
