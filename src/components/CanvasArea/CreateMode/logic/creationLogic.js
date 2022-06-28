@@ -67,6 +67,9 @@ const renderTile = (canvasRef, tileInfo) => {
 
 //#region Tile Logic
 
+export const findTileCoordinate = (tileLength, mousePosition) => {
+    return Math.floor(mousePosition / tileLength);
+}
 
 export const determineOuterTileSize = () => {
   let size = determineInnerTileSize() + (2 * getInnerTileOffset());
