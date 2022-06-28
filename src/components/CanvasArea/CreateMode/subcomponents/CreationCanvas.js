@@ -209,6 +209,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     }
 
     const canTileBeSelected = ({iX, iY}) => {
+        // TODO add logic to ensure object isn't right next to wall or another object
         if (selectedTiles[2].hasSelectedTile) {
             return false;
         }
