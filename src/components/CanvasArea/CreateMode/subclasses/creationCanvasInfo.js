@@ -22,6 +22,12 @@ export default class CreationCanvasClass {
     return tile;
   }
 
+  deselectTileInGrid = (iX, iY) => {
+    let row = this.grid[iY];
+    let tile = row[iX];
+    tile.isSelected = false;
+  }
+
   createNewTileGrid = () => {
     let newGrid = [];
     for (let y = 0; y < this.yTiles; y++) {
@@ -38,15 +44,21 @@ export default class CreationCanvasClass {
 
   getTileAtMousePosition = ({x, y}) => {
     let coords = this.findTileGridCoordinates(x, y);
-    let row = this.grid[coords.y];
-    let tile = row[coords.x];
+    let row = this.grid[coords.iY];
+    let tile = row[coords.iX];
     return tile;
   }
 
-  getTileGridCoordinates = (xMouse, yMouse) => {
+  getTileAtGridPosition = ({iX, iY}) => {
+    let row = this.grid[iY];
+    let tile = row[iX];
+    return tile;
+  }
+
+  getTileGridCoordinates = ({x, y}) => {
     return {
-      x: findTileCoordinate(this.outerTileSize, xMouse),
-      y: findTileCoordinate(this.outerTileSize, yMouse)
+      iX: findTileCoordinate(this.outerTileSize, x),
+      iY: findTileCoordinate(this.outerTileSize, y)
     };
   }
 

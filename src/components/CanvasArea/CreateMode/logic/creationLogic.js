@@ -35,7 +35,9 @@ const renderTile = (canvasRef, tileInfo) => {
   let color = tileInfo.isSelected
     ? CreationDefaults.OUTER_SELECTED_COLOR
     : CreationDefaults.OUTER_TILE_COLOR;
-  let thickness = CreationDefaults.OUTER_TILE_LINE_THICKNESS;
+  let thickness = tileInfo.isSelected
+    ? CreationDefaults.OUTER_SELECTED_THICKNESS
+    : CreationDefaults.OUTER_TILE_LINE_THICKNESS;
 
   drawBox(canvasRef.current, color, thickness,
     tileInfo.xStartO, tileInfo.xEndO,
@@ -67,6 +69,14 @@ const renderTile = (canvasRef, tileInfo) => {
 
 //#region Selector Logic
 
+export const isSameGridPosition = (coord1, coord2) => {
+  if (coord1.iX === coord2.iX &&
+    coord1.iY === coord2.iY) {
+      return true;
+    }
+  return false;
+}
+
 export const getEmptySelectorArray = () => { // should have 3
   return [
     getEmptySelectedIndicator(),
@@ -75,9 +85,9 @@ export const getEmptySelectorArray = () => { // should have 3
   ];
 }
 
-const getEmptySelectedIndicator = () => {
+export const getEmptySelectedIndicator = () => {
   return {
-    hasSelected: false,
+    hasSelectedTile: false,
     tile: null,
     iX: 0,
     iY: 0
@@ -88,8 +98,9 @@ const getEmptySelectedIndicator = () => {
 
 //#region Tile Logic
 
-export const findTileCoordinate = (tileLength, mousePosition) => {
-    return Math.floor(mousePosition / tileLength);
+export const findTileCoordinate = (tileLength, mouseCoord) => {
+  let coord = Math.floor(mouseCoord / tileLength)
+    return coord;
 }
 
 export const determineOuterTileSize = () => {
