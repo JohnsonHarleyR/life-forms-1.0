@@ -66,6 +66,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     }
 
+    //#region object methods
+    
+
+    //#endregion
+
     //#region selector index methods
 
         // for undoing a selected tile
@@ -106,6 +111,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     //#region tile selector methods
     const canTileBeSelected = ({iX, iY}) => {
+        if (selectedTiles[2].hasSelectedTile) {
+            return false;
+        }
+
         let coord0;
         let coord1;
         switch(selectorIndex) {
@@ -152,7 +161,8 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             return false;
         }
 
-        for (let i = selectorIndex - 1; i >= 0; i--) {
+        let startIndex = selectorIndex !== 2 ? selectorIndex - 1 : 2;
+        for (let i = startIndex; i >= 0; i--) {
             if (isSameGridPosition(
                 {iX, iY},
                 {iX: selectedTiles[i].iX, iY: selectedTiles[i].iY}
@@ -174,7 +184,8 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             return 0;
         }
 
-        for (let i = selectorIndex - 1; i >= 0; i--) {
+        let startIndex = selectorIndex !== 2 ? selectorIndex - 1 : 2;
+        for (let i = startIndex; i >= 0; i--) {
             if (isSameGridPosition(
                 {iX, iY},
                 {iX: selectedTiles[i].iX, iY: selectedTiles[i].iY}
@@ -187,11 +198,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const deselectTilesFromPointOfIndex = (index) => {
         let copy = [...selectedTiles];
-        for (let i = index; i >= 0; i--) {
+        for (let i = selectorIndex; i >= index; i--) {
             if (copy[i].tile !== null) {
                 creationCanvas.deselectTileInGrid(copy[i].iX, copy[i].iY);
+                copy[i] = getEmptySelectedIndicator();
             }
-            copy[i] = getEmptySelectedIndicator();
         }
 
         setSelectedTiles(copy);
