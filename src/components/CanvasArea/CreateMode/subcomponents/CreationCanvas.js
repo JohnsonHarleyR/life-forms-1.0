@@ -139,7 +139,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
         let relCopy = [...relativeObjects];
         relCopy.push(relativeInfo);
-        setNewObjects(relCopy);
+        setRelativeObjects(relCopy);
     }
     
     //#endregion
