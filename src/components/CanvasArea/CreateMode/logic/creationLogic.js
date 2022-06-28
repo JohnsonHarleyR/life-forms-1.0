@@ -145,7 +145,26 @@ export const createObjectInfoFromSelected = (objectNumber, selectedTiles, creati
     height: pos.height
   };
 
-  return info;
+  let iXStart = determiners.startXDeterminer.iX;
+  let iYStart = determiners.startYDeterminer.iY;
+  let iXEnd = determiners.endXDeterminer.iX;
+  let iYEnd = determiners.endYDeterminer.iY;
+
+  let info2 = {
+    name: name,
+    type: type,
+    color: color,
+    iXStart: iXStart,
+    iYStart: iYStart,
+    iXEnd: iXEnd,
+    iYEnd: iYEnd
+  };
+
+  //return info;
+  return {
+    mainInfo: info,
+    relativeInfo: info2
+  }
 }
 
 const setNewObjectOnTiles = (determiners, creationCanvas) => {

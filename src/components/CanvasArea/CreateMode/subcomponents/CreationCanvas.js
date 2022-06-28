@@ -30,6 +30,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const [objectColor, setObjectColor] = useState("#000000");
     const [objectCount, setObjectCount] = useState(1);
     const [newObjects, setNewObjects] = useState([]);
+    const [relativeObjects, setRelativeObjects] = useState([]);
 
     // TODO button for completing object
 
@@ -108,8 +109,12 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const clickAddObjectBtn = (evt) => {
         // get object info
-        let newObjectInfo = createObjectInfoFromSelected(objectCount, selectedTiles,
+        let objectInfos = createObjectInfoFromSelected(objectCount, selectedTiles,
             creationCanvas, objectColor);
+        // let newObjectInfo = createObjectInfoFromSelected(objectCount, selectedTiles,
+        //     creationCanvas, objectColor);
+        let newObjectInfo = objectInfos.mainInfo;
+        let relativeInfo = objectInfos.relativeInfo;
 
         // adjust object count
         let newCount = objectCount + 1;
@@ -122,6 +127,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         let copy = [...newObjects];
         copy.push(newObjectInfo);
         setNewObjects(copy);
+
+        let relCopy = [...relativeObjects];
+        relCopy.push(relativeInfo);
+        setNewObjects(relCopy);
     }
     
     //#endregion
