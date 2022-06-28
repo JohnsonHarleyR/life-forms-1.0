@@ -16,6 +16,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const canvasRef = useRef();
     const addObjectRef = useRef();
+    const colorRef = useRef();
     
     const {} = useContext(LifeContext);
     const [creationCanvas, setCreationCanvas] // TODO allow updates to this with tiles
@@ -32,9 +33,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const [newObjects, setNewObjects] = useState([]);
     const [relativeObjects, setRelativeObjects] = useState([]);
 
-    // TODO button for completing object
-
     //#region effects
+
+    useEffect(() => {
+        colorRef.current.value = "#000000";
+    }, []);
 
     useEffect(() => {
         if (xTiles && yTiles) {
@@ -94,8 +97,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     }
     //#endregion
 
-
-    //#region click methods
+    //#region click/change methods
     const clickCanvas = (evt) => {
         let mousePos = getMousePos(canvasRef.current, evt);
         console.log(`Mouse pos: {x: ${Math.round(mousePos.x)}, y: ${Math.round(mousePos.y)}}`);
@@ -114,6 +116,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             selectTile(tileCoords);
         }
 
+    }
+
+    const changeColor = (evt) => {
+        setObjectColor(colorRef.current.value);
     }
 
     const clickAddObjectBtn = (evt) => {
@@ -312,6 +318,12 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     return (
         <div>
             <div>
+                Color: 
+                <input
+                type="color"
+                ref={colorRef}
+                onChange={changeColor}
+                />
                 <button 
                 ref={addObjectRef}
                 onClick={clickAddObjectBtn}>Add Object</button>

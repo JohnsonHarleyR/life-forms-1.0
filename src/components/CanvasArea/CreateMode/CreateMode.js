@@ -37,7 +37,7 @@ const CreateMode = ({}) => {
         X Tiles: <input type="number" ref={xRef} min={5} /> | 
         Y Tiles: <input type="number" ref={yRef} min={5} />
         <br></br>
-        <sup>Warning: changing grid size after adding objects could erase progress.</sup>
+        <sup>Warning: changing grid size after adding objects will erase progress.</sup>
         <br></br>
         <button ref={updateRef} onClick={updateSize}>Update Size</button>
 
