@@ -3,12 +3,11 @@ import TileClass from "./tileInfo";
 
 
 export default class CreationCanvasClass {
-  constructor(xTiles, yTiles, objectColor = "#000000") {
+  constructor(xTiles, yTiles) {
     this.xTiles = xTiles;
     this.yTiles = yTiles;
 
     this.outerTileSize = determineOuterTileSize();
-    this.objectColor = this.objectColor;
 
     this.grid = this.createNewTileGrid();
 
