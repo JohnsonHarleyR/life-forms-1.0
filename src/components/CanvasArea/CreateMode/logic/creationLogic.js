@@ -2,6 +2,7 @@
 import { CanvasInfo } from "../../../../crosscutting/constants/canvasConstants"
 import { CreationDefaults } from "../../../../crosscutting/constants/creationConstants";
 import { CreatureDefaults } from "../../../../crosscutting/constants/creatureConstants"
+import { ObjectType } from "../../../../crosscutting/constants/objectConstants";
 import { drawBox, fillBackground } from "../../../../crosscutting/logic/canvasLogic";
 import CreationCanvasClass from "../subclasses/creationCanvasInfo"
 
@@ -119,6 +120,120 @@ export const getInnerTileOffset = () => {
 // Tile position determining
 export const determineOuterTileStartPos = (index, outerSize) => {
   return index * outerSize;
+}
+
+//#endregion
+
+//#region Object info methods
+
+export const createObjectInfoFromSelected = (objectNumber, selectedTiles, creationCanvas, color) => {
+  let name = `w${objectNumber}`;
+  let type = ObjectType.WALL;
+  let determiners = getStartAndEndDeterminers(selectedTiles);
+  let pos = getAllStartPositionsAndLengths(determiners);
+
+  // This also will set a bool in the object tiles so they can't be selected anymore
+  setNewObjectOnTiles(determiners, creationCanvas);
+
+  let info = {
+    name: name,
+    type: type,
+    color: color,
+    xStart: pos.xStart,
+    yStart: pos.yStart,
+    width: pos.width,
+    height: pos.height
+  };
+
+  return info;
+}
+
+const setNewObjectOnTiles = (determiners, creationCanvas) => {
+  let grid = creationCanvas.grid;
+
+  let iXStart = determiners.startXDeterminer.iX;
+  let iYStart = determiners.startYDeterminer.iY;
+  let iXEnd = determiners.endXDeterminer.iX;
+  let iYEnd = determiners.endYDeterminer.iY;
+
+  for (let y = iYStart; y <= iYEnd; y++) {
+    let row = grid[y];
+    for (let x = iXStart; x <= iXEnd; x++) {
+      let tile = row[x];
+      tile.hasObject = true;
+    }
+  }
+}
+
+const getStartAndEndDeterminers = (selectorTiles) => {
+  let startXDeterminer = null;
+  let endXDeterminer = null;
+  let startYDeterminer = null;
+  let endYDeterminer = null;
+
+  selectorTiles.forEach(st => {
+    if (st.hasSelectedTile) {
+      if (startXDeterminer === null ||
+          st.iX < startXDeterminer.iX) {
+            startXDeterminer = st;
+      }
+
+      if (startYDeterminer === null ||
+        st.iY < startXDeterminer.iY) {
+          startYDeterminer = st;
+      }
+
+      if (endXDeterminer === null ||
+        st.iX > endXDeterminer.iX) {
+          endXDeterminer = st;
+      }
+
+      if (endYDeterminer === null ||
+        st.iY > endYDeterminer.iY) {
+          endYDeterminer = st;
+      }
+    }
+  });
+
+  return {
+    startXDeterminer: startXDeterminer,
+    endXDeterminer: endXDeterminer,
+    startYDeterminer: startYDeterminer,
+    endYDeterminer: endYDeterminer,
+  }
+}
+
+const getAllStartPositionsAndLengths = ({startXDeterminer, startYDeterminer, endXDeterminer, endYDeterminer}) => {
+
+
+  let xStart = getPointFromInnerTile(startXDeterminer.tile, "xStart");
+  let yStart = getPointFromInnerTile(startYDeterminer.tile, "yStart");
+  let xEnd = getPointFromInnerTile(endXDeterminer.tile, "xEnd");
+  let yEnd = getPointFromInnerTile(endYDeterminer.tile, "yEnd");
+  let width = xEnd - xStart;
+  let height = yEnd - yStart;
+
+  return {
+    xStart: xStart,
+    yStart: yStart,
+    width: width,
+    height: height
+  };
+}
+
+const getPointFromInnerTile = (tile, pointName) => {
+  switch (pointName) {
+    case "xStart":
+      return tile.xStartI;
+    case "xEnd":
+      return tile.xEndI;
+    case "yStart":
+      return tile.yStartI;
+    case "yEnd":
+      return tile.yEndI;
+    default:
+      return null;
+  }
 }
 
 //#endregion

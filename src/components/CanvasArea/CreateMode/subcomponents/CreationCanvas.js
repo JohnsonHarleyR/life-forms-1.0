@@ -1,13 +1,14 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import {
     createCreationCanvasClass,
+    createObjectInfoFromSelected,
     getEmptySelectedIndicator,
     getEmptySelectorArray,
     isSameGridPosition,
     renderCreationCanvas,
 } from '../logic/creationLogic';
 import { LifeContext } from '../../../../Context/LifeContext';
-import { getMousePos } from '../../../../crosscutting/logic/canvasLogic';
+import { drawAllObjects, getMousePos } from '../../../../crosscutting/logic/canvasLogic';
 
 const CreationCanvas = ({xTiles, yTiles}) => {
     
@@ -24,26 +25,29 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const [selectorIndex, setSelectorIndex] = useState(0);
     const [selectedTiles, setSelectedTiles] = useState(getEmptySelectorArray());
+    const [canFinishObject, setCanFinishObject] = useState(false);
     
     const [objectColor, setObjectColor] = useState("#000000");
-    const [canFinishObject, setCanFinishObject] = useState(false);
-    const [isObjectFinished, setIsObjectFinished] = useState(false);
+    const [objectCount, setObjectCount] = useState(1);
+    const [newObjects, setNewObjects] = useState([]);
 
     // TODO button for completing object
+
+    //#region effects
 
     useEffect(() => {
         if (creationCanvas) {
             canvasRef.current.width = creationCanvas.width;
             canvasRef.current.height = creationCanvas.height;
-            renderCreationCanvas(canvasRef, creationCanvas);
+            renderCanvas();
         }
     }, [creationCanvas]);
 
     useEffect(() => {
         if (selectedTiles) {
-            renderCreationCanvas(canvasRef, creationCanvas);
+            renderCanvas();
         }
-    }, [selectedTiles]);
+    }, [selectedTiles, newObjects]);
 
     useEffect(() => {
         if (selectorIndex !== undefined) {
@@ -63,6 +67,24 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         }
     }, [canFinishObject]);
 
+    useEffect(() => {
+        if (newObjects) {
+            renderCanvas();
+        }
+    }, [newObjects]);
+
+    //#endregion
+
+    //#region render methods
+    const renderCanvas = () => {
+        renderCreationCanvas(canvasRef, creationCanvas);
+        if (newObjects) {
+            drawNewObjects();
+        }
+    }
+    //#endregion
+
+
     //#region click methods
     const clickCanvas = (evt) => {
         let mousePos = getMousePos(canvasRef.current, evt);
@@ -78,8 +100,6 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
         } // otherwise, see if tile can be selected
         else if (canTileBeSelected(tileCoords)) {
-            // set object to finished
-            setIsObjectFinished(false);
             // if it can, select the tile
             selectTile(tileCoords);
         }
@@ -87,12 +107,29 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     }
 
     const clickAddObjectBtn = (evt) => {
+        // get object info
+        let newObjectInfo = createObjectInfoFromSelected(objectCount, selectedTiles,
+            creationCanvas, objectColor);
 
+        // adjust object count
+        let newCount = objectCount + 1;
+        setObjectCount(newCount);
+
+        // reset selected tiles and selector index
+        resetSelector();
+
+        // add to new objects
+        let copy = [...newObjects];
+        copy.push(newObjectInfo);
+        setNewObjects(copy);
     }
+    
     //#endregion
 
     //#region object methods
-    
+    const drawNewObjects = () => {
+        drawAllObjects(canvasRef.current, newObjects);
+    }
 
     //#endregion
 
@@ -136,12 +173,24 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     //#region tile selector methods
     const resetSelector = () => {
+        // first go through selected tiles and set isSelected to false
+        selectedTiles.forEach(st => {
+            if (st.hasSelectedTile) {
+                st.tile.isSelected = false;
+            }
+        });
+
         setSelectedTiles(getEmptySelectorArray());
         setSelectorIndex(0);
     }
 
     const canTileBeSelected = ({iX, iY}) => {
         if (selectedTiles[2].hasSelectedTile) {
+            return false;
+        }
+
+        let tile = creationCanvas.getTileAtGridPosition({iX, iY});
+        if (tile.hasObject) {
             return false;
         }
 

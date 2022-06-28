@@ -31,6 +31,7 @@ export default class TileClass {
 
     // selection info
     this.isSelected = false;
+    this.hasObject = false;
 
   }
 
