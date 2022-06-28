@@ -2,13 +2,17 @@ import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
 import { AllCreatureDefaults, Gender } from '../../../../../crosscutting/constants/creatureConstants';
 import AddCreature from './AddCreature';
+import CreatureCard from './CreatureCard';
 
 const AddCreatures = ({}) => {
 
   const {startingCreatureTypes, setStartingCreatureTypes} = useContext(LifeContext);
+  const [addedToDisplay, setAddedToDisplay] = useState([]);
 
   const [typesAlreadyAdded, setTypesAlreadyAdded] = useState([]);
   const [creatureOptions, setCreatureOptions] = useState([]);
+
+  const [startingCreaturesDisplay, setStartingCreaturesDisplay] = useState(<></>);
 
   useEffect(() => {
     if (startingCreatureTypes) {
@@ -17,19 +21,21 @@ const AddCreatures = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (startingCreatureTypes && startingCreatureTypes.length > 0) {
-      let toJsonStrings = [];
-      startingCreatureTypes.forEach(c => {
-        let toStringify = {
-          type: c.type.type,
-          gender: c.gender,
-          count: c.count
-        };
-        toJsonStrings.push(`${JSON.stringify(toStringify)}\n`);
+    if (addedToDisplay && addedToDisplay.length > 0) {
+      let displayLines = [];
+      //displayLines.push(<><b>Starting Creatures</b><br></br></>);
+      addedToDisplay.forEach(c => {
+        let line = <CreatureCard
+                    typeInfo={c.type}
+                    showCounts={true}
+                    maleCount={c.maleCount}
+                    femaleCount={c.femaleCount}
+                  />;
+        displayLines.push(line);
       });
-      console.log(`starting creatures: \n${toJsonStrings}`);
+      setStartingCreaturesDisplay(displayLines);
     }
-  }, [startingCreatureTypes]);
+  }, [addedToDisplay]);
 
   const populateCreatureOptions = () => {
     let newOptions = [];
@@ -77,6 +83,14 @@ const AddCreatures = ({}) => {
     }
 
     setStartingCreatureTypes(startingCopy);
+
+    let addedCopy = [...addedToDisplay];
+    addedCopy.push({
+      type: type,
+      maleCount: maleCount,
+      femaleCount: femaleCount
+    });
+    setAddedToDisplay(addedCopy);
   }
 
   const addCreatureTypeToDefaults = (newOption) => { // for creating a new creature type
@@ -85,13 +99,23 @@ const AddCreatures = ({}) => {
   }
 
   return (
-    <div>
+    <>
+      <div style={{display: "flex"}}>
       <AddCreature 
         creatureOptions={creatureOptions}
         addTypeAlreadyAdded={addTypeAlreadyAdded}
         addStartingCreature={addStartingCreature}
         />
+
     </div>
+    <div>
+      <b>Starting Creatures</b>
+      <div style={{display: "flex"}}>
+        {startingCreaturesDisplay}
+      </div>
+    </div>
+    </>
+
   );
 }
 

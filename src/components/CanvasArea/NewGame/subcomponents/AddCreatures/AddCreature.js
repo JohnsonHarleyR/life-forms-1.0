@@ -2,6 +2,7 @@ import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
 import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
 import CreatureCard from './CreatureCard';
+import './css/creatureCard.css';
 
 const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}) => {
 
@@ -47,9 +48,16 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
     if (chosenCreature) {
       console.log(`new chosen: ${chosenCreature.type}`);
       setGenderAreaDisplay(getGenderSelectors);
-      setCreatureCardDisplay(<CreatureCard typeInfo={chosenCreature}/>);
+      setCreatureCardDisplay(
+      <CreatureCard
+        typeInfo={chosenCreature}
+        showCounts={false}
+        maleCount={0}
+        femaleCount={0}
+        />);
     } else {
       setGenderAreaDisplay(<></>);
+      setCreatureCardDisplay(<></>);
     }
   }, [chosenCreature]);
 
@@ -123,7 +131,7 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
 
   return (
     <div className="add-creature-type">
-      <div ref={areaRef}>
+      <div className="add-area">
         <b>Add Creature Type</b>
         <div>
           <label>Type</label>
@@ -137,7 +145,7 @@ const AddCreature = ({creatureOptions, addTypeAlreadyAdded, addStartingCreature}
         {addButtonDisplay}
       </div>
 
-      <div>
+      <div className="card-area">
         {creatureCardDisplay}
       </div>
     </div>

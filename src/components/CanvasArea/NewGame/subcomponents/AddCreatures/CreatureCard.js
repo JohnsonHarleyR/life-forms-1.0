@@ -1,7 +1,7 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import './css/creatureCard.css';
 
-const CreatureCard = ({typeInfo}) => {
+const CreatureCard = ({typeInfo, showCounts, maleCount, femaleCount}) => {
 
   const createFoodString = (array) => {
     let str = "NONE";
@@ -18,6 +18,22 @@ const CreatureCard = ({typeInfo}) => {
     }
     return str;
   }
+
+
+
+  const determineGenderCounts = () => {
+    let counts = <></>;
+    if (showCounts) {
+      counts = 
+      <div>
+        <b>Male:</b> {maleCount}<br></br>
+        <b>Female:</b> {femaleCount}<br></br>
+      </div>;
+    }
+    return counts;
+  }
+
+  const [genderCounts, setGenderCounts] = useState(determineGenderCounts());
 
   const name = `${typeInfo.type}`;
 
@@ -53,31 +69,49 @@ const CreatureCard = ({typeInfo}) => {
 
   return (
     <div className="card">
-      {display}
-      <b>Type:</b> {name}<br></br>
-      <b>Size:</b> {size}<br></br>
-      <b>Speed:</b> {speed}<br></br>
-      <br></br>
-      <b>Lifespan: </b> {lifespan}<br></br>
-      <b>As child: </b>{lifeAsChild}<br></br>
-      <b>As elder: </b>{lifeAsElder}<br></br>
-
-
-      <br></br>
-      <b>Plants to eat:</b> {plants}<br></br>
-      <b>Prey to eat:</b> {prey}<br></br>
-      <b>Energy to predator:</b> {energyWhenEaten}<br></br>
-      <br></br>
-      <b>Food needed:</b> {foodPerDay}<br></br>
-      <b>Sleep needed:</b> {sleep}<br></br>
-      <b>Mating:</b> {mating}<br></br>
-      <br></br>
-      <b>Offspring at once:</b> {offspring}<br></br>
-      <b>Multiple litters?:</b> {multipleLitters}<br></br>
-      <b>Shelter provider:</b> {shelterProvider}<br></br>
-      <br></br>
-
-
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <div style={{display: "flex"}}>
+                <div>
+                  {display}
+                </div>
+                {genderCounts}
+              </div>
+              </td>
+            <td>
+              <b>Plants to eat:</b> {plants}<br></br>
+              <b>Prey to eat:</b> {prey}<br></br>
+              <b>Energy to predator:</b> {energyWhenEaten}<br></br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Type:</b> {name}<br></br>
+              <b>Size:</b> {size}<br></br>
+              <b>Speed:</b> {speed}<br></br>
+            </td>
+            <td>
+              <b>Food needed:</b> {foodPerDay}<br></br>
+              <b>Sleep needed:</b> {sleep}<br></br>
+              <b>Mating:</b> {mating}<br></br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Lifespan: </b> {lifespan}<br></br>
+              <b>As child: </b>{lifeAsChild}<br></br>
+              <b>As elder: </b>{lifeAsElder}<br></br>
+            </td>
+            <td>
+              <b>Offspring at once:</b> {offspring}<br></br>
+              <b>Multiple litters?:</b> {multipleLitters}<br></br>
+              <b>Shelter provider:</b> {shelterProvider}<br></br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
     
