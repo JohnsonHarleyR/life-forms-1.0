@@ -14,6 +14,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     // TODO method to set the chosen creature
 
     const canvasRef = useRef();
+    const addObjectRef = useRef();
     
     const {} = useContext(LifeContext);
     const [creationCanvas, setCreationCanvas] // TODO allow updates to this with tiles
@@ -25,6 +26,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const [selectedTiles, setSelectedTiles] = useState(getEmptySelectorArray());
     
     const [objectColor, setObjectColor] = useState("#000000");
+    const [canFinishObject, setCanFinishObject] = useState(false);
     const [isObjectFinished, setIsObjectFinished] = useState(false);
 
     // TODO button for completing object
@@ -41,9 +43,27 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         if (selectedTiles) {
             renderCreationCanvas(canvasRef, creationCanvas);
         }
-    }, [selectedTiles, selectorIndex]);
+    }, [selectedTiles]);
 
+    useEffect(() => {
+        if (selectorIndex !== undefined) {
+            if (selectorIndex === 0) {
+                setCanFinishObject(false);
+            } else {
+                setCanFinishObject(true);
+            }
+        }
+    }, [selectorIndex]);
 
+    useEffect(() => {
+        if (canFinishObject) {
+            addObjectRef.current.disabled = false;
+        } else {
+            addObjectRef.current.disabled = true;
+        }
+    }, [canFinishObject]);
+
+    //#region click methods
     const clickCanvas = (evt) => {
         let mousePos = getMousePos(canvasRef.current, evt);
         console.log(`Mouse pos: {x: ${Math.round(mousePos.x)}, y: ${Math.round(mousePos.y)}}`);
@@ -65,6 +85,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         }
 
     }
+
+    const clickAddObjectBtn = (evt) => {
+
+    }
+    //#endregion
 
     //#region object methods
     
@@ -110,6 +135,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     //#endregion
 
     //#region tile selector methods
+    const resetSelector = () => {
+        setSelectedTiles(getEmptySelectorArray());
+        setSelectorIndex(0);
+    }
+
     const canTileBeSelected = ({iX, iY}) => {
         if (selectedTiles[2].hasSelectedTile) {
             return false;
@@ -215,6 +245,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     return (
         <div>
             <div>
+                <button 
+                ref={addObjectRef}
+                onClick={clickAddObjectBtn}>Add Object</button>
+                <br></br>
                 <canvas
                 ref={canvasRef}
                 style={{ border: "2px solid black" }}
