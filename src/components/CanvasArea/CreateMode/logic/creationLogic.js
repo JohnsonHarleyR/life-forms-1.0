@@ -65,6 +65,27 @@ const renderTile = (canvasRef, tileInfo) => {
 
 //#endregion
 
+//#region Selector Logic
+
+export const getEmptySelectorArray = () => { // should have 3
+  return [
+    getEmptySelectedIndicator(),
+    getEmptySelectedIndicator(),
+    getEmptySelectedIndicator()
+  ];
+}
+
+const getEmptySelectedIndicator = () => {
+  return {
+    hasSelected: false,
+    tile: null,
+    iX: 0,
+    iY: 0
+  };
+}
+
+//#endregion
+
 //#region Tile Logic
 
 export const findTileCoordinate = (tileLength, mousePosition) => {
