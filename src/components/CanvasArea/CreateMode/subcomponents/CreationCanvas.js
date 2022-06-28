@@ -37,6 +37,15 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     //#region effects
 
     useEffect(() => {
+        if (xTiles && yTiles) {
+            resetSelector();
+            setNewObjects([]);
+            setRelativeObjects([]);
+            setCreationCanvas(createCreationCanvasClass(xTiles, yTiles));
+        }
+    }, [xTiles, yTiles]);
+
+    useEffect(() => {
         if (creationCanvas) {
             canvasRef.current.width = creationCanvas.width;
             canvasRef.current.height = creationCanvas.height;
