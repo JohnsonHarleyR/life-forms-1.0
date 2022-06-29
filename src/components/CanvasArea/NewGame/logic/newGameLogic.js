@@ -7,7 +7,7 @@ export const createBlankPlantsIncludedArray = () => {
   Plants.forEach(p => {
     array.push({
       type: p,
-      isIncluded: false
+      isIncluded: true
     });
   });
   return array;

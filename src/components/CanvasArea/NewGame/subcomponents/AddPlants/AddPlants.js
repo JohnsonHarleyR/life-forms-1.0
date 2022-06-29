@@ -27,7 +27,7 @@ const AddPlants = ({}) => {
       populatePlantOptions();
     }
     setPlantsIncludedArray(createBlankPlantsIncludedArray());
-    isIncludedRef.current.checked = false;
+    isIncludedRef.current.checked = true;
 
   }, []);
 

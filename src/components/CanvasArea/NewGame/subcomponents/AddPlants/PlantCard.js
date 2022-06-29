@@ -1,4 +1,5 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
+import { CanvasInfo } from '../../../../../crosscutting/constants/canvasConstants';
 import './css/plantCard.css';
 
 const PlantCard = ({typeInfo}) => {
@@ -18,42 +19,31 @@ const PlantCard = ({typeInfo}) => {
   //   }
   //   return str;
   // }
+  const calculateSpawnRate = (growInterval, intervalRate) => {
+    let perMs = growInterval * intervalRate;
+    let perS = perMs / 1000;
+    return Math.round(perS * 100) / 100;
+  }
 
-  // const name = `${typeInfo.type}`;
+  const name = `${typeInfo.type}`;
+  const color = typeInfo.color;
+  const width = typeInfo.width;
+  const height = typeInfo.height;
+  const energy = typeInfo.energy;
+  const spawnRate = calculateSpawnRate(typeInfo.growInterval, CanvasInfo.INTERVAL);
 
-  // const color = typeInfo.color;
-  // const size = `${typeInfo.size}`;
-  // const displayStyle = {
-  //   backgroundColor: `${color}`,
-  //   width: `${typeInfo.size}px`,
-  //   height: `${typeInfo.size}px`,
-  // }
-  // const display = <div className="creature-icon"><div style={displayStyle}></div></div>;
 
-  // const speed = `${typeInfo.speed}`;
-  // const energyWhenEaten = `${typeInfo.energy}`;
+  const displayStyle = {
+    backgroundColor: `${color}`,
+    width: `${width}px`,
+    height: `${height}px`,
+  }
+  const display = <div className="plant-icon"><div style={displayStyle}></div></div>;
 
-  // const foodPerDay = `${typeInfo.foodNeeded} meals/day`;
-  // const plants = `${createFoodString(typeInfo.food.plants)}`
-  // const prey = `${createFoodString(typeInfo.food.prey)}`;
-
-  // const sleep = `${typeInfo.sleepNeeded} hrs/day`;
-
-  // const mating = `every ${typeInfo.matingNeeded} day(s)`;
-  // const offspring = `${typeInfo.minOffspring}-${typeInfo.maxOffspring}`;
-  // const multipleLitters = `${typeInfo.canHaveMultipleLitters}`;
-  // const shelterProvider = `${typeInfo.genderOfShelterMaker}`;
-
-  // const lifespan = `${typeInfo.lifeSpanRange.low}-${typeInfo.lifeSpanRange.high} days`;
-  // const lifeAsChild = `${typeInfo.fractionAsChild * 100}%`;
-  // const lifeAsElder = `${typeInfo.fractionAsElder * 100}%`;
-
-  // const specialTraits = '';
-  // const description = '';
 
   return (
     <div className="card">
-      {/* <table>
+      <table>
         <tbody>
           <tr>
             <td>
@@ -61,41 +51,22 @@ const PlantCard = ({typeInfo}) => {
                 <div>
                   {display}
                 </div>
-                {genderCounts}
+                <div>
+                  <b>Type:</b> {name}<br></br>
+                  <b>Width:</b> {width}<br></br>
+                  <b>Height:</b> {height}<br></br>
+                </div>
               </div>
-              </td>
-            <td>
-              <b>Plants to eat:</b> {plants}<br></br>
-              <b>Prey to eat:</b> {prey}<br></br>
-              <b>Energy to predator:</b> {energyWhenEaten}<br></br>
             </td>
           </tr>
           <tr>
             <td>
-              <b>Type:</b> {name}<br></br>
-              <b>Size:</b> {size}<br></br>
-              <b>Speed:</b> {speed}<br></br>
-            </td>
-            <td>
-              <b>Food needed:</b> {foodPerDay}<br></br>
-              <b>Sleep needed:</b> {sleep}<br></br>
-              <b>Mating:</b> {mating}<br></br>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>Lifespan: </b> {lifespan}<br></br>
-              <b>As child: </b>{lifeAsChild}<br></br>
-              <b>As elder: </b>{lifeAsElder}<br></br>
-            </td>
-            <td>
-              <b>Offspring at once:</b> {offspring}<br></br>
-              <b>Multiple litters?:</b> {multipleLitters}<br></br>
-              <b>Shelter provider:</b> {shelterProvider}<br></br>
+              <b>Energy to creatures: </b> {energy}<br></br>
+              <b>Spawn rate: </b>every {spawnRate} sec<br></br>
             </td>
           </tr>
         </tbody>
-      </table> */}
+      </table>
     </div>
   );
     
