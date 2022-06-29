@@ -84,7 +84,8 @@ const LifeProvider = ({children}) => {
             startingCreatureTypes, startingPlantTypes, startingObjects,
             setCreatures, setPassedOn, setShelters, setPlants, setObjects,
             setIsCreateMode, setIsGameStarted, setIsGameOver,
-            setStartingCreatureTypes, setStartingPlantTypes, setStartingObjects
+            setStartingCreatureTypes, setStartingPlantTypes, setStartingObjects,
+            setCanvasWidth, setCanvasHeight, setCanvasBgColor
         }}>
             {children}
         </LifeContext.Provider>

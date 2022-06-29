@@ -7,6 +7,35 @@ import { drawBox, fillBackground } from "../../../../crosscutting/logic/canvasLo
 import CreationCanvasClass from "../subclasses/creationCanvasInfo"
 import TileClass from "../subclasses/tileInfo";
 
+
+//#region Conversion logic
+
+export const convertJsonCodeToLandscapeObject = (jsonCode) => {
+  let newObj = JSON.parse(jsonCode);
+  let canvasClass = createCreationCanvasClass(newObj.xTiles, newObj.yTiles, newObj.bgColor);
+
+  let landscapeName = newObj.name;
+  let bgColor = newObj.bgColor;
+  let canvasWidth = canvasClass.width;
+  let canvasHeight = canvasClass.height;
+  let objectInfos = [];
+
+  newObj.objects.forEach(ro => {
+    let info = convertObjectInfo(ro, canvasClass);
+    objectInfos.push(info);
+  });
+
+  let landscape = {
+    name: landscapeName,
+    bgColor: bgColor,
+    width: canvasWidth,
+    height: canvasHeight,
+    objects: objectInfos
+  }
+
+  return landscape;
+}
+
 //#region Creation Canvas Logic
 
 export const createCreationCanvasClass = (xTiles, yTiles, bgColor) => {
@@ -231,6 +260,35 @@ export const removeObjectFromTiles = (iXStart, iXEnd, iYStart, iYEnd, creationCa
       tile.hasObject = false;
     }
   }
+}
+
+export const convertObjectInfo = (relativeInfo, creationCanvas) => {
+  let xStartTile = creationCanvas.getTileAtGridPosition({iX: relativeInfo.iXStart, iY: 0});
+  let xStart = getPointFromInnerTile(xStartTile, "xStart");
+
+  let xEndTile = creationCanvas.getTileAtGridPosition({iX: relativeInfo.iXEnd, iY: 0});
+  let xEnd = getPointFromInnerTile(xEndTile, "xEnd");
+
+  let yStartTile = creationCanvas.getTileAtGridPosition({iX: 0, iY: relativeInfo.iYStart});
+  let yStart = getPointFromInnerTile(yStartTile, "yStart");
+
+  let yEndTile = creationCanvas.getTileAtGridPosition({iX: 0, iY: relativeInfo.iYEnd});
+  let yEnd = getPointFromInnerTile(yEndTile, "yEnd");
+
+  let width = xEnd - xStart;
+  let height = yEnd - yStart;
+
+  let info = {
+    name: relativeInfo.name,
+    type: relativeInfo.type,
+    color: relativeInfo.color,
+    xStart: xStart,
+    yStart: yStart,
+    width: width,
+    height: height
+  }
+
+  return info;
 }
 
 export const createObjectInfoFromSelected = (objectNumber, selectedTiles, creationCanvas, color) => {
