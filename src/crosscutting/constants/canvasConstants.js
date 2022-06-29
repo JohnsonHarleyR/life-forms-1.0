@@ -1,6 +1,6 @@
 export const CanvasDefaults = {
-    USE_CREATE_MODE: false,
-    START_GAME_WITH_CANVAS: true,
+    USE_CREATE_MODE: true,
+    START_GAME_WITH_CANVAS: false,
     RESIZE_FACTOR: 1, // TODO implement this into all sizing and such - use in any new sizing - keep as 1 until implemented fully
 
 }

@@ -25,6 +25,8 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const bgColorRef = useRef();
     const showGridRef = useRef();
     const undoRef = useRef();
+    const codeRef = useRef();
+    const nameRef = useRef();
     
     const {} = useContext(LifeContext);
     const [bgColor, setBgColor] = useState("#ffffff");
@@ -42,12 +44,15 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const [newObjects, setNewObjects] = useState([]);
     const [relativeObjects, setRelativeObjects] = useState([]);
 
+    const [landscapeName, setLandscapeName] = useState("Landscape Name Here");
+
     //#region effects
 
     useEffect(() => {
         colorRef.current.value = "#000000";
         bgColorRef.current.value = "#ffffff";
         showGridRef.current.checked = true;
+        nameRef.current.value = landscapeName;
     }, []);
 
     useEffect(() => {
@@ -128,7 +133,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     //#region click/change methods
     const clickCanvas = (evt) => {
         let mousePos = getMousePos(canvasRef.current, evt);
-        console.log(`Mouse pos: {x: ${Math.round(mousePos.x)}, y: ${Math.round(mousePos.y)}}`);
+        //console.log(`Mouse pos: {x: ${Math.round(mousePos.x)}, y: ${Math.round(mousePos.y)}}`);
 
         // get selected grid coordinates for tile clicked
         let tileCoords = creationCanvas.getTileGridCoordinates(mousePos);
@@ -144,6 +149,15 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             selectTile(tileCoords);
         }
 
+    }
+
+    const clickLogCodeBtn = (evt) => {
+        let json = createJsonObjectForCreation();
+        console.log(json);
+    }
+
+    const changeLandscapeName = (evt) => {
+        setLandscapeName(nameRef.current.value.trim());
     }
 
     const changeColor = (evt) => {
@@ -376,9 +390,39 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     //#endregion
 
+    //#region generate code methods
+    
+    const createJsonObjectForCreation = () => {
+        let obj = {
+            name: landscapeName,
+            bgColor: bgColor,
+            xTiles: xTiles,
+            yTiles: yTiles,
+            objects: relativeObjects
+        };
+        return JSON.stringify(obj);
+    }
+
+    //#endregion
+
     return (
         <div>
             <div>
+                <h2>Landscape Creator</h2>
+                <input 
+                type="text"
+                ref={nameRef}
+                onChange={changeLandscapeName}
+                />
+                <br></br>
+                <button
+                ref={codeRef}
+                onClick={clickLogCodeBtn}
+                >
+                    Log Code
+                </button>
+                <br></br>
+                <br></br>
                 Object Color:  
                 <input
                 type="color"
