@@ -54,7 +54,7 @@ const Canvas = () => {
                         action: "setTime",
                         time: Date.now()
                     });
-                }, 70);
+                }, 50);
 
                 postMessage({
                     action: "clearInterval",
