@@ -9,6 +9,7 @@ import {
     isOnCanvasEdge,
     isSameGridPosition,
     makeDeepSelectedTilesCopy,
+    removeObjectFromTiles,
     renderCreationCanvas,
 } from '../logic/creationLogic';
 import { LifeContext } from '../../../../Context/LifeContext';
@@ -23,6 +24,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const colorRef = useRef();
     const bgColorRef = useRef();
     const showGridRef = useRef();
+    const undoRef = useRef();
     
     const {} = useContext(LifeContext);
     const [bgColor, setBgColor] = useState("#ffffff");
@@ -92,6 +94,12 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     useEffect(() => {
         if (newObjects) {
             renderCanvas();
+
+            if (newObjects.length === 0) {
+                undoRef.current.disabled = true;
+            } else {
+                undoRef.current.disabled = false;
+            }
         }
     }, [newObjects]);
 
@@ -174,6 +182,23 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         let relCopy = [...relativeObjects];
         relCopy.push(relativeInfo);
         setRelativeObjects(relCopy);
+    }
+
+    const clickUndoBtn = (evt) => {
+        if (newObjects.length > 0 && relativeObjects.length > 0) {
+            let newObjectsCopy = [...newObjects];
+            newObjectsCopy.pop();
+            let relativeObjectsCopy = [...relativeObjects];
+            let erased = relativeObjectsCopy.pop();
+            removeObjectFromTiles(
+                erased.iXStart,
+                erased.iXEnd,
+                erased.iYStart,
+                erased.iYEnd,
+                creationCanvas);
+            setNewObjects(newObjectsCopy);
+            setRelativeObjects(relativeObjectsCopy);
+        }
     }
     
     //#endregion
@@ -281,7 +306,8 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const selectTile = (coords) => {
         let tileToSelect = creationCanvas.getTileAtGridPosition(coords);
 
-        let selectedCopy = [...selectedTiles];
+        //let selectedCopy = [...selectedTiles];
+        let selectedCopy = makeDeepSelectedTilesCopy(selectedTiles);
         selectedCopy[selectorIndex].hasSelectedTile = true;
         selectedCopy[selectorIndex].tile = tileToSelect;
         selectedCopy[selectorIndex].iX = coords.iX;
@@ -362,6 +388,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
                 <button 
                 ref={addObjectRef}
                 onClick={clickAddObjectBtn}>Add Object</button>
+                <button
+                ref={undoRef}
+                onClick={clickUndoBtn}>
+                    Undo Object
+                </button>
                 <br></br>
                 <canvas
                 ref={canvasRef}

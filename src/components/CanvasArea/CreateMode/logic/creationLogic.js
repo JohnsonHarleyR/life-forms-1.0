@@ -5,6 +5,7 @@ import { CreatureDefaults } from "../../../../crosscutting/constants/creatureCon
 import { ObjectType } from "../../../../crosscutting/constants/objectConstants";
 import { drawBox, fillBackground } from "../../../../crosscutting/logic/canvasLogic";
 import CreationCanvasClass from "../subclasses/creationCanvasInfo"
+import TileClass from "../subclasses/tileInfo";
 
 //#region Creation Canvas Logic
 
@@ -73,6 +74,20 @@ const renderTile = (canvasRef, tileInfo, showGridLines) => {
 //#endregion
 
 //#region Selector Logic
+
+export const makeDeepSelectedTilesCopy = (selectedTiles) => {
+  let copy = [];
+  selectedTiles.forEach(st => {
+    copy.push({
+      hasSelectedTile: st.hasSelectedTile,
+      // tile: makeDeepTileCopy(st.tile),
+      tile: st.tile,
+      iX: st.iX,
+      iY: st.iY
+    });
+  });
+  return copy;
+}
 
 export const isOnCanvasEdge = (iX, iY, xTiles, yTiles) => {
   if (iX === 0 || iX === xTiles - 1 ||
@@ -165,6 +180,21 @@ export const canSelectTileWithLastCheck = (selectorTiles, creationCanvas) => {
 //#endregion
 
 //#region Tile Logic
+export const makeDeepTileCopy = (tile) => {
+  if (tile === null) {
+    return null;
+  }
+
+  let newTile = new TileClass(tile.xIndex, tile.yIndex);
+  newTile.isColoredIn = tile.isColoredIn;
+  newTile.isLeftColored = tile.isLeftColored;
+  newTile.isRightColored = tile.isRightColored;
+  newTile.isTopColored = tile.isTopColored;
+  newTile.isBottomColored = tile.isBottomColored;
+  newTile.isSelected = tile.isSelected;
+  newTile.hasObject = tile.hasObject;
+  return newTile;
+}
 
 export const findTileCoordinate = (tileLength, mouseCoord) => {
   let coord = Math.floor(mouseCoord / tileLength)
@@ -192,6 +222,16 @@ export const determineOuterTileStartPos = (index, outerSize) => {
 //#endregion
 
 //#region Object info methods
+
+export const removeObjectFromTiles = (iXStart, iXEnd, iYStart, iYEnd, creationCanvas) => {
+  for (let y = iYStart; y <= iYEnd; y++) {
+    let row = creationCanvas.grid[y];
+    for (let x = iXStart; x <= iXEnd; x++) {
+      let tile = row[x];
+      tile.hasObject = false;
+    }
+  }
+}
 
 export const createObjectInfoFromSelected = (objectNumber, selectedTiles, creationCanvas, color) => {
   let name = `w${objectNumber}`;
