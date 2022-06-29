@@ -74,6 +74,46 @@ const renderTile = (canvasRef, tileInfo, showGridLines) => {
 
 //#region Selector Logic
 
+export const isOnCanvasEdge = (iX, iY, xTiles, yTiles) => {
+  if (iX === 0 || iX === xTiles - 1 ||
+      iY === 0 || iY === yTiles - 1) {
+        return true;
+  }
+  return false;
+}
+
+export const isObjectOnSurroundingTile = (iX, iY, creationCanvas) => {
+  let relPositions = [
+    {iX: -1, iY: -1}, {iX: 0, iY: -1}, {iX: 1, iY: -1},
+    {iX: -1, iY: 0}, {iX: 0, iY: 0}, {iX: 1, iY: 0},
+    {iX: -1, iY: 1}, {iX: 0, iY: 1}, {iX: 1, iY: 1},
+  ];
+
+  let checkPositions = [];
+  relPositions.forEach(rp => {
+    let iXNew = iX + rp.iX;
+    let iYNew = iY + rp.iY;
+
+    let doUse = true;
+    if (iXNew < 0 || iXNew >= creationCanvas.xTiles ||
+        iYNew < 0 || iYNew >= creationCanvas.yTiles) {
+      doUse = false;
+    }
+
+    if (doUse) {
+      checkPositions.push({iX: iXNew, iY: iYNew});
+    }
+  });
+  
+  for (let i = 0; i < checkPositions.length; i++) {
+    let tile = creationCanvas.getTileAtGridPosition(checkPositions[i]);
+    if (tile.hasObject) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const isSameGridPosition = (coord1, coord2) => {
   if (coord1.iX === coord2.iX &&
     coord1.iY === coord2.iY) {
@@ -97,6 +137,29 @@ export const getEmptySelectedIndicator = () => {
     iX: 0,
     iY: 0
   };
+}
+
+export const canSelectTileWithLastCheck = (selectorTiles, creationCanvas) => {
+  let determiners = getStartAndEndDeterminers(selectorTiles);
+
+  let grid = creationCanvas.grid;
+
+  let iXStart = determiners.startXDeterminer.iX;
+  let iYStart = determiners.startYDeterminer.iY;
+  let iXEnd = determiners.endXDeterminer.iX;
+  let iYEnd = determiners.endYDeterminer.iY;
+
+  for (let y = iYStart; y <= iYEnd; y++) {
+    let row = grid[y];
+    for (let x = iXStart; x <= iXEnd; x++) {
+      let tile = row[x];
+      if (tile.hasObject) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
 }
 
 //#endregion

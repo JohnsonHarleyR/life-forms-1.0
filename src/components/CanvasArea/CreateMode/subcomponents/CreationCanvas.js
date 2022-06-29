@@ -1,10 +1,14 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import {
+    canSelectTileWithLastCheck,
     createCreationCanvasClass,
     createObjectInfoFromSelected,
     getEmptySelectedIndicator,
     getEmptySelectorArray,
+    isObjectOnSurroundingTile,
+    isOnCanvasEdge,
     isSameGridPosition,
+    makeDeepSelectedTilesCopy,
     renderCreationCanvas,
 } from '../logic/creationLogic';
 import { LifeContext } from '../../../../Context/LifeContext';
@@ -242,6 +246,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         if (tile.hasObject) {
             return false;
         }
+        if (isOnCanvasEdge(iX, iY, xTiles, yTiles) ||
+            isObjectOnSurroundingTile(iX, iY, creationCanvas)) {
+                return false;
+        }
 
         let coord0;
         let coord1;
@@ -272,7 +280,6 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const selectTile = (coords) => {
         let tileToSelect = creationCanvas.getTileAtGridPosition(coords);
-        tileToSelect.isSelected = true;
 
         let selectedCopy = [...selectedTiles];
         selectedCopy[selectorIndex].hasSelectedTile = true;
@@ -280,8 +287,11 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         selectedCopy[selectorIndex].iX = coords.iX;
         selectedCopy[selectorIndex].iY = coords.iY;
 
-        setSelectedTiles(selectedCopy);
-        incrementSelectorIndex();
+        if (canSelectTileWithLastCheck(selectedCopy, creationCanvas)) {
+            tileToSelect.isSelected = true;
+            setSelectedTiles(selectedCopy);
+            incrementSelectorIndex();
+        }
     }
 
     const isTileAlreadySelected = ({iX, iY}) => {
