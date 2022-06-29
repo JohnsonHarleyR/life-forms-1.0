@@ -1,7 +1,6 @@
 .card {
   border: 2px solid red;
   background-color: white;
-  /* width: 200px; */
   /* height: 200px; */
   color: black;
   font-size: small;
@@ -27,6 +26,7 @@
 
 .add-creature-type {
   display: flex;
+  flex-direction: column;
 }
 
 .add-area {
@@ -36,5 +36,6 @@
 }
 
 .card-area {
-  float: right;
+  display: flex;
+  justify-content: center;
 }

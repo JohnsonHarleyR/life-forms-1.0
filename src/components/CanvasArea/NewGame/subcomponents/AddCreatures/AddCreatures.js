@@ -20,6 +20,7 @@ const AddCreatures = ({}) => {
   // const [femaleCount, setFemaleCount] = useState(null);
 
   const [creatureTypeDisplayOptions, setCreatureTypeDisplayOptions] = useState([]);
+  const [creatureCardDisplay, setCreatureCardDisplay] = useState(<></>);
 
   useEffect(() => {
     if (startingCreatureTypes) {
@@ -56,6 +57,15 @@ const AddCreatures = ({}) => {
       let info = getInfoFromCreatureCountArray(typeName, creatureCountArray);
       maleCountRef.current.value = info.maleCount;
       femaleCountRef.current.value = info.femaleCount;
+      setCreatureCardDisplay(
+        <CreatureCard
+          typeInfo={chosenCreature}
+          showCounts={false}
+          maleCount={0}
+          femaleCount={0}
+          />);
+    } else {
+      setCreatureCardDisplay(<></>);
     }
   }, [chosenCreature]);
 
@@ -131,21 +141,21 @@ const AddCreatures = ({}) => {
   return (
     <div className="add-creature-type">
       <div className="add-area">
-        <b>Add Creature Type</b>
+        <b>Add Creatures</b>
         <div>
-          <label>Type</label>
+          <label>Type: </label>
           <select onChange={handleTypeSelectChange}>
             {creatureTypeDisplayOptions}
           </select>
         </div>
         <div>
-        Male Count: <input type="number" min="0" ref={maleCountRef} onChange={updateMaleCount}/>
+        Male Count: <input type="number" min="0" ref={maleCountRef} onChange={updateMaleCount}/><br></br>
         Female Count: <input type="number" min="0" ref={femaleCountRef} onChange={updateFemaleCount}/>
         </div>
       </div>
 
       <div className="card-area">
-        {/* {creatureCardDisplay} */}
+        {creatureCardDisplay}
       </div>
     </div>
     // <>
