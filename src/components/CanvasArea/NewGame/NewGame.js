@@ -1,6 +1,7 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
 import AddCreatures from './subcomponents/AddCreatures/AddCreatures';
+import AddPlants from './subcomponents/AddPlants/AddPlants';
 
 const NewGame = ({}) => {
 
@@ -22,9 +23,9 @@ const NewGame = ({}) => {
 
   return (
     <>
-      <AddCreatures
-      />
-      <br></br><br></br>
+      <AddCreatures/>
+      <AddPlants />
+      <br></br>
       {/* {startGameButton} */}
       <button ref={startGameRef} onClick={handleStartGameClick}>Start Game</button>
     </>

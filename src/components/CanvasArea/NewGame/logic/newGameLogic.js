@@ -1,4 +1,45 @@
 import { AllCreatureDefaults, Gender } from "../../../../crosscutting/constants/creatureConstants"
+import { Plants } from "../../../../crosscutting/constants/plantConstants";
+
+//#region starting plant logic
+export const createBlankPlantsIncludedArray = () => {
+  let array = [];
+  Plants.forEach(p => {
+    array.push({
+      type: p,
+      isIncluded: false
+    });
+  });
+  return array;
+}
+
+export const getInfoFromPlantsIncludedArray = (typeName, array) => {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].type.type === typeName) {
+      return array[i];
+    }
+  }
+}
+
+export const updatePlantsIncludedInArray = (typeName, newIsIncluded, array) => {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].type.type === typeName) {
+      array[i].isIncluded = newIsIncluded;
+      break;
+    }
+  }
+}
+
+export const createStartingPlantsArray = (plantIncludedArray) => {
+  let array = [];
+  plantIncludedArray.forEach(pi => {
+    if (pi.isIncluded) {
+      array.push(pi.type);
+    }
+  });
+  return array;
+}
+//#endregion
 
 //#region starting creature logic
 export const createBlankCreatureCountArray = () => {

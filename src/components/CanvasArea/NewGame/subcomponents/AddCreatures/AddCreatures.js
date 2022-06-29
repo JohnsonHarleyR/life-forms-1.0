@@ -16,8 +16,6 @@ const AddCreatures = ({}) => {
   const [creatureCountArray, setCreatureCountArray] = useState([]);
 
   const [chosenCreature, setChosenCreature] = useState(null);
-  // const [maleCount, setMaleCount] = useState(null);
-  // const [femaleCount, setFemaleCount] = useState(null);
 
   const [creatureTypeDisplayOptions, setCreatureTypeDisplayOptions] = useState([]);
   const [creatureCardDisplay, setCreatureCardDisplay] = useState(<></>);
@@ -85,8 +83,6 @@ const AddCreatures = ({}) => {
     let typeName = e.target.value;
     let info = getInfoFromCreatureCountArray(typeName, creatureCountArray);
     setChosenCreature(info.type);
-    // setMaleCount(info.maleCount);
-    // setFemaleCount(info.femaleCount);
     maleCountRef.current.value = info.maleCount;
     femaleCountRef.current.value = info.femaleCount;
   }
@@ -100,43 +96,6 @@ const AddCreatures = ({}) => {
     updateCreatureCountInArray(chosenCreature.type, parseInt(e.target.value), "female", creatureCountArray);
     setStartingCreatureTypes(createStartingCreatureTypeArray(creatureCountArray));
   }
-
-
-
-  // const addStartingCreature = (type, maleCount, femaleCount) => {
-  //   let startingCopy = [...startingCreatureTypes];
-
-  //   if (maleCount > 0) {
-  //     startingCopy.push({
-  //       type: type,
-  //       gender: Gender.MALE,
-  //       count: maleCount
-  //     });
-  //   }
-
-  //   if (femaleCount > 0) {
-  //     startingCopy.push({
-  //       type: type,
-  //       gender: Gender.FEMALE,
-  //       count: femaleCount
-  //     });
-  //   }
-
-  //   setStartingCreatureTypes(startingCopy);
-
-  //   let addedCopy = [...addedToDisplay];
-  //   addedCopy.push({
-  //     type: type,
-  //     maleCount: maleCount,
-  //     femaleCount: femaleCount
-  //   });
-  //   setAddedToDisplay(addedCopy);
-  // }
-
-  // const addCreatureTypeToDefaults = (newOption) => { // for creating a new creature type
-  //   AllCreatureDefaults.push(newOption);
-  //   populateCreatureOptions();
-  // }
 
   return (
     <div className="add-creature-type">
@@ -158,15 +117,6 @@ const AddCreatures = ({}) => {
         {creatureCardDisplay}
       </div>
     </div>
-    // <>
-    //   <div style={{display: "flex"}}>
-    //   <AddCreature 
-    //     creatureOptions={creatureOptions}
-    //     addStartingCreature={addStartingCreature}
-    //     />
-
-    // </div>
-    // </>
 
   );
 }

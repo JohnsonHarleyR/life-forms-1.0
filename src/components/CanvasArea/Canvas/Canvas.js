@@ -28,7 +28,7 @@ const Canvas = () => {
     const [intervals, setIntervals] = useState(0);
 
     const {creatures, passedOn, shelters, plants, objects, startingCreatureTypes,
-        setCreatures, setPassedOn, setShelters, setPlants, setObjects,
+        startingPlantTypes, setCreatures, setPassedOn, setShelters, setPlants, setObjects,
         } = useContext(LifeContext);
 
     useEffect(() => {
@@ -124,7 +124,7 @@ const Canvas = () => {
         if (intervals) {
             //let numberOfPlants = plants.length;
             //console.log(`plant count: ${numberOfPlants}`);
-            generatePlants(intervals, plants, creatures, objects, shelters, Plants, setPlants, CreatureDefaults.LARGEST_SIZE);
+            generatePlants(intervals, plants, creatures, objects, shelters, startingPlantTypes, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);
 
