@@ -4,30 +4,17 @@ import AddCreatures from './subcomponents/AddCreatures/AddCreatures';
 
 const NewGame = ({}) => {
 
-  const {setIsGameStarted, startingCreatureTypes} = useContext(LifeContext);
+  const startGameRef = useRef();
+  const {setIsGameStarted, startingCreatureTypes, isGameStarted} = useContext(LifeContext);
 
-  const [creaturesIncludedDisplay, setCreaturesIncludedDisplay] = useState(<></>);
-  const [startGameButton, setStartGameButton] = useState(<></>);
-
-  const determineStartGameButtonDisplay = () => {
-    let buttonDisplay = <></>
-    if (canStartGame()) {
-      buttonDisplay = <button onClick={handleStartGameClick}>Start Game</button>;
-    }
-    setStartGameButton(buttonDisplay);
-  }
 
   useEffect(() => {
-    determineStartGameButtonDisplay();
-  }, [startingCreatureTypes]);
-
-  const canStartGame = () => {
     if (startingCreatureTypes.length > 0) {
-      return true;
+      startGameRef.current.disabled = false;
+    } else {
+      startGameRef.current.disabled = true;
     }
-
-    return false;
-  }
+  }, [startingCreatureTypes]);
 
   const handleStartGameClick = (e) => {
     setIsGameStarted(true);
@@ -38,7 +25,8 @@ const NewGame = ({}) => {
       <AddCreatures
       />
       <br></br><br></br>
-      {startGameButton}
+      {/* {startGameButton} */}
+      <button ref={startGameRef} onClick={handleStartGameClick}>Start Game</button>
     </>
   );
 }
