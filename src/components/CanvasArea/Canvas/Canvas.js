@@ -29,12 +29,12 @@ const Canvas = () => {
 
     const {creatures, passedOn, shelters, plants, objects, startingCreatureTypes,
         startingPlantTypes, setCreatures, setPassedOn, setShelters, setPlants, setObjects,
-        } = useContext(LifeContext);
+        startingObjects} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
-        let objs = createObjects();
+        let objs = createObjects(startingObjects);
         setObjects(objs);
         let newCreatures = createCreatures(startingCreatureTypes, objs, plants, shelters, setCreatures, setPlants, setShelters);
         setCreatures(newCreatures);

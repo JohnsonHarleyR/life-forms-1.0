@@ -1,6 +1,7 @@
 import React, {useState, useEffect, createContext} from 'react';
-import { CanvasDefaults } from '../crosscutting/constants/canvasConstants';
+import { CanvasDefaults, CanvasInfo } from '../crosscutting/constants/canvasConstants';
 import { StartingCreatureDefaults } from '../crosscutting/constants/creatureConstants';
+import { DefaultObjects } from '../crosscutting/constants/objectConstants';
 import { Plants } from '../crosscutting/constants/plantConstants';
 //import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
@@ -23,6 +24,29 @@ const LifeProvider = ({children}) => {
 
     const [startingCreatureTypes, setStartingCreatureTypes] = useState(StartingCreatureDefaults);
     const [startingPlantTypes, setStartingPlantTypes] = useState(Plants);
+    const [startingObjects, setStartingObjects] = useState(DefaultObjects);
+
+    const [canvasWidth, setCanvasWidth] = useState(CanvasInfo.WIDTH);
+    const [canvasHeight, setCanvasHeight] = useState(800);
+    const [canvasBgColor, setCanvasBgColor] = useState(CanvasInfo.BG_COLOR);
+
+    useEffect(() => {
+        if (canvasWidth) {
+            CanvasInfo.WIDTH = canvasWidth;
+        }
+    }, [canvasWidth]);
+
+    useEffect(() => {
+        if (canvasHeight) {
+            CanvasInfo.HEIGHT = canvasHeight;
+        }
+    }, [canvasHeight]);
+
+    useEffect(() => {
+        if (canvasBgColor) {
+            CanvasInfo.BG_COLOR = canvasBgColor;
+        }
+    }, [canvasBgColor]);
 
 
 
@@ -57,10 +81,10 @@ const LifeProvider = ({children}) => {
         <LifeContext.Provider value={{
             creatures, passedOn, shelters, plants, objects,
             startTime, isCreateMode, isGameStarted, isGameOver,
-            startingCreatureTypes, startingPlantTypes,
+            startingCreatureTypes, startingPlantTypes, startingObjects,
             setCreatures, setPassedOn, setShelters, setPlants, setObjects,
             setIsCreateMode, setIsGameStarted, setIsGameOver,
-            setStartingCreatureTypes, setStartingPlantTypes
+            setStartingCreatureTypes, setStartingPlantTypes, setStartingObjects
         }}>
             {children}
         </LifeContext.Provider>

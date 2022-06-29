@@ -16,8 +16,8 @@ import { PlantDefaults } from "../../../crosscutting/constants/plantConstants";
 
 // Creating and generating functions
 
-export const createObjects = () => { // TODO create object class so that this will work
-    let constants = DefaultObjects;
+export const createObjects = (startingObjects) => { // TODO create object class so that this will work
+    let constants = startingObjects;
 
     let objs = [];
     constants.forEach(c => {
