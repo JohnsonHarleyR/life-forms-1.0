@@ -8,30 +8,30 @@ import CreationCanvasClass from "../subclasses/creationCanvasInfo"
 
 //#region Creation Canvas Logic
 
-export const createCreationCanvasClass = (xTiles, yTiles) => {
-  let newCanvas = new CreationCanvasClass(xTiles, yTiles);
+export const createCreationCanvasClass = (xTiles, yTiles, bgColor) => {
+  let newCanvas = new CreationCanvasClass(xTiles, yTiles, bgColor);
   return newCanvas;
 }
 
-export const renderCreationCanvas = (canvasRef, creationCanvas) => {
+export const renderCreationCanvas = (canvasRef, creationCanvas, showGridLines = true) => {
   // fill background
-  fillBackground(canvasRef.current, CanvasInfo.BG_COLOR);
+  fillBackground(canvasRef.current, creationCanvas.bgColor);
 
   // render all the tiles
-  renderGridTiles(canvasRef, creationCanvas);
+  renderGridTiles(canvasRef, creationCanvas, showGridLines);
 }
 
-const renderGridTiles = (canvasRef, creationCanvas) => {
+const renderGridTiles = (canvasRef, creationCanvas, showGridLines) => {
   for (let y = 0; y < creationCanvas.grid.length; y++) {
     let row = creationCanvas.grid[y];
     for (let x = 0; x < row.length; x++) {
       let tile = row[x];
-      renderTile(canvasRef, tile);
+      renderTile(canvasRef, tile, showGridLines);
     }
   }
 }
 
-const renderTile = (canvasRef, tileInfo) => {
+const renderTile = (canvasRef, tileInfo, showGridLines) => {
   // first draw outer tile lines
   let color = tileInfo.isSelected
     ? CreationDefaults.OUTER_SELECTED_COLOR
@@ -40,16 +40,20 @@ const renderTile = (canvasRef, tileInfo) => {
     ? CreationDefaults.OUTER_SELECTED_THICKNESS
     : CreationDefaults.OUTER_TILE_LINE_THICKNESS;
 
-  drawBox(canvasRef.current, color, thickness,
-    tileInfo.xStartO, tileInfo.xEndO,
-    tileInfo.yStartO, tileInfo.yEndO);
+  if (showGridLines || tileInfo.isSelected) {
+    drawBox(canvasRef.current, color, thickness,
+      tileInfo.xStartO, tileInfo.xEndO,
+      tileInfo.yStartO, tileInfo.yEndO);
+  }
 
   // draw inner tile lines
-  color = CreationDefaults.INNER_TILE_COLOR;
-  thickness = CreationDefaults.INNER_TILE_LINE_THICKNESS;
-  drawBox(canvasRef.current, color, thickness,
-    tileInfo.xStartI, tileInfo.xEndI,
-    tileInfo.yStartI, tileInfo.yEndI);
+  if (showGridLines) {
+    color = CreationDefaults.INNER_TILE_COLOR;
+    thickness = CreationDefaults.INNER_TILE_LINE_THICKNESS;
+    drawBox(canvasRef.current, color, thickness,
+      tileInfo.xStartI, tileInfo.xEndI,
+      tileInfo.yStartI, tileInfo.yEndI);
+  }
 
   // draw object fill
   if (tileInfo.isColoredIn) {

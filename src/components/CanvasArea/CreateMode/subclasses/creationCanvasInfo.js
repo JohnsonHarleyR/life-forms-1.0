@@ -3,7 +3,9 @@ import TileClass from "./tileInfo";
 
 
 export default class CreationCanvasClass {
-  constructor(xTiles, yTiles) {
+  constructor(xTiles, yTiles, bgColor) {
+    this.bgColor = bgColor;
+    
     this.xTiles = xTiles;
     this.yTiles = yTiles;
 

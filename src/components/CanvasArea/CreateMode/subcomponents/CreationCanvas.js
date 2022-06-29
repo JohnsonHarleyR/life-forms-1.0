@@ -17,12 +17,15 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const canvasRef = useRef();
     const addObjectRef = useRef();
     const colorRef = useRef();
+    const bgColorRef = useRef();
+    const showGridRef = useRef();
     
     const {} = useContext(LifeContext);
+    const [bgColor, setBgColor] = useState("#ffffff");
     const [creationCanvas, setCreationCanvas] // TODO allow updates to this with tiles
-        = useState(createCreationCanvasClass(xTiles, yTiles));
+        = useState(createCreationCanvasClass(xTiles, yTiles, "#ffffff"));
 
-    const [canSelectTile, setCanSelectTile] = useState(true);
+    const [showGridLines, setShowGridLines] = useState(true);
 
     const [selectorIndex, setSelectorIndex] = useState(0);
     const [selectedTiles, setSelectedTiles] = useState(getEmptySelectorArray());
@@ -37,6 +40,8 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     useEffect(() => {
         colorRef.current.value = "#000000";
+        bgColorRef.current.value = "#ffffff";
+        showGridRef.current.checked = true;
     }, []);
 
     useEffect(() => {
@@ -44,7 +49,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             resetSelector();
             setNewObjects([]);
             setRelativeObjects([]);
-            setCreationCanvas(createCreationCanvasClass(xTiles, yTiles));
+            setCreationCanvas(createCreationCanvasClass(xTiles, yTiles, bgColor));
         }
     }, [xTiles, yTiles]);
 
@@ -86,11 +91,22 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         }
     }, [newObjects]);
 
+    useEffect(() => {
+        if (bgColor && creationCanvas) {
+            creationCanvas.bgColor = bgColor;
+            renderCanvas();
+        }
+    }, [bgColor]);
+
+    useEffect(() => {
+        renderCanvas();
+    }, [showGridLines]);
+
     //#endregion
 
     //#region render methods
     const renderCanvas = () => {
-        renderCreationCanvas(canvasRef, creationCanvas);
+        renderCreationCanvas(canvasRef, creationCanvas, showGridLines);
         if (newObjects) {
             drawNewObjects();
         }
@@ -120,6 +136,14 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     const changeColor = (evt) => {
         setObjectColor(colorRef.current.value);
+    }
+
+    const changeBgColor = (evt) => {
+        setBgColor(bgColorRef.current.value);
+    }
+
+    const toggleGridLines = (evt) => {
+        setShowGridLines(showGridRef.current.checked);
     }
 
     const clickAddObjectBtn = (evt) => {
@@ -319,7 +343,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     return (
         <div>
             <div>
-                Color: 
+                Object Color:  
                 <input
                 type="color"
                 ref={colorRef}
@@ -333,6 +357,19 @@ const CreationCanvas = ({xTiles, yTiles}) => {
                 ref={canvasRef}
                 style={{ border: "2px solid black" }}
                 onClick={clickCanvas}
+                />
+                <br></br>
+                Background Color: 
+                <input
+                type="color"
+                ref={bgColorRef}
+                onChange={changeBgColor}
+                />
+                Show grid?: 
+                <input 
+                type="checkbox"
+                ref={showGridRef}
+                onChange={toggleGridLines}
                 />
             </div>
         </div>
