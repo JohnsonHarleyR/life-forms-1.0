@@ -9,11 +9,14 @@
 }
 
 .card td {
-  padding: 3px;
+  padding-right: 3px;
+  padding-left: 7px;
+  width: 175px;
 }
 
 .creature-icon {
-  margin-right:5px;
+  margin-right: 6px;
+  margin-top: 3px;
   display: flex;
   float: left;
   justify-content: center;

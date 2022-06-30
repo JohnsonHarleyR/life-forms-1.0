@@ -10,7 +10,7 @@ import {
     getRandomItemInArray
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
-    CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath, TimeProps } from "../../constants/creatureConstants";
+    CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath, TimeProps, AllCreatureDefaults } from "../../constants/creatureConstants";
 import { ShelterLine, CanvasInfo, Axis } from "../../constants/canvasConstants";
 import { FoodType, Side } from "../../constants/objectConstants";
 import { isNewCreaturePositionInsideAnyObject } from "../object/objectsLogic";
@@ -528,16 +528,13 @@ export const getRandomGender = () => {
 }
 
 export const getCreatureInfoByType = (type) => {
-    switch(type) {
-        case CreatureType.BOOP:
-            return Boop;
-        case CreatureType.BLEEP:
-            return Bleep;
-        case CreatureType.BIDDY:
-            return Biddy;
-        default:
-            throw "Error: No relevent creature type specified inside getCreatureInfoByType inside of CreatureLogic.js.";
+    let all = AllCreatureDefaults;
+    for (let i = 0; i < all.length; i++) {
+        if (all[i].type === type) {
+            return all[i];
+        }
     }
+    throw "Error: No relevent creature type specified inside getCreatureInfoByType inside of CreatureLogic.js.";
 }
 
 export const searchAreaForMate = (creature, allCreatures) => {

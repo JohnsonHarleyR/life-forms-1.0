@@ -20,7 +20,7 @@ export const GeneticDefaults = {
     SPEED_CHANGE_MAX: .20,
 
     MIN_SIZE: 4,
-    MAX_SIZE: 14,
+    MAX_SIZE: 20,
     SIZE_CHANGE_MIN: .10,
     SIZE_CHANGE_MAX: .20,
 

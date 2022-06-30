@@ -40,7 +40,7 @@ export const CreatureDefaults = {
     FEMALE_COLOR: "#F020D1",
     MALE_COLOR: "#001CDA",
     GENDER_BLEND_AMOUNT: .15,
-    INTERVALS_BEFORE_NEW_TARGET_POSITION: 25
+    INTERVALS_BEFORE_NEW_TARGET_POSITION: 50
 }
 
 export const Gender = {
@@ -121,13 +121,15 @@ export const InventoryLocation = {
 export const CreatureType = {
     BOOP: "BOOP",
     BLEEP: "BLEEP",
-    BIDDY: "BIDDY"
+    BIDDY: "BIDDY",
+    DUDIT: "DUDIT",
 };
 
 export const CreatureTypeList = [
     CreatureType.BOOP,
     CreatureType.BLEEP,
-    CreatureType.BIDDY
+    CreatureType.BIDDY,
+    CreatureType.DUDIT
 ];
 
 export const Boop = {
@@ -162,7 +164,8 @@ export const Boop = {
     genderOfShelterMaker: Gender.FEMALE,
     canHaveMultipleLitters: true,
     minOffspring: 1,
-    maxOffspring: 3
+    maxOffspring: 3,
+    description: "A mid-sized, peaceful, plant-loving creature just happy to go about their day."
 };
 
 export const Bleep = {
@@ -194,7 +197,8 @@ export const Bleep = {
     genderOfShelterMaker: Gender.MALE,
     canHaveMultipleLitters: false,
     minOffspring: 2,
-    maxOffspring: 5
+    maxOffspring: 5,
+    description: "An omnivore with a limited palette."
 };
 
 export const Biddy = {
@@ -224,13 +228,46 @@ export const Biddy = {
     genderOfShelterMaker: Gender.MALE,
     canHaveMultipleLitters: false,
     minOffspring: 3,
-    maxOffspring: 7
+    maxOffspring: 7,
+    description: "A tiny creature that outwits predators with speed and large families. Relies on one beloved plant."
+};
+
+export const Dudit = {
+    type: CreatureType.DUDIT,
+    color: "#ffd736",
+    food: {
+    plants: [],
+    prey: [CreatureType.BOOP, CreatureType.BLEEP, CreatureType.BIDDY]
+    },
+    energy: 25,
+    size: 15,
+    sightRadius: 70,
+    sightDistance: 40,
+    speed: 7,
+    lifeSpanRange: {
+        low: 10,
+        high: 25
+    },
+    fractionAsChild: .15,
+    fractionAsElder: .15,
+    foodToGatherAtOnce: 5,
+    sleepNeeded: 8,
+    foodNeeded: 3,
+    matingNeeded: 1,
+    genderOfProvider: Gender.MALE,
+    genderOfCaregiver: Gender.FEMALE,
+    genderOfShelterMaker: Gender.MALE,
+    canHaveMultipleLitters: false,
+    minOffspring: 1,
+    maxOffspring: 4,
+    description: "A menacing predator on the lookout. TODO Add thief trait."
 };
 
 export const AllCreatureDefaults = [
     Boop,
     Bleep,
-    Biddy
+    Biddy,
+    Dudit,
 ];
 
 
@@ -264,5 +301,15 @@ export const StartingCreatureDefaults = [
         type: Biddy,
         gender: Gender.MALE,
         count: 3
+    },
+    {
+        type: Dudit,
+        gender: Gender.FEMALE,
+        count: 1
+    },
+    {
+        type: Dudit,
+        gender: Gender.MALE,
+        count: 1
     }
 ];

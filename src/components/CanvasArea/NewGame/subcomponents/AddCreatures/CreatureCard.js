@@ -52,6 +52,7 @@ const CreatureCard = ({typeInfo, showCounts, maleCount, femaleCount}) => {
   const foodPerDay = `${typeInfo.foodNeeded} meals/day`;
   const plants = `${createFoodString(typeInfo.food.plants)}`
   const prey = `${createFoodString(typeInfo.food.prey)}`;
+  const sightDistance = `${typeInfo.sightRadius * 2}w x ${typeInfo.sightDistance}h`;
 
   const sleep = `${typeInfo.sleepNeeded} hrs/day`;
 
@@ -65,7 +66,7 @@ const CreatureCard = ({typeInfo, showCounts, maleCount, femaleCount}) => {
   const lifeAsElder = `${typeInfo.fractionAsElder * 100}%`;
 
   const specialTraits = '';
-  const description = '';
+  const description = typeInfo.description;
 
   return (
     <div className="card">
@@ -76,7 +77,9 @@ const CreatureCard = ({typeInfo, showCounts, maleCount, femaleCount}) => {
               <div style={{display: "flex"}}>
                 <div>
                   {display}
-                </div>
+
+                  {description}
+                  </div>
                 {genderCounts}
               </div>
               </td>
@@ -91,6 +94,7 @@ const CreatureCard = ({typeInfo, showCounts, maleCount, femaleCount}) => {
               <b>Type:</b> {name}<br></br>
               <b>Size:</b> {size}<br></br>
               <b>Speed:</b> {speed}<br></br>
+              <b>Sight:</b> {sightDistance}<br></br>
             </td>
             <td>
               <b>Food needed:</b> {foodPerDay}<br></br>
