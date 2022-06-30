@@ -1,10 +1,10 @@
 import React, {useRef, useState, useEffect} from 'react';
-import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
+import { AllCreatureDefaults, StartingCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
 import { createBlankCreatureCountArray, createStartingCreatureTypeArray, getInfoFromCreatureCountArray, replaceStartingCreatureDefaults, updateCreatureCountInArray } from '../../logic/newGameLogic';
 import CreatureCard from './CreatureCard';
 import './css/creatureCard.css';
 
-const AddCreatures = ({}) => {
+const AddCreatures = ({setCanStartGame}) => {
 
   const maleCountRef = useRef();
   const femaleCountRef = useRef();
@@ -73,6 +73,14 @@ const AddCreatures = ({}) => {
     setCreatureOptions(newOptions);
   }
 
+  const checkIfCanStartGame = () => {
+    if (StartingCreatureDefaults.length > 0) {
+      setCanStartGame(true);
+    } else {
+      setCanStartGame(false);
+    }
+  }
+
   const handleTypeSelectChange = (e) => {
     let typeName = e.target.value;
     let info = getInfoFromCreatureCountArray(typeName, creatureCountArray);
@@ -84,11 +92,13 @@ const AddCreatures = ({}) => {
   const updateMaleCount = (e) => {
     updateCreatureCountInArray(chosenCreature.type, parseInt(e.target.value), "male", creatureCountArray);
     replaceStartingCreatureDefaults(createStartingCreatureTypeArray(creatureCountArray));
+    checkIfCanStartGame();
   }
 
   const updateFemaleCount = (e) => {
     updateCreatureCountInArray(chosenCreature.type, parseInt(e.target.value), "female", creatureCountArray);
     replaceStartingCreatureDefaults(createStartingCreatureTypeArray(creatureCountArray));
+    checkIfCanStartGame();
   }
 
   return (

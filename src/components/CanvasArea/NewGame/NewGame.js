@@ -1,6 +1,7 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../Context/LifeContext';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
+import { StartingCreatureDefaults } from '../../../crosscutting/constants/creatureConstants';
 import { DefaultObjects } from '../../../crosscutting/constants/objectConstants';
 import { convertJsonCodeToLandscapeObject } from '../CreateMode/logic/creationLogic';
 import AddCreatures from './subcomponents/AddCreatures/AddCreatures';
@@ -10,17 +11,18 @@ import { ChooseLandscape } from './subcomponents/ChooseLandscape/ChooseLandscape
 const NewGame = ({}) => {
 
   const startGameRef = useRef();
-  const {setIsGameStarted, startingCreatureTypes} = useContext(LifeContext);
+  const {setIsGameStarted} = useContext(LifeContext);
   const [landscapeJson, setLandscapeJson] = useState("");
+  const [canStartGame, setCanStartGame] = useState(false);
 
 
   useEffect(() => {
-    if (startingCreatureTypes.length > 0) {
+    if (canStartGame) {
       startGameRef.current.disabled = false;
     } else {
       startGameRef.current.disabled = true;
     }
-  }, [startingCreatureTypes]);
+  }, [canStartGame]);
 
   const handleStartGameClick = (e) => {
     // before starting game, set the landscape stuff
@@ -42,7 +44,7 @@ const NewGame = ({}) => {
 
   return (
     <>
-      <AddCreatures/>
+      <AddCreatures setCanStartGame={setCanStartGame}/>
       <AddPlants />
       <ChooseLandscape setLandscapeJson={setLandscapeJson} />
       <br></br>
