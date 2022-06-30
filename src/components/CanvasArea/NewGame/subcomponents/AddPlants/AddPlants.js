@@ -45,6 +45,7 @@ const AddPlants = ({}) => {
     if (plantsIncludedArray && plantsIncludedArray.length > 0) {
       setChosenPlant(plantsIncludedArray[0].type);
     }
+    setStartingPlantTypes(createStartingPlantsArray(plantsIncludedArray));
   }, [plantsIncludedArray]);
 
   useEffect(() => {
@@ -83,7 +84,6 @@ const AddPlants = ({}) => {
   const updateIsIncluded = (e) => {
     let isIncluded = e.target.checked;
     updatePlantsIncludedInArray(chosenPlant.type, isIncluded, plantsIncludedArray);
-    setStartingPlantTypes(createStartingPlantsArray(plantsIncludedArray));
   }
 
   return (
