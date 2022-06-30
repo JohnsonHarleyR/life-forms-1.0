@@ -2,7 +2,7 @@ import React, {useState, useEffect, createContext} from 'react';
 import { CanvasDefaults, CanvasInfo } from '../crosscutting/constants/canvasConstants';
 import { StartingCreatureDefaults } from '../crosscutting/constants/creatureConstants';
 import { DefaultObjects } from '../crosscutting/constants/objectConstants';
-import { Plants } from '../crosscutting/constants/plantConstants';
+import { PlantConstants } from '../crosscutting/constants/plantConstants';
 //import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const LifeContext = createContext({creatures: [], plants: [], objects: []});
@@ -15,10 +15,7 @@ const LifeProvider = ({children}) => {
     const [isGameStarted, setIsGameStarted] = useState(CanvasDefaults.START_GAME_WITH_CANVAS);
     const [isGameOver, setIsGameOver] = useState(false);
 
-    const [creatures, setCreatures] = useState([]);
-
     const [shelters, setShelters] = useState([]);
-    const [plants, setPlants] = useState([]);
     const [objects, setObjects] = useState([]);
 
     useEffect(() => { 
@@ -31,9 +28,9 @@ const LifeProvider = ({children}) => {
 
     return (
         <LifeContext.Provider value={{
-            creatures, shelters, plants, objects,
+            shelters, objects,
             startTime, isCreateMode, isGameStarted, isGameOver,
-            setCreatures, setShelters, setPlants, setObjects,
+            setShelters, setObjects,
             setIsCreateMode, setIsGameStarted, setIsGameOver,
         }}>
             {children}

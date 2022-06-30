@@ -1,5 +1,5 @@
 import { AllCreatureDefaults, Gender, StartingCreatureDefaults } from "../../../../crosscutting/constants/creatureConstants"
-import { Plants, StartingPlants } from "../../../../crosscutting/constants/plantConstants";
+import { PlantConstants as Plants, StartingPlants } from "../../../../crosscutting/constants/plantConstants";
 
 //#region starting plant logic
 export const replaceStartingPlantDefaults = (newDefaults) => {

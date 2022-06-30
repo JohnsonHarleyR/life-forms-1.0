@@ -46,6 +46,8 @@ export const Wheat = {
     energy: 8
 }
 
-export const Plants = [Bud, Weed, Shrub, Wheat];
+export const PlantConstants = [Bud, Weed, Shrub, Wheat];
 
-export const StartingPlants = [];
+export const StartingPlants = [Bud, Weed, Shrub, Wheat];
+
+export const Plants = [];

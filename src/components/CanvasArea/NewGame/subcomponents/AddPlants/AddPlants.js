@@ -1,6 +1,5 @@
-import React, {useRef, useState, useEffect, useContext} from 'react';
-import { LifeContext } from '../../../../../Context/LifeContext';
-import { Plants } from '../../../../../crosscutting/constants/plantConstants';
+import React, {useRef, useState, useEffect } from 'react';
+import { PlantConstants as Plants } from '../../../../../crosscutting/constants/plantConstants';
 import { createBlankPlantsIncludedArray, createStartingPlantsArray, getInfoFromPlantsIncludedArray, replaceStartingPlantDefaults, updatePlantsIncludedInArray } from '../../logic/newGameLogic';
 import PlantCard from './PlantCard';
 import './css/plantCard.css';
