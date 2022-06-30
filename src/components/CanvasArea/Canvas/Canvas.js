@@ -17,6 +17,7 @@ import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
+import { DefaultObjects } from '../../../crosscutting/constants/objectConstants';
 
 const Canvas = () => {
     
@@ -28,13 +29,12 @@ const Canvas = () => {
     const [intervals, setIntervals] = useState(0);
 
     const {creatures, passedOn, shelters, plants, objects, startingCreatureTypes,
-        startingPlantTypes, setCreatures, setPassedOn, setShelters, setPlants, setObjects,
-        startingObjects} = useContext(LifeContext);
+        startingPlantTypes, setCreatures, setPassedOn, setShelters, setPlants, setObjects} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
-        let objs = createObjects(startingObjects);
+        let objs = createObjects(DefaultObjects);
         setObjects(objs);
         let newCreatures = createCreatures(startingCreatureTypes, objs, plants, shelters, setCreatures, setPlants, setShelters);
         setCreatures(newCreatures);
