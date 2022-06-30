@@ -47,3 +47,5 @@ export const Wheat = {
 }
 
 export const Plants = [Bud, Weed, Shrub, Wheat];
+
+export const StartingPlants = [];

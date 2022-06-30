@@ -11,9 +11,9 @@ import {
     updatePlants
 } from './canvasMethods';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
-import { Plants } from '../../../crosscutting/constants/plantConstants';
+import { StartingPlants } from '../../../crosscutting/constants/plantConstants';
 import { testFindArrayPatterns } from '../../../crosscutting/logic/universalLogic';
-import { CreatureDefaults, CreatureType } from '../../../crosscutting/constants/creatureConstants';
+import { CreatureDefaults, CreatureType, StartingCreatureDefaults } from '../../../crosscutting/constants/creatureConstants';
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
@@ -28,15 +28,15 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {creatures, passedOn, shelters, plants, objects, startingCreatureTypes,
-        startingPlantTypes, setCreatures, setPassedOn, setShelters, setPlants, setObjects} = useContext(LifeContext);
+    const {creatures, shelters, plants, objects,
+        setCreatures, setPassedOn, setShelters, setPlants, setObjects} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
         let objs = createObjects(DefaultObjects);
         setObjects(objs);
-        let newCreatures = createCreatures(startingCreatureTypes, objs, plants, shelters, setCreatures, setPlants, setShelters);
+        let newCreatures = createCreatures(StartingCreatureDefaults, objs, plants, shelters, setCreatures, setPlants, setShelters);
         setCreatures(newCreatures);
         renderCanvas(canvasRef, newCreatures, plants, objs, shelters);
         //setInitialTargetRefValues();
@@ -124,7 +124,7 @@ const Canvas = () => {
         if (intervals) {
             //let numberOfPlants = plants.length;
             //console.log(`plant count: ${numberOfPlants}`);
-            generatePlants(intervals, plants, creatures, objects, shelters, startingPlantTypes, setPlants, CreatureDefaults.LARGEST_SIZE);
+            generatePlants(intervals, plants, creatures, objects, shelters, StartingPlants, setPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);
 

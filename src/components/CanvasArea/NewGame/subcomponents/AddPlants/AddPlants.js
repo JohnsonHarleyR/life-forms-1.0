@@ -1,15 +1,13 @@
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import { LifeContext } from '../../../../../Context/LifeContext';
 import { Plants } from '../../../../../crosscutting/constants/plantConstants';
-import { createBlankPlantsIncludedArray, createStartingPlantsArray, getInfoFromPlantsIncludedArray, updatePlantsIncludedInArray } from '../../logic/newGameLogic';
+import { createBlankPlantsIncludedArray, createStartingPlantsArray, getInfoFromPlantsIncludedArray, replaceStartingPlantDefaults, updatePlantsIncludedInArray } from '../../logic/newGameLogic';
 import PlantCard from './PlantCard';
 import './css/plantCard.css';
 
 const AddPlants = ({}) => {
 
   const isIncludedRef = useRef();
-
-  const {startingPlantTypes, setStartingPlantTypes} = useContext(LifeContext);
 
   const [plantOptions, setPlantOptions] = useState([]);
   const [plantsIncludedArray, setPlantsIncludedArray] = useState([]);
@@ -20,9 +18,6 @@ const AddPlants = ({}) => {
   const [plantCardDisplay, setPlantCardDisplay] = useState(<></>);
 
   useEffect(() => {
-    if (startingPlantTypes) {
-      setStartingPlantTypes([]);
-    }
     if (plantOptions) {
       populatePlantOptions();
     }
@@ -45,7 +40,7 @@ const AddPlants = ({}) => {
     if (plantsIncludedArray && plantsIncludedArray.length > 0) {
       setChosenPlant(plantsIncludedArray[0].type);
     }
-    setStartingPlantTypes(createStartingPlantsArray(plantsIncludedArray));
+    replaceStartingPlantDefaults(createStartingPlantsArray(plantsIncludedArray));
   }, [plantsIncludedArray]);
 
   useEffect(() => {

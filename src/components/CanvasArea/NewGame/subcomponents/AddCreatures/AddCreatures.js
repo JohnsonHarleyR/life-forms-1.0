@@ -1,7 +1,6 @@
-import React, {useRef, useState, useEffect, useContext} from 'react';
-import { LifeContext } from '../../../../../Context/LifeContext';
-import { AllCreatureDefaults, Gender } from '../../../../../crosscutting/constants/creatureConstants';
-import { createBlankCreatureCountArray, createStartingCreatureTypeArray, getInfoFromCreatureCountArray, updateCreatureCountInArray } from '../../logic/newGameLogic';
+import React, {useRef, useState, useEffect} from 'react';
+import { AllCreatureDefaults } from '../../../../../crosscutting/constants/creatureConstants';
+import { createBlankCreatureCountArray, createStartingCreatureTypeArray, getInfoFromCreatureCountArray, replaceStartingCreatureDefaults, updateCreatureCountInArray } from '../../logic/newGameLogic';
 import CreatureCard from './CreatureCard';
 import './css/creatureCard.css';
 
@@ -9,8 +8,6 @@ const AddCreatures = ({}) => {
 
   const maleCountRef = useRef();
   const femaleCountRef = useRef();
-
-  const {startingCreatureTypes, setStartingCreatureTypes} = useContext(LifeContext);
 
   const [creatureOptions, setCreatureOptions] = useState([]);
   const [creatureCountArray, setCreatureCountArray] = useState([]);
@@ -21,9 +18,6 @@ const AddCreatures = ({}) => {
   const [creatureCardDisplay, setCreatureCardDisplay] = useState(<></>);
 
   useEffect(() => {
-    if (startingCreatureTypes) {
-      setStartingCreatureTypes([]);
-    }
     if (creatureOptions) {
       populateCreatureOptions();
     }
@@ -89,12 +83,12 @@ const AddCreatures = ({}) => {
 
   const updateMaleCount = (e) => {
     updateCreatureCountInArray(chosenCreature.type, parseInt(e.target.value), "male", creatureCountArray);
-    setStartingCreatureTypes(createStartingCreatureTypeArray(creatureCountArray));
+    replaceStartingCreatureDefaults(createStartingCreatureTypeArray(creatureCountArray));
   }
 
   const updateFemaleCount = (e) => {
     updateCreatureCountInArray(chosenCreature.type, parseInt(e.target.value), "female", creatureCountArray);
-    setStartingCreatureTypes(createStartingCreatureTypeArray(creatureCountArray));
+    replaceStartingCreatureDefaults(createStartingCreatureTypeArray(creatureCountArray));
   }
 
   return (

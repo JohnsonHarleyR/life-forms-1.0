@@ -1,7 +1,14 @@
-import { AllCreatureDefaults, Gender } from "../../../../crosscutting/constants/creatureConstants"
-import { Plants } from "../../../../crosscutting/constants/plantConstants";
+import { AllCreatureDefaults, Gender, StartingCreatureDefaults } from "../../../../crosscutting/constants/creatureConstants"
+import { Plants, StartingPlants } from "../../../../crosscutting/constants/plantConstants";
 
 //#region starting plant logic
+export const replaceStartingPlantDefaults = (newDefaults) => {
+  StartingPlants.splice(0, StartingPlants.length);
+  newDefaults.forEach(nd => {
+    StartingPlants.push(nd);
+  });
+}
+
 export const createBlankPlantsIncludedArray = () => {
   let array = [];
   Plants.forEach(p => {
@@ -42,6 +49,13 @@ export const createStartingPlantsArray = (plantIncludedArray) => {
 //#endregion
 
 //#region starting creature logic
+export const replaceStartingCreatureDefaults = (newDefaults) => {
+  StartingCreatureDefaults.splice(0, StartingCreatureDefaults.length);
+  newDefaults.forEach(nd => {
+    StartingCreatureDefaults.push(nd);
+  });
+}
+
 export const createBlankCreatureCountArray = () => {
   let array = [];
   AllCreatureDefaults.forEach(c => {
