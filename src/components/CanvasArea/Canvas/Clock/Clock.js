@@ -8,49 +8,31 @@ const Clock = ({time}) => {
     const msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
     const msToAdd = msPerHour * CanvasInfo.STARTING_HOUR;
 
-    const [msPassed, setMsPassed] = useState(0);
-    const [hoursPassed, setHoursPassed] = useState(0);
     const [currentDay, setCurrentDay] = useState(1);
-    const [hoursPassedToday, setHoursPassedToday] = useState(0);
-    const [timeString, setTimeString] = useState("12:00 AM");
+    const [displayString, setDisplayString] = useState('');
 
 
     useEffect(() => { 
         if (time) {
             let passed = getMsPassed(CanvasInfo.START_TIME, time) + msToAdd;
-            setMsPassed(passed);
-        }
-    }, [time]);
-
-    useEffect(() => { 
-        if (msPassed) {
-            let hoursPassed = getHoursPassed(msPassed, msPerHour);
-            setHoursPassed(hoursPassed);
-        }
-    }, [msPassed]);
-
-    useEffect(() => { 
-        if (hoursPassed) {
+            let hoursPassed = getHoursPassed(passed, msPerHour);
             let daysPassed = getDaysPassed(hoursPassed);
+            let day = currentDay;
             if (daysPassed + 1 > currentDay) {
-                setCurrentDay(daysPassed + 1);
+                day = daysPassed + 1;
+                setCurrentDay(day);
             }
             let hoursToday = getHoursPassedToday(hoursPassed, daysPassed);
-            setHoursPassedToday(hoursToday);
+            let tString = getTimeStringFromHoursToday(hoursToday);
+            let newDisplay = `${tString} - Day ${day}`;
+            setDisplayString(newDisplay);
         }
-    }, [hoursPassed]);
-
-    useEffect(() => { 
-        if (hoursPassedToday) {
-            let tString = getTimeStringFromHoursToday(hoursPassedToday);
-            setTimeString(tString);
-        }
-    }, [hoursPassedToday]);
+    }, [time]);
 
     return (
         <>
             <h2>
-            {timeString} - Day {currentDay}
+            {displayString}
             </h2>
         </>
     );

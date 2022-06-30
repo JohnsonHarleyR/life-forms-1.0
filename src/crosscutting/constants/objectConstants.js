@@ -165,4 +165,6 @@ export const RelativeToObjectCases = [
     },
 ];
 
+export const Objects = [];
+
 export const Shelters = [];

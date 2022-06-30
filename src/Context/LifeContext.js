@@ -9,27 +9,14 @@ const LifeContext = createContext({creatures: [], plants: [], objects: []});
 
 const LifeProvider = ({children}) => {
 
-    const [startTime, setStartTime] = useState(Date.now());
-
     const [isCreateMode, setIsCreateMode] = useState(CanvasDefaults.USE_CREATE_MODE);
     const [isGameStarted, setIsGameStarted] = useState(CanvasDefaults.START_GAME_WITH_CANVAS);
     const [isGameOver, setIsGameOver] = useState(false);
 
-    const [objects, setObjects] = useState([]);
-
-    useEffect(() => { 
-        if (isGameStarted) {
-            setStartTime(Date.now());
-        }
-
-    }, [isGameStarted]);
-
 
     return (
         <LifeContext.Provider value={{
-            objects,
-            startTime, isCreateMode, isGameStarted, isGameOver,
-            setObjects,
+            isCreateMode, isGameStarted, isGameOver,
             setIsCreateMode, setIsGameStarted, setIsGameOver,
         }}>
             {children}
