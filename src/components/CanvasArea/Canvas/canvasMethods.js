@@ -1,6 +1,6 @@
 import { DefaultObjects, ObjectType } from "../../../crosscutting/constants/objectConstants";
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
-import { Gender, LifeStage, Boop, Bleep, Biddy, StartingCreatureDefaults } from "../../../crosscutting/constants/creatureConstants";
+import { Gender, LifeStage, Boop, Bleep, Biddy, StartingCreatureDefaults, PassedOnCreatures } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants,
     drawAllShelters, drawAllCreatureLines, drawAllShelterTexts } from "../../../crosscutting/logic/canvasLogic";
@@ -133,7 +133,7 @@ export const updatePlants = (plants, setPlants) => {
     setPlants(newPlants);
 }
 
-export const updateCreatures = (creatures, setCreatures, setPassedOn) => {
+export const updateCreatures = (creatures, setCreatures) => {
     let newCreatures = [];
     let creatureNames = [];
     let newPassedOn = [];
@@ -171,7 +171,10 @@ export const updateCreatures = (creatures, setCreatures, setPassedOn) => {
     resetHasMovedForCreatures(newCreatures);
     //console.log(`number of creatures: ${newCreatures.length}`);
     setCreatures(newCreatures);
-    setPassedOn(newPassedOn);
+    // setPassedOn(newPassedOn);
+    newPassedOn.forEach(npo => {
+        PassedOnCreatures.push(npo);
+    });
 }
 
 const resetHasMovedForCreatures = (creatures) => {

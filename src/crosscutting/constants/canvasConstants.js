@@ -11,7 +11,8 @@ export const CanvasInfo = {
     BG_COLOR: "#D3D3D3",
     INTERVAL: 50,
     OBJECT_PADDING: 2 * CanvasDefaults.RESIZE_FACTOR,
-    STARTING_HOUR: 14
+    STARTING_HOUR: 14,
+    START_TIME: Date.now()
 };
 
 export const XMark = {

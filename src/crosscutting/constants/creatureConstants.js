@@ -313,3 +313,5 @@ export const StartingCreatureDefaults = [
         count: 1
     }
 ];
+
+export const PassedOnCreatures = [];

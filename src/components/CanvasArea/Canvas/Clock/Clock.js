@@ -1,5 +1,4 @@
-import React, {useRef, useState, useEffect, useContext} from 'react';
-import { LifeContext } from '../../../../Context/LifeContext';
+import React, {useState, useEffect} from 'react';
 import { getDaysPassed, getHoursPassed, getHoursPassedToday, getMsPassed, getTimeStringFromHoursToday } from './clockMethods';
 import { TimeProps } from '../../../../crosscutting/constants/creatureConstants';
 import { CanvasInfo } from '../../../../crosscutting/constants/canvasConstants';
@@ -8,8 +7,6 @@ const Clock = ({time}) => {
 
     const msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
     const msToAdd = msPerHour * CanvasInfo.STARTING_HOUR;
-
-    const {startTime} = useContext(LifeContext);
 
     const [msPassed, setMsPassed] = useState(0);
     const [hoursPassed, setHoursPassed] = useState(0);
@@ -20,7 +17,7 @@ const Clock = ({time}) => {
 
     useEffect(() => { 
         if (time) {
-            let passed = getMsPassed(startTime, time) + msToAdd;
+            let passed = getMsPassed(CanvasInfo.START_TIME, time) + msToAdd;
             setMsPassed(passed);
         }
     }, [time]);

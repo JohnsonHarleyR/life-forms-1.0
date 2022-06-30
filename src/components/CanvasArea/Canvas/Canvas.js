@@ -29,7 +29,7 @@ const Canvas = () => {
     const [intervals, setIntervals] = useState(0);
 
     const {creatures, shelters, plants, objects,
-        setCreatures, setPassedOn, setShelters, setPlants, setObjects} = useContext(LifeContext);
+        setCreatures, setShelters, setPlants, setObjects} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
@@ -113,7 +113,7 @@ const Canvas = () => {
             //console.log(JSON.stringify(creaturesCopy));
             setCreatures(creaturesCopy);
             // update shelters too
-            updateCreatures(creatures, setCreatures, setPassedOn);
+            updateCreatures(creatures, setCreatures);
             updateShelters(creatures, setShelters);
             updatePlants(plants, setPlants);
         }
