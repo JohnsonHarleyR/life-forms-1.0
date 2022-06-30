@@ -164,3 +164,5 @@ export const RelativeToObjectCases = [
         condition: RelativeToObject.BOTTOM_RIGHT_CORNER
     },
 ];
+
+export const Shelters = [];

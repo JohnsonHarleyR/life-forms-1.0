@@ -8,6 +8,7 @@ import Plant from "../../../crosscutting/logic/object/plants/plant";
 import { getRandomCreatureStartPosition } from "../../../crosscutting/logic/creature/creatureLogic";
 import Creature from "../../../crosscutting/logic/creature/creature";
 import { PlantDefaults, Plants } from "../../../crosscutting/constants/plantConstants";
+import { Shelters } from "../../../crosscutting/constants/objectConstants";
 
 // TODO generateCreature, generatePlant
 
@@ -26,25 +27,25 @@ export const createObjects = (startingObjects) => { // TODO create object class 
     return objs;
 };
 
-export const createCreatures = (startingCreatureTypes, objects, plants, shelters, setShelters) => {
+export const createCreatures = (startingCreatureTypes, objects, plants, shelters) => {
     
     let array = [];
     //array.push(creature); // HACK this is only while there is a main creature to test
 
     startingCreatureTypes.forEach(sc => {
         for (let i = 0; i < sc.count; i++) {
-            array.push(generateCreature(sc.gender, LifeStage.ADULT, sc.type, null, null, array, objects, plants, shelters, setShelters));
+            array.push(generateCreature(sc.gender, LifeStage.ADULT, sc.type, null, null, array, objects, plants, shelters));
         }
     });
     
     return array;
 }
 
-const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, mother, father, creatures, objects, plants, shelters, setShelters) => { // TODO Be sure to include an id too - make it easier to pull out
+const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, mother, father, creatures, objects, plants, shelters) => { // TODO Be sure to include an id too - make it easier to pull out
     let index = creatures.length;
     let randomPosition = getRandomCreatureStartPosition(info, creatures, objects, plants, shelters);
     let creature = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
-        mother: mother, father: father, targetPosition: randomPosition, setPlants: null, setCreatures: null, setShelters: setShelters, ...info });
+        mother: mother, father: father, targetPosition: randomPosition, setPlants: null, setCreatures: null, setShelters: null, ...info });
     return creature;
 }
 
@@ -106,7 +107,7 @@ export const renderCanvas = (canvasRef, creatures, plants, objects, shelters) =>
     drawAllShelterTexts(canvasRef.current, shelters);
 };
 
-export const updateShelters = (creatures, setShelters) => {
+export const updateShelters = (creatures) => {
     let shelters = [];
     let shelterNames = [];
     creatures.forEach(c => {
@@ -116,7 +117,10 @@ export const updateShelters = (creatures, setShelters) => {
                 shelters.push(c.safety.shelter);
             }
     })
-    setShelters(shelters);
+    Shelters.splice(0, Shelters.length);
+    shelters.forEach(s => {
+        Shelters.push(s);
+    });
 }
 
 export const updatePlants = (plants) => {

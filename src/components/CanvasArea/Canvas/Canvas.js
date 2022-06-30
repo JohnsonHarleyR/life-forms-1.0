@@ -16,7 +16,7 @@ import { CreatureDefaults, Creatures, StartingCreatureDefaults } from '../../../
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
-import { DefaultObjects } from '../../../crosscutting/constants/objectConstants';
+import { DefaultObjects, Shelters } from '../../../crosscutting/constants/objectConstants';
 
 const Canvas = () => {
     
@@ -27,21 +27,21 @@ const Canvas = () => {
     const [time, setTime] = useState(Date.now());
     const [intervals, setIntervals] = useState(0);
 
-    const {shelters, objects,
-        setShelters, setObjects} = useContext(LifeContext);
+    const {objects,
+        setObjects} = useContext(LifeContext);
 
     useEffect(() => {
         canvasRef.current.width = CanvasInfo.WIDTH;
         canvasRef.current.height = CanvasInfo.HEIGHT;
         let objs = createObjects(DefaultObjects);
         setObjects(objs);
-        let newCreatures = createCreatures(StartingCreatureDefaults, objs, Plants, shelters, setShelters);
+        let newCreatures = createCreatures(StartingCreatureDefaults, objs, Plants, Shelters);
         Creatures.splice(0, Creatures.length);
         newCreatures.forEach(nc => {
             Creatures.push(nc);
         });
         // setCreatures(newCreatures);
-        renderCanvas(canvasRef, Creatures, Plants, objs, shelters);
+        renderCanvas(canvasRef, Creatures, Plants, objs, Shelters);
         //setInitialTargetRefValues();
 
         // test area
@@ -89,7 +89,7 @@ const Canvas = () => {
 
             let creaturesCopy = [...Creatures];
             creaturesCopy.forEach(c => {
-                let result = c.update(objects, Plants, Creatures, shelters, CanvasInfo);
+                let result = c.update(objects, Plants, Creatures, Shelters, CanvasInfo);
                 setCreatureResult(c, result);
             })
             //console.log(JSON.stringify(creaturesCopy));
@@ -100,17 +100,17 @@ const Canvas = () => {
             // setCreatures(creaturesCopy);
             // update shelters too
             updateCreatures(Creatures);
-            updateShelters(Creatures, setShelters);
+            updateShelters(Creatures);
             updatePlants(Plants);
         }
-        renderCanvas(canvasRef, Creatures, Plants, objects, shelters);
+        renderCanvas(canvasRef, Creatures, Plants, objects, Shelters);
     }, [time]);
 
     useEffect(() => {
         if (intervals) {
             //let numberOfPlants = plants.length;
             //console.log(`plant count: ${numberOfPlants}`);
-            generatePlants(intervals, Plants, Creatures, objects, shelters, StartingPlants, CreatureDefaults.LARGEST_SIZE);
+            generatePlants(intervals, Plants, Creatures, objects, Shelters, StartingPlants, CreatureDefaults.LARGEST_SIZE);
         }
     }, [intervals]);
 

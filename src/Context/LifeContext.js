@@ -15,7 +15,6 @@ const LifeProvider = ({children}) => {
     const [isGameStarted, setIsGameStarted] = useState(CanvasDefaults.START_GAME_WITH_CANVAS);
     const [isGameOver, setIsGameOver] = useState(false);
 
-    const [shelters, setShelters] = useState([]);
     const [objects, setObjects] = useState([]);
 
     useEffect(() => { 
@@ -28,9 +27,9 @@ const LifeProvider = ({children}) => {
 
     return (
         <LifeContext.Provider value={{
-            shelters, objects,
+            objects,
             startTime, isCreateMode, isGameStarted, isGameOver,
-            setShelters, setObjects,
+            setObjects,
             setIsCreateMode, setIsGameStarted, setIsGameOver,
         }}>
             {children}
