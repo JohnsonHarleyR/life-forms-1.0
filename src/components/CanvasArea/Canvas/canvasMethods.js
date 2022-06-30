@@ -108,46 +108,37 @@ export const renderCanvas = (canvasRef, creatures, plants, objects, shelters) =>
 };
 
 export const updateShelters = (creatures) => {
-    let shelters = [];
+    // let sheltersCopy = [...Shelters];
     let shelterNames = [];
+    let old = Shelters.splice(0, Shelters.length);
     creatures.forEach(c => {
         if (c.safety.shelter !== null && 
             !shelterNames.includes(c.safety.shelter.id)) {
                 shelterNames.push(c.safety.shelter.id);
-                shelters.push(c.safety.shelter);
+                Shelters.push(c.safety.shelter);
             }
-    })
-    Shelters.splice(0, Shelters.length);
-    shelters.forEach(s => {
-        Shelters.push(s);
     });
 }
 
 export const updatePlants = (plants) => {
-    let newPlants = [];
-    plants.forEach(p => {
+    let plantsCopy = plants.splice(0, plants.length);
+    plantsCopy.forEach(p => {
         if (!p.isEaten) {
-            newPlants.push(p);
+            plants.push(p);
         }
     });
-    plants.splice(0, plants.length);
-    newPlants.forEach(np => {
-        plants.push(np);
-    })
-    // setPlants(newPlants);
 }
 
 export const updateCreatures = (creatures) => {
-    let newCreatures = [];
+    let creaturesCopy = Creatures.splice(0, Creatures.length);;
     let creatureNames = [];
-    let newPassedOn = [];
     let passedOnNames = [];
-    creatures.forEach(c => {
+    creaturesCopy.forEach(c => {
         if (!c.hasLeftWorld && !creatureNames.includes(c.id)) {
-            newCreatures.push(c);
+            Creatures.push(c);
             creatureNames.push(c.id);
         } else if (!passedOnNames.includes(c.id)) {
-            newPassedOn.push(c);
+            PassedOnCreatures.push(c);
             passedOnNames.push(c.id);
         }
         // if (( (c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead)) 
@@ -157,10 +148,10 @@ export const updateCreatures = (creatures) => {
         // }
         c.family.children.forEach(ch => {
             if (!ch.hasLeftWorld && !creatureNames.includes(ch.id)) {
-                newCreatures.push(ch);
+                Creatures.push(ch);
                 creatureNames.push(ch.id);
             } else if (!passedOnNames.includes(ch.id)) {
-                newPassedOn.push(ch);
+                PassedOnCreatures.push(ch);
                 passedOnNames.push(ch.id);
             }
         })
@@ -172,17 +163,7 @@ export const updateCreatures = (creatures) => {
         //     }
         // })
     });
-    resetHasMovedForCreatures(newCreatures);
-    //console.log(`number of creatures: ${newCreatures.length}`);
-    Creatures.splice(0, Creatures.length);
-    newCreatures.forEach(nc => {
-        Creatures.push(nc);
-    })
-    // setCreatures(newCreatures);
-    // setPassedOn(newPassedOn);
-    newPassedOn.forEach(npo => {
-        PassedOnCreatures.push(npo);
-    });
+    resetHasMovedForCreatures(Creatures);
 }
 
 const resetHasMovedForCreatures = (creatures) => {

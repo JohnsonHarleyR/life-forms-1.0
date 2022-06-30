@@ -24,7 +24,7 @@ export const MoveMode = {
 };
 
 export const CreatureDefaults = {
-    SHOW_LINES: false,
+    SHOW_LINES: true,
     MUTATE_GENES: true,
     SET_UP_GENES: true,
     ALTER_COLOR_BY_GENDER: false,
@@ -40,7 +40,7 @@ export const CreatureDefaults = {
     FEMALE_COLOR: "#F020D1",
     MALE_COLOR: "#001CDA",
     GENDER_BLEND_AMOUNT: .15,
-    INTERVALS_BEFORE_NEW_TARGET_POSITION: 50
+    INTERVALS_BEFORE_NEW_TARGET_POSITION: 30
 }
 
 export const Gender = {
