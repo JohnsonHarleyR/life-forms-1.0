@@ -1,8 +1,5 @@
-import React, {useState, useEffect, createContext} from 'react';
-import { CanvasDefaults, CanvasInfo } from '../crosscutting/constants/canvasConstants';
-import { StartingCreatureDefaults } from '../crosscutting/constants/creatureConstants';
-import { DefaultObjects } from '../crosscutting/constants/objectConstants';
-import { PlantConstants } from '../crosscutting/constants/plantConstants';
+import React, {useState, createContext} from 'react';
+import { CanvasDefaults } from '../crosscutting/constants/canvasConstants';
 //import { runAllGeneticTests } from '../crosscutting/logic/creature/genetics/tests/geneticTests';
 
 const LifeContext = createContext({creatures: [], plants: [], objects: []});

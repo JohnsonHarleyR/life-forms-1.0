@@ -3,7 +3,6 @@ import {
     renderCanvas,
     createObjects,
     createCreatures,
-    setCreatureResult,
     generatePlants,
     updateShelters,
     updateCreatures,
@@ -11,7 +10,7 @@ import {
 } from './canvasMethods';
 import { CanvasInfo } from '../../../crosscutting/constants/canvasConstants';
 import { Plants, StartingPlants } from '../../../crosscutting/constants/plantConstants';
-import { CreatureDefaults, Creatures, StartingCreatureDefaults } from '../../../crosscutting/constants/creatureConstants';
+import { CreatureDefaults, Creatures, PassedOnCreatures, StartingCreatureDefaults } from '../../../crosscutting/constants/creatureConstants';
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
@@ -85,19 +84,22 @@ const Canvas = () => {
         setIntervals(intervals + 1);
         if (time && Creatures && Creatures.length !== 0) {
 
-            let creaturesCopy = [...Creatures];
-            creaturesCopy.forEach(c => {
-                let result = c.update(Objects, Plants, Creatures, Shelters, CanvasInfo);
-                setCreatureResult(c, result);
-            })
-            //console.log(JSON.stringify(creaturesCopy));
-            Creatures.splice(0, Creatures.length);
-            creaturesCopy.forEach(cc => {
-                Creatures.push(cc);
-            })
+            // let creaturesCopy = [...Creatures];
+            // creaturesCopy.forEach(c => {
+            //     let result = c.update(Objects, Plants, Creatures, Shelters, CanvasInfo);
+            //     setCreatureResult(c, result);
+            // })
+            // //console.log(JSON.stringify(creaturesCopy));
+            // Creatures.splice(0, Creatures.length);
+            // creaturesCopy.forEach(cc => {
+            //     Creatures.push(cc);
+            // })
+            Creatures.forEach(c => {
+                c.update(Objects, Plants, Creatures, Shelters, CanvasInfo);
+            });
             // setCreatures(creaturesCopy);
             // update shelters too
-            updateCreatures(Creatures);
+            updateCreatures(Creatures, PassedOnCreatures);
             updateShelters(Creatures);
             updatePlants(Plants);
         }

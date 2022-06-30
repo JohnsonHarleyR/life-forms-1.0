@@ -129,16 +129,16 @@ export const updatePlants = (plants) => {
     });
 }
 
-export const updateCreatures = (creatures) => {
-    let creaturesCopy = Creatures.splice(0, Creatures.length);;
+export const updateCreatures = (creatures, passedOnCreatures) => {
+    let creaturesCopy = creatures.splice(0, creatures.length);;
     let creatureNames = [];
     let passedOnNames = [];
     creaturesCopy.forEach(c => {
         if (!c.hasLeftWorld && !creatureNames.includes(c.id)) {
-            Creatures.push(c);
+            creatures.push(c);
             creatureNames.push(c.id);
         } else if (!passedOnNames.includes(c.id)) {
-            PassedOnCreatures.push(c);
+            passedOnCreatures.push(c);
             passedOnNames.push(c.id);
         }
         // if (( (c.life.isDead && !c.isEaten) || (!c.isEaten && !c.life.isDead)) 
@@ -148,10 +148,10 @@ export const updateCreatures = (creatures) => {
         // }
         c.family.children.forEach(ch => {
             if (!ch.hasLeftWorld && !creatureNames.includes(ch.id)) {
-                Creatures.push(ch);
+                creatures.push(ch);
                 creatureNames.push(ch.id);
             } else if (!passedOnNames.includes(ch.id)) {
-                PassedOnCreatures.push(ch);
+                passedOnCreatures.push(ch);
                 passedOnNames.push(ch.id);
             }
         })
@@ -163,7 +163,7 @@ export const updateCreatures = (creatures) => {
         //     }
         // })
     });
-    resetHasMovedForCreatures(Creatures);
+    resetHasMovedForCreatures(creatures);
 }
 
 const resetHasMovedForCreatures = (creatures) => {
