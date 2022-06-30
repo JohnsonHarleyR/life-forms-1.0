@@ -45,8 +45,6 @@ import {
   isFoodInInventoryEnoughForFamily,
   isFoodInShelterEnoughForFamily,
   isCombinedFoodEnoughToMate,
-  isStarving,
-  hasStarvingChildren,
   hasHungryChildren
  } from "./logic/needLogic";
 import { canChasePrey, isPrey } from "./logic/safetyLogic";
@@ -80,19 +78,6 @@ export default class CreatureMovement {
     }
 
     updateMovement = (objects, plants, creatures, shelters, CanvasInfo) => {
-        
-        // if previous priority is different than new priority, set mode to think mode
-        // if (this.creature.needs.previousPriority === null || 
-        //     this.creature.needs.previousPriority !== this.creature.needs.priority || 
-        //     this.creature.needs.priorityComplete) {
-        //       console.log(`Creature ${this.creature.id} about to think`);
-        //         this.moveMode = MoveMode.THINK;
-        //         this.resetMovementProperties(); // keey?
-        //       if (this.creature.needs.prioriityComplete) {
-        //         console.log('priority complete');
-        //         this.creature.needs.priorityComplete = false;
-        //       }
-        // }
 
         if (this.creature.needs.startNewAction === true) {
           this.creature.needs.startNewAction = false;
