@@ -314,4 +314,6 @@ export const StartingCreatureDefaults = [
     }
 ];
 
+export const Creatures = [];
+
 export const PassedOnCreatures = [];
