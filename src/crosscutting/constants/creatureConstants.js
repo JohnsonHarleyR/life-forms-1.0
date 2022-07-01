@@ -123,13 +123,15 @@ export const CreatureType = {
     BLEEP: "BLEEP",
     BIDDY: "BIDDY",
     DUDIT: "DUDIT",
+    PYGMY: "PYGMY",
 };
 
 export const CreatureTypeList = [
     CreatureType.BOOP,
     CreatureType.BLEEP,
     CreatureType.BIDDY,
-    CreatureType.DUDIT
+    CreatureType.DUDIT,
+    CreatureType.PYGMY,
 ];
 
 export const Boop = {
@@ -249,11 +251,45 @@ export const Dudit = {
     description: "A menacing predator on the lookout. TODO Add thief trait."
 };
 
+export const Pygmy = {
+    type: CreatureType.PYGMY,
+    color: "#CDF8F9",
+    food: {
+        plants: [
+            PlantSpecies.SHRUB,
+            PlantSpecies.WHEAT,
+            PlantSpecies.BUD,
+            PlantSpecies.WEED
+        ],
+        prey: []
+    },
+    energy: 5,
+    size: 6,
+    sightRadius: 30,
+    sightDistance: 70,
+    speed: 5,
+    lifeSpanRange: {
+        low: 2,
+        high: 5
+    },
+    fractionAsChild: .10,
+    fractionAsElder: .10,
+    sleepNeeded: 4,
+    foodNeeded: 3,
+    matingNeeded: 0.75,
+    genderOfShelterMaker: Gender.FEMALE,
+    canHaveMultipleLitters: true,
+    minOffspring: 2,
+    maxOffspring: 4,
+    description: "A little creature that lives and dies quickly but is great for studying genetics."
+};
+
 export const AllCreatureDefaults = [
     Boop,
     Bleep,
     Biddy,
     Dudit,
+    Pygmy,
 ];
 
 
