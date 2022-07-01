@@ -129,14 +129,20 @@ const subtractOneFromPlantCount = (type, startingTypes) => {
 }
 
 export const updateCreatures = (creatures, passedOnCreatures) => {
-    let creaturesCopy = creatures.splice(0, creatures.length);;
+    let creaturesCopy = creatures.splice(0, creatures.length);
+    //let passedOn = passedOnCreatures.splice(0, passedOnCreatures.length);
     let creatureNames = [];
     let passedOnNames = [];
+    passedOnCreatures.forEach(po => {
+        if (!passedOnNames.includes(po.id)) {
+            passedOnNames.push(po.id);
+        }
+    })
     creaturesCopy.forEach(c => {
         if (!c.hasLeftWorld && !creatureNames.includes(c.id)) {
             creatures.push(c);
             creatureNames.push(c.id);
-        } else if (!passedOnNames.includes(c.id)) {
+        } else if (c.hasLeftWorld && !passedOnNames.includes(c.id)) {
             passedOnCreatures.push(c);
             passedOnNames.push(c.id);
         }
@@ -149,7 +155,7 @@ export const updateCreatures = (creatures, passedOnCreatures) => {
             if (!ch.hasLeftWorld && !creatureNames.includes(ch.id)) {
                 creatures.push(ch);
                 creatureNames.push(ch.id);
-            } else if (!passedOnNames.includes(ch.id)) {
+            } else if (c.hasLeftWorld && !passedOnNames.includes(ch.id)) {
                 passedOnCreatures.push(ch);
                 passedOnNames.push(ch.id);
             }

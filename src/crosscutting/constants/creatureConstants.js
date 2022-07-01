@@ -253,7 +253,7 @@ export const Dudit = {
 
 export const Pygmy = {
     type: CreatureType.PYGMY,
-    color: "#CDF8F9",
+    color: "#10AAAB",
     food: {
         plants: [
             PlantSpecies.SHRUB,

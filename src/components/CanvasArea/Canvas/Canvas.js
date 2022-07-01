@@ -14,6 +14,7 @@ import { CreatureDefaults, Creatures, PassedOnCreatures, StartingCreatureDefault
 import { runAllGeneticTests } from '../../../crosscutting/logic/creature/genetics/tests/geneticTests';
 import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
+import CreatureStats from './CreatureStats/CreatureStats';
 import { DefaultObjects, Shelters, Objects } from '../../../crosscutting/constants/objectConstants';
 
 const Canvas = () => {
@@ -119,6 +120,9 @@ const Canvas = () => {
                 style={{ border: "2px solid black" }}
                 onClick={showMousePos}
                 />
+            </div>
+            <div>
+                <CreatureStats />
             </div>
         </div>
 

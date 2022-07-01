@@ -46,7 +46,7 @@ export const assessCauseOfDeath = (creature) => {
         cause = CauseOfDeath.WAS_EATEN;
     } else if (creature.needs.foodLevel.points <= 0) {
         cause = CauseOfDeath.STARVATION;
-    } else if (this.creature.life.LifeStage === LifeStage.DECEASED || 
+    } else if (creature.life.LifeStage === LifeStage.DECEASED || 
         creature.life.age > creature.life.lifeSpan) {
             cause = CauseOfDeath.OLD_AGE;
     }

@@ -171,8 +171,10 @@ export default class CreatureMating {
             throw `Error: creature ${getCreatureIdentityString(this.creature)} should have a shelter when reaching this method.` +
             `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
         } else if (this.creature.family.mate.safety.shelter === null) {
-            throw `Error: creature ${getCreatureIdentityString(this.creature)}'s mate should have a shelter when reaching this method.` +
-            `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
+            this.moveIntoMateShelter(this.creature.family.mate, this.creature, creatures);
+            // throw `Error: creature ${getCreatureIdentityString(this.creature)}'s mate should have a shelter when reaching this method.` +
+            // `\n(Method: ensureMatesHaveSameShelter; File: mating.js)`;
+
         }
 
         let creature = this.creature;
