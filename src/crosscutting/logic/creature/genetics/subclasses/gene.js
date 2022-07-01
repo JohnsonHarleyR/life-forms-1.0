@@ -53,6 +53,7 @@ export default class Gene {
     }
 
     determineNewPermanentChanges = () => {
+        
         // See if the x and y traits qualify to make a change permanent
         if (doMakePermanentChange(this.xTrait, this.yTrait)) {
             console.log(`MAKING NEW PERMANENT CHANGES!!`);
