@@ -7,7 +7,8 @@ import {
     getRandomIntInRange,
     findArrayPatterns,
     getCreatureIdentityString,
-    getRandomItemInArray
+    getRandomItemInArray,
+    getRandomCreatureTargetPosition
 } from "../universalLogic";
 import { Direction, ActionType, NeedType, MoveMode, Gender, LifeStage,
     CreatureType, Bleep, Boop, CreatureDefaults, Biddy, CauseOfDeath, TimeProps, AllCreatureDefaults } from "../../constants/creatureConstants";
@@ -593,12 +594,13 @@ export const isPotentialMate = (creature, otherCreature) => {
 //#endregion
 //#region shelter logic
 export const getRandomShelterPosition = (creature, creatures, objects, shelters) => {
-    let shelterSize = creature.size * ShelterLine.MULTIPLIER;
+    let shelterSize = creature.adultSize * ShelterLine.MULTIPLIER;
     let shelterInfo = {width: shelterSize, height: shelterSize};
     // don't worry about plants
     let position = null;
     do {
-        position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, CreatureDefaults.LARGEST_SIZE, null, false);
+        position = getRandomCreatureTargetPosition(creature, objects, shelters);
+        //position = getRandomStartPosition(shelterInfo, creatures, objects, [], shelters, CreatureDefaults.LARGEST_SIZE, null, false);
     } while (!canSetShelterInPosition(position, creature, creatures, objects, shelters));
 
     return position;

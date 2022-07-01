@@ -8,7 +8,6 @@ const Clock = ({time}) => {
     const msPerHour = TimeProps.MS_PER_DAY / TimeProps.HOURS_PER_DAY;
     const msToAdd = msPerHour * CanvasInfo.STARTING_HOUR;
 
-    const [currentDay, setCurrentDay] = useState(1);
     const [displayString, setDisplayString] = useState('');
 
 
@@ -17,10 +16,10 @@ const Clock = ({time}) => {
             let passed = getMsPassed(CanvasInfo.START_TIME, time) + msToAdd;
             let hoursPassed = getHoursPassed(passed, msPerHour);
             let daysPassed = getDaysPassed(hoursPassed);
-            let day = currentDay;
-            if (daysPassed + 1 > currentDay) {
+            let day = CanvasInfo.CURRENT_DAY;
+            if (daysPassed + 1 > day) {
                 day = daysPassed + 1;
-                setCurrentDay(day);
+                CanvasInfo.CURRENT_DAY = day;
             }
             let hoursToday = getHoursPassedToday(hoursPassed, daysPassed);
             let tString = getTimeStringFromHoursToday(hoursToday);

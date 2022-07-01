@@ -12,7 +12,8 @@ export const CanvasInfo = {
     INTERVAL: 50,
     OBJECT_PADDING: 2 * CanvasDefaults.RESIZE_FACTOR,
     STARTING_HOUR: 14,
-    START_TIME: Date.now()
+    START_TIME: Date.now(),
+    CURRENT_DAY: 1,
 };
 
 export const XMark = {
