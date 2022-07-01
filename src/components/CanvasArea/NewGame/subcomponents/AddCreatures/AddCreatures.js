@@ -18,6 +18,9 @@ const AddCreatures = ({setCanStartGame}) => {
   const [creatureCardDisplay, setCreatureCardDisplay] = useState(<></>);
 
   useEffect(() => {
+    AllCreatureDefaults.sort(function (a, b) {
+      return a.type.localeCompare(b.type);
+    });
     if (creatureOptions) {
       populateCreatureOptions();
     }
@@ -70,6 +73,7 @@ const AddCreatures = ({setCanStartGame}) => {
         value: d.type
       });
     });
+
     setCreatureOptions(newOptions);
   }
 

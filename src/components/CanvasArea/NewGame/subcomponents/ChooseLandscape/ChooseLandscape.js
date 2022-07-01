@@ -4,11 +4,15 @@ import { Landscapes } from '../../../../../crosscutting/constants/landscapeConst
 
 export const ChooseLandscape = ({setLandscapeJson}) => {
   
-  const [chosenLandscape, setChosenLandscape] = useState(Landscapes[0].name);
+  const [chosenLandscape, setChosenLandscape] = useState();
   const [landscapeOptions, setLandscapeOptions] = useState([]);
   const [landscapeDisplayOptions, setLandscapeDisplayOptions] = useState([]);
 
   useEffect(() => {
+    Landscapes.sort(function (a, b) {
+      return a.name.localeCompare(b.name);
+    });
+    setChosenLandscape(Landscapes[0].name);
     populateLandscapeOptions();
   }, []);
 

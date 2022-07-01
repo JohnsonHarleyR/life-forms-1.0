@@ -17,6 +17,9 @@ const AddPlants = ({}) => {
   const [plantCardDisplay, setPlantCardDisplay] = useState(<></>);
 
   useEffect(() => {
+    Plants.sort(function (a, b) {
+      return a.type.localeCompare(b.type);
+    });
     if (plantOptions) {
       populatePlantOptions();
     }
@@ -65,6 +68,7 @@ const AddPlants = ({}) => {
         value: p.type
       });
     });
+
     setPlantOptions(newOptions);
   }
 
