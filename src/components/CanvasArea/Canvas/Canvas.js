@@ -101,7 +101,7 @@ const Canvas = () => {
             // update shelters too
             updateCreatures(Creatures, PassedOnCreatures);
             updateShelters(Creatures);
-            updatePlants(Plants);
+            updatePlants(Plants, StartingPlants);
         }
         renderCanvas(canvasRef, Creatures, Plants, Objects, Shelters);
     }, [time]);

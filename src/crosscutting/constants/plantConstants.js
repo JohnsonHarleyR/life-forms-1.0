@@ -16,7 +16,9 @@ export const Bud = {
     width: 4,
     height: 6,
     growInterval: 20,
-    energy: 10
+    energy: 10,
+    maxCount: 350,
+    currentCount: 0
 }
 
 export const Shrub = {
@@ -25,7 +27,9 @@ export const Shrub = {
     width: 6,
     height: 6,
     growInterval: 70,
-    energy: 5
+    energy: 5,
+    maxCount: 300,
+    currentCount: 0
 }
 
 export const Weed = {
@@ -34,7 +38,9 @@ export const Weed = {
     width: 5,
     height: 10,
     growInterval: 30,
-    energy: 3
+    energy: 3,
+    maxCount: 500,
+    currentCount: 0
 }
 
 export const Wheat = {
@@ -43,7 +49,9 @@ export const Wheat = {
     width: 5,
     height: 15,
     growInterval: 100,
-    energy: 8
+    energy: 8,
+    maxCount: 200,
+    currentCount: 0
 }
 
 export const PlantConstants = [Bud, Weed, Shrub, Wheat];

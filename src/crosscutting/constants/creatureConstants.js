@@ -24,7 +24,7 @@ export const MoveMode = {
 };
 
 export const CreatureDefaults = {
-    SHOW_LINES: true,
+    SHOW_LINES: false,
     MUTATE_GENES: true,
     SET_UP_GENES: true,
     ALTER_COLOR_BY_GENDER: false,

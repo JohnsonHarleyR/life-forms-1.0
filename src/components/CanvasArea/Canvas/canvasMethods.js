@@ -1,5 +1,5 @@
 import { CanvasInfo } from "../../../crosscutting/constants/canvasConstants";
-import {LifeStage, PassedOnCreatures, Creatures } from "../../../crosscutting/constants/creatureConstants";
+import {LifeStage } from "../../../crosscutting/constants/creatureConstants";
 import NewObject from "../../../crosscutting/logic/object/objects";
 import { fillBackground, drawAllObjects, drawAllCreatures, drawAllPlants,
     drawAllShelters, drawAllCreatureLines, drawAllShelterTexts } from "../../../crosscutting/logic/canvasLogic";
@@ -63,27 +63,14 @@ export const generatePlants = (intervals, plants, creatures, objects, shelters, 
     let index = Plants.length;
     plantConstants.forEach(p => {
         //let count = plantCounts[`${p.type}`];
-        if (intervals % p.growInterval === 0 
-            //&& count <= PlantDefaults.MAX_PLANTS
-        ) {
-            let newPlant = generatePlant(index, p, Plants, creatures, objects, shelters, largestCreatureSize);
-            Plants.push(newPlant);
-            index++;
+        if (intervals % p.growInterval === 0 &&
+            p.currentCount < p.maxCount) {
+                let newPlant = generatePlant(index, p, Plants, creatures, objects, shelters, largestCreatureSize);
+                Plants.push(newPlant);
+                p.currentCount++;
+                index++;
         }
     });
-}
-
-const countPlants = (plantConstants, plants) => {
-    let counts = new Object();
-    plantConstants.forEach(c => {
-        counts[`${c.type}`] = 0;
-    });
-
-    plants.forEach(p => {
-        counts[`${p.type}`]++;
-    });
-
-    return counts;
 }
 
 const generatePlant = (index, speciesInfo, plants, creatures, objects, shelters, largestCreatureSize) => { // TODO Be sure to include an id too - make it easier to pull out
@@ -120,13 +107,25 @@ export const updateShelters = (creatures) => {
     });
 }
 
-export const updatePlants = (plants) => {
+export const updatePlants = (plants, startingTypes) => {
     let plantsCopy = plants.splice(0, plants.length);
     plantsCopy.forEach(p => {
         if (!p.isEaten) {
             plants.push(p);
+        } else {
+            subtractOneFromPlantCount(p.type, startingTypes);
         }
     });
+}
+
+const subtractOneFromPlantCount = (type, startingTypes) => {
+    for (let i = 0; i < startingTypes.length; i++) {
+        if (startingTypes[i].type === type &&
+            startingTypes[i].currentCount > 0) {
+                startingTypes[i].currentCount--;
+                break;
+        }
+    }
 }
 
 export const updateCreatures = (creatures, passedOnCreatures) => {
