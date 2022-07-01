@@ -5,12 +5,10 @@ import Creature from "../creature";
 import { getRandomShelterPosition } from "../creatureLogic";
 import { hasYoungChildren } from "./logic/needLogic";
 export default class CreatureMating {
-    constructor(creature, genderOfProvider, genderOfCaregiver, genderOfShelterMaker,
+    constructor(creature, genderOfShelterMaker,
         minOffspring, maxOffspring, canHaveMultipleLitters) {
         this.creature = creature;
 
-        this.genderOfProvider = genderOfProvider;
-        this.genderOfCaregiver = genderOfCaregiver;
         this.genderOfShelterMaker = genderOfShelterMaker;
 
         this.isMating = false;
@@ -65,10 +63,6 @@ export default class CreatureMating {
             if (this.creature.safety.shelter) {
                 this.creature.safety.shelter.addMemberToShelter(newChild);
             }
-            // let creaturesCopy = [...creatures];
-            // creaturesCopy.push(newChild);
-            // this.creature.setCreatures(creaturesCopy);
-            //addItemToArray(newChild, creatures, this.creature.setCreatures);
             this.offspringCount--;
             //console.log(`having child - ${this.offspringCount} left`);
         } else if (this.isPregnant && this.offspringCount === 0) {
@@ -95,9 +89,6 @@ export default class CreatureMating {
         let gender = getRandomGender();
         let randomPosition = this.creature.safety.shelter.getRandomPositionInsideShelter(this.creature.size);
         let info = getCreatureInfoByType(this.creature.type);
-        let setPlants = this.creature.setPlants;
-        let setCreatures = this.creature.setCreatures;
-        let setShelters = this.creature.setShelters;
         switch(this.creature.gender) {
             case Gender.MALE:
                 father = this.creature;
@@ -110,7 +101,7 @@ export default class CreatureMating {
         }
 
         let newChild = new Creature({id: `c${index}-${this.creature.id}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
-        mother: mother, father: father, targetPosition: randomPosition, setPlants: setPlants, setCreatures: setCreatures, setShelters: setShelters, ...info });
+        mother: mother, father: father, targetPosition: randomPosition, ...info });
         newChild.safety.shelter = this.creature.safety.shelter;
         return newChild;
     }

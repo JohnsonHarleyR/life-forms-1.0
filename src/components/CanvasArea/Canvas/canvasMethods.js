@@ -45,7 +45,7 @@ const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, mother, fat
     let index = creatures.length;
     let randomPosition = getRandomCreatureStartPosition(info, creatures, objects, plants, shelters);
     let creature = new Creature({id: `c${index}`, gender: gender, lifeStage: lifeStage, position: randomPosition, 
-        mother: mother, father: father, targetPosition: randomPosition, setPlants: null, setCreatures: null, setShelters: null, ...info });
+        mother: mother, father: father, targetPosition: randomPosition, ...info });
     return creature;
 }
 

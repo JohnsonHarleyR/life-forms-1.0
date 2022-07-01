@@ -150,17 +150,14 @@ export const Boop = {
     sightDistance: 60,
     speed: 5,
     lifeSpanRange: {
-        low: 70,
-        high: 100
+        low: 25,
+        high: 50
     },
     fractionAsChild: .1,
     fractionAsElder: .15,
-    foodToGatherAtOnce: 5,
     sleepNeeded: 8,
     foodNeeded: 3,
     matingNeeded: 1.5, // how many days before it's needed again
-    genderOfProvider: Gender.FEMALE,
-    genderOfCaregiver: Gender.MALE,
     genderOfShelterMaker: Gender.FEMALE,
     canHaveMultipleLitters: true,
     minOffspring: 1,
@@ -174,26 +171,21 @@ export const Bleep = {
     food: {
     plants: [PlantSpecies.WEED],
     prey: [CreatureType.BIDDY]
-    //prey: []
     },
     energy: 15,
     size: 8,
     sightRadius: 30,
     sightDistance: 60,
-    //speed: 5,
-    speed: 6,
+    speed: 7,
     lifeSpanRange: {
-        low: 15,
-        high: 20
+        low: 10,
+        high: 15
     },
     fractionAsChild: .1,
     fractionAsElder: .15,
-    foodToGatherAtOnce: 5,
     sleepNeeded: 6,
     foodNeeded: 2,
     matingNeeded: 3,
-    genderOfProvider: Gender.MALE,
-    genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,
     canHaveMultipleLitters: false,
     minOffspring: 2,
@@ -214,17 +206,14 @@ export const Biddy = {
     sightDistance: 50,
     speed: 7,
     lifeSpanRange: {
-        low: 10,
-        high: 25
+        low: 7,
+        high: 15
     },
     fractionAsChild: .05,
     fractionAsElder: .15,
-    foodToGatherAtOnce: 5,
     sleepNeeded: 5,
     foodNeeded: 2,
     matingNeeded: 2,
-    genderOfProvider: Gender.MALE,
-    genderOfCaregiver: Gender.FEMALE,
     genderOfShelterMaker: Gender.MALE,
     canHaveMultipleLitters: false,
     minOffspring: 3,
@@ -239,27 +228,24 @@ export const Dudit = {
     plants: [],
     prey: [CreatureType.BOOP, CreatureType.BLEEP, CreatureType.BIDDY]
     },
-    energy: 25,
+    energy: 20,
     size: 15,
     sightRadius: 70,
     sightDistance: 40,
-    speed: 7,
+    speed: 6.5,
     lifeSpanRange: {
         low: 10,
         high: 25
     },
     fractionAsChild: .15,
     fractionAsElder: .15,
-    foodToGatherAtOnce: 5,
     sleepNeeded: 8,
-    foodNeeded: 3,
-    matingNeeded: 1,
-    genderOfProvider: Gender.MALE,
-    genderOfCaregiver: Gender.FEMALE,
+    foodNeeded: 1,
+    matingNeeded: 3,
     genderOfShelterMaker: Gender.MALE,
     canHaveMultipleLitters: false,
     minOffspring: 1,
-    maxOffspring: 4,
+    maxOffspring: 3,
     description: "A menacing predator on the lookout. TODO Add thief trait."
 };
 

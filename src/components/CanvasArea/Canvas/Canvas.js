@@ -37,12 +37,7 @@ const Canvas = () => {
         newCreatures.forEach(nc => {
             Creatures.push(nc);
         });
-        // setCreatures(newCreatures);
         renderCanvas(canvasRef, Creatures, Plants, Objects, Shelters);
-        //setInitialTargetRefValues();
-
-        // test area
-        //testFindArrayPatterns();
     }, []);
 
     useEffect(() => {
@@ -83,21 +78,9 @@ const Canvas = () => {
     useEffect(() => {
         setIntervals(intervals + 1);
         if (time && Creatures && Creatures.length !== 0) {
-
-            // let creaturesCopy = [...Creatures];
-            // creaturesCopy.forEach(c => {
-            //     let result = c.update(Objects, Plants, Creatures, Shelters, CanvasInfo);
-            //     setCreatureResult(c, result);
-            // })
-            // //console.log(JSON.stringify(creaturesCopy));
-            // Creatures.splice(0, Creatures.length);
-            // creaturesCopy.forEach(cc => {
-            //     Creatures.push(cc);
-            // })
             Creatures.forEach(c => {
                 c.update(Objects, Plants, Creatures, Shelters, CanvasInfo);
             });
-            // setCreatures(creaturesCopy);
             // update shelters too
             updateCreatures(Creatures, PassedOnCreatures);
             updateShelters(Creatures);

@@ -3,9 +3,7 @@ import { LifeContext } from '../../Context/LifeContext';
 import CreateMode from './CreateMode/CreateMode';
 import NewGame from './NewGame/NewGame';
 import Canvas from './Canvas/Canvas';
-import Controls from './Canvas/Controls/Controls';
 import GameOver from './GameOver/GameOver';
-import { CreationDefaults } from '../../crosscutting/constants/creationConstants';
 
 const CanvasArea = () => {
 

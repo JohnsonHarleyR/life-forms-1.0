@@ -1,32 +1,25 @@
 import { FoodType } from "../../constants/objectConstants";
-import { MoveMode,
-        Direction,
-        LifeStage,
-        CreatureDefaults,
-        AmountNeeded,
-        Gender,
-        ActionType,
-        NeedType } from "../../constants/creatureConstants";
+import { 
+    CreatureDefaults,
+} from "../../constants/creatureConstants";
 import CreatureNeeds from "./subclasses/needs";
 import CreatureSafety from "./subclasses/safety";
 import CreatureLife from "./subclasses/life";
 import CreatureMovement from "./subclasses/movement";
 import CreatureMating from "./subclasses/mating";
 import { 
-    determineSightDirection,
-    determineSightCoordinates,
     determineGeneration,
 } from "./creatureLogic";
-import { roundToPlace, millisecondsToMinutes, blendColors, getCreatureIdentityString } from "../universalLogic";
+import { getCreatureIdentityString } from "../universalLogic";
 import Emojis from "./subclasses/emojis/emojis";
 import { getFoodTargetType } from "./subclasses/logic/safetyLogic";
-import { createDefaultGeneticProfile, createGeneticProfileForCreature } from "./genetics/logic/geneticLogic";
+import { createGeneticProfileForCreature } from "./genetics/logic/geneticLogic";
 
 export default class Creature {
-    constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder, foodToGatherAtOnce,
+    constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder,
         food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
-        genderOfProvider, genderOfCaregiver, genderOfShelterMaker, canHaveMultipleLitters, minOffspring, maxOffspring,
-        mother, father, targetPosition, setPlants, setCreatures, setShelters }) {
+        genderOfShelterMaker, canHaveMultipleLitters, minOffspring, maxOffspring,
+        mother, father, targetPosition }) {
 
         // do not touch the stuff in the next paragraph - as in don't refactor
         this.id = id;
@@ -57,14 +50,12 @@ export default class Creature {
             mother: mother,
             father: father
         };
-        this.mating = new CreatureMating(this,genderOfProvider, genderOfCaregiver,
-            genderOfShelterMaker, minOffspring, maxOffspring, canHaveMultipleLitters);
+        this.mating = new CreatureMating(this, genderOfShelterMaker, minOffspring, maxOffspring, canHaveMultipleLitters);
     
         this.food = food; // what types of food does the creature eat? Two categories: plants and prey, both arrays
 
         this.inventory = {
             food: [],
-            foodToGatherAtOnce: foodToGatherAtOnce
         };
 
         this.needs = new CreatureNeeds(this, foodNeeded, sleepNeeded, matingNeeded);
@@ -81,10 +72,6 @@ export default class Creature {
         this.emojis = new Emojis(this);
 
         this.geneticProfile = createGeneticProfileForCreature(this);
-    
-        this.setPlants = setPlants;
-        this.setCreatures = setCreatures;
-        this.setShelters = setShelters;
 
         console.log(`Generation ${this.generation}: ${getCreatureIdentityString(this)} is born`);
     }
