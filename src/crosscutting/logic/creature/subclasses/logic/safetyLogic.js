@@ -1,9 +1,9 @@
-import { CreatureArray, LifeStage } from "../../../../constants/creatureConstants";
+import { LifeStage } from "../../../../constants/creatureConstants";
 import { FoodType } from "../../../../constants/objectConstants";
 import { isInSight } from "../../creatureLogic";
 import { CanvasInfo } from "../../../../constants/canvasConstants";
 
-// predator/prey logic
+//#region predator/prey logic
 export const isPredator = (predator, creature) => {
     let creatureType = creature.type;
 
@@ -91,3 +91,11 @@ export const isPreyInSight = (creature, prey) => {
     let sightCoords = creature.movement.getSightCoordinates(CanvasInfo);
     return isInSight(sightCoords, prey);
 }
+
+//#endregion
+
+//#region shelter logic
+
+
+
+//#endregion
