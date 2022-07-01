@@ -246,7 +246,9 @@ export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, 
 
 
 // trait logic
-export const doMakePermanentChange = (xTrait, yTrait) => {
+export const doMakePermanentChange = (xTrait, yTrait) => { // HACK for now just returns false
+    return false;
+
     let xQualifies = false;
     if (xTrait.dominance === Dominance.DOMINANT && xTrait.isMutation) {
         xQualifies = true;
@@ -294,13 +296,15 @@ export const determineChosenTrait = (xTrait, yTrait) => {
             chosen = getDominantTrait(traits);
             break;
         case 0:
-            let highest = getTraitsWithHighestGenerationCount(traits);
-            if (highest.length > 1) {
-                chosen = getRandomItemInArray(highest);
-            } else {
-                chosen = highest[0];
-            }
-            break;
+            // HACK temporarily just randomizing for recessive to see if issues stop
+            chosen = getRandomItemInArray(highest);
+            // let highest = getTraitsWithHighestGenerationCount(traits);
+            // if (highest.length > 1) {
+            //     chosen = getRandomItemInArray(highest);
+            // } else {
+            //     chosen = highest[0];
+            // }
+            // break;
     }
 
     // the generation count should already be increased while creating the gene - so it should be the same
@@ -313,15 +317,15 @@ export const determineChosenTrait = (xTrait, yTrait) => {
         chosen.dominance = Dominance.DOMINANT;
         // also change dominance of original trait - as it is now mutating!
         // NOTE: if traits were the same, then alter both traits
-        if (!areTraitsIdentical(traits)) {
-            chosen.dominance = Dominance.DOMINANT;
-            chosen.isMutation = false; // set to false so it is ignored in trait changes
-        } else {
-            traits.forEach(t => {
-                t.dominance = Dominance.DOMINANT;
-                chosen.isMutation = false;
-            });
-        }
+        // if (!areTraitsIdentical(traits)) {
+        //     chosen.dominance = Dominance.DOMINANT;
+        //     //chosen.isMutation = false; // set to false so it is ignored in trait changes
+        // } else {
+        //     traits.forEach(t => {
+        //         t.dominance = Dominance.DOMINANT;
+        //         //chosen.isMutation = false;
+        //     });
+        // }
     }
 
     return newTrait;
