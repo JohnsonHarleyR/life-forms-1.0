@@ -1,4 +1,4 @@
-import { addToRGBValues, alterColorByAmount,
+import { addToRGBValues,
     alterColorDarkOrLight,
     canColorChangeRequirementBeMet,
     getRandomDecimalInRange,
@@ -8,10 +8,9 @@ import { addToRGBValues, alterColorByAmount,
 
 export const GeneticDefaults = {
     GENERATIONS_TO_BECOME_DOMINANT: 4,
-    GENERATIONS_TO_BECOME_PERMANENT: 8,
     
-    CHANCE_OF_MUTATION: .75,
-    POSSIBLE_MUTATIONS: 2,
+    CHANCE_OF_MUTATION: .5,
+    POSSIBLE_RECESSIVE_MUTATIONS: 3,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15,
 
     MIN_SPEED: 1,

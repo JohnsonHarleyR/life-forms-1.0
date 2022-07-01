@@ -3,7 +3,8 @@ import { getRandomItemInArray } from "../../../universalLogic";
 import GeneticProfile from "../geneticProfile";
 import Gene from "../subclasses/gene";
 import Trait from "../subclasses/trait";
-import { CreatureDefaults } from "../../../../constants/creatureConstants";
+import { CreatureDefaults, Gender } from "../../../../constants/creatureConstants";
+import { getRandomGender } from "../../creatureLogic";
 
 // testing
 export const getPrivateGeneticMethodsForTesting = () => {
@@ -187,7 +188,24 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose, creature 
     return newGene;
 }
 
-const chooseValidTraitForCreature = (traits, creature) => {
+export const replaceXOrYTraitAndChooseTrait = (gene, newRecessiveTrait) => {
+    if (!gene.xTrait.isMutation && !gene.yTrait.isMutation) {
+        let gender = getRandomGender();
+        if (gender === Gender.MALE) {
+            gene.yTrait = newRecessiveTrait;
+        } else {
+            gene.xTrait = newRecessiveTrait;
+        }
+    } else if (gene.xTrait.isMutation) {
+        gene.yTrait = newRecessiveTrait;
+    } else {
+        gene.xTrait = newRecessiveTrait;
+    }
+
+    gene.chosenTrait = determineChosenTrait(gene.xTrait, gene.yTrait);
+}
+
+export const chooseValidTraitForCreature = (traits, creature) => {
     if (creature === null) {
         return getRandomItemInArray(traits);
     }

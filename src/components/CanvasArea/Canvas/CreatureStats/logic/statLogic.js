@@ -193,7 +193,7 @@ const getMostCommonCausesOfDeath = (array) => {
     }
   });
 
-  causeCounts.sort((a, b) => a.count - b.count);
+  causeCounts.sort((a, b) => b.count - a.count);
 
   let cause1 = causeCounts[0] !== undefined ? `${causeCounts[0].causeType}: ${causeCounts[0].count}` : "NONE";
   let cause2 = causeCounts[1] !== undefined ? `${causeCounts[1].causeType}: ${causeCounts[1].count}` : "NONE";
