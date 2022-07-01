@@ -35,6 +35,7 @@ export default class Creature {
         
         this.isEaten = false;
         this.hasLeftWorld = false;
+        this.causeOfDeath = null;
 
         this.size = this.life.determineSize();
         this.width = this.size; // Necessary?

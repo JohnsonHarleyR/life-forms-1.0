@@ -54,6 +54,8 @@ export const assessCauseOfDeath = (creature) => {
     console.log(`==========================================================================\n` +
         `CREATURE ${getCreatureIdentityString(creature)} HAS DIED DUE TO: ${cause}\n` +
         `==========================================================================`);
+
+    creature.causeOfDeath = cause;
 }
 
 export const isTimeToMoveOn = (creature) => {

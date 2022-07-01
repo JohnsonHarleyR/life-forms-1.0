@@ -41,12 +41,20 @@ export default class CreatureLife { // TODO - make the creature grow up - and pe
         let newSize = this.determineSize();
         this.updateSize(newSize);
         this.creature.energy = this.determineEnergy();
+        this.checkToLeaveWorld();
 
         // test
         // this.intervals++;
         // if ((this.intervals < 11 && this.intervals % 10 === 0) || this.intervals % 100 === 0) {
         //     this.showAgingInfo();
         // }
+    }
+
+    checkToLeaveWorld = () => {
+        if (!this.creature.hasLeftWorld && this.isDead && this.timeOfDeath !== null &&
+            Date.now() - this.timeOfDeath >= CreatureDefaults.TIME_BEFORE_LEAVING_WORLD) {
+                this.creature.hasLeftWorld = true;
+        }
     }
 
     showAgingInfo = () => {

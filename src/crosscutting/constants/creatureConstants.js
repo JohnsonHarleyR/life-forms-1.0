@@ -23,6 +23,16 @@ export const MoveMode = {
     NONE: "NONE"
 };
 
+export const SleepProps = {
+    HOURS_PER_YEAR: 24,
+    HOURS_FOR_FULL_RESTORE: 8
+}
+
+export const TimeProps = {
+    HOURS_PER_DAY: 24,
+    MS_PER_DAY: minutesToMilliseconds(2)
+}
+
 export const CreatureDefaults = {
     SHOW_LINES: false,
     MUTATE_GENES: true,
@@ -40,7 +50,8 @@ export const CreatureDefaults = {
     FEMALE_COLOR: "#F020D1",
     MALE_COLOR: "#001CDA",
     GENDER_BLEND_AMOUNT: .15,
-    INTERVALS_BEFORE_NEW_TARGET_POSITION: 30
+    INTERVALS_BEFORE_NEW_TARGET_POSITION: 30,
+    TIME_BEFORE_LEAVING_WORLD: TimeProps.MS_PER_DAY
 }
 
 export const Gender = {
@@ -97,17 +108,6 @@ export const NeedType = {
     MATE: "MATE",
     NONE: "NONE"
 }
-
-export const SleepProps = {
-    HOURS_PER_YEAR: 24,
-    HOURS_FOR_FULL_RESTORE: 8
-}
-
-export const TimeProps = {
-    HOURS_PER_DAY: 24,
-    MS_PER_DAY: minutesToMilliseconds(2)
-}
-
 export const AddOrSubtract = {
     ADD: "ADD",
     SUBTRACT: "SUBTRACT"
