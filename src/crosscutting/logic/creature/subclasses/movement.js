@@ -1,36 +1,37 @@
-import { LifeStage, ActionType, NeedType, CreatureType } from "../../../constants/creatureConstants";
+import { LifeStage, ActionType, NeedType } from "../../../constants/creatureConstants";
 import { Direction, CreatureDefaults } from "../../../constants/creatureConstants";
-import { determineSightCoordinates,
-    getRandomShelterPosition,
-    determineSightDirection,
-    getRandomCreatureStartPosition,
-    getPositionInNewDirection,
-    checkSightAreaForItemInArray,
-    canSetShelterInPosition,
-    searchAreaForMate,
+import { 
+  determineSightCoordinates,
+  getRandomShelterPosition,
+  determineSightDirection,
+  getPositionInNewDirection,
+  canSetShelterInPosition,
+  searchAreaForMate,
   addMovementRecord,
   checkForMovementPattern,
   isCreatureInRangeOfTargetPosition,
-  prepareForDeath} from "../creatureLogic";
+  prepareForDeath
+} from "../creatureLogic";
 import { MoveMode } from "../../../constants/creatureConstants";
 import { CanvasInfo } from "../../../constants/canvasConstants";
-import { ShelterLine } from "../../../constants/canvasConstants";
-import { FoodType, RelativeToObject } from "../../../constants/objectConstants";
-import { isInPosition, getPositionDifference, getTriangleMovePosition,
-    getRandomStartPosition, addItemToArray, displayPatternResult, getStartAndEndPoints,
-  getRandomPositionInBounds, getPositionChangeIntervals, getPositionDifferenceIntervals,
-getRandomCreatureTargetPosition, 
-getCreatureIdentityString} from "../../universalLogic";
-import { checkAllCreatureObjectCollisions, 
-  determineDirectionByTarget,
+import { RelativeToObject } from "../../../constants/objectConstants";
+import { 
+  isInPosition,
+  getPositionDifference,
+  getTriangleMovePosition,
+  getStartAndEndPoints,
+  getRandomPositionInBounds,
+  getRandomCreatureTargetPosition, 
+  getCreatureIdentityString
+} from "../../universalLogic";
+import {
   checkIfCreatureCollidesWithAnyObjects,
-isValidCreatureTargetPosition, 
-isValidTargetPosition} from "../../object/objectsLogic";
+  isValidTargetPosition
+} from "../../object/objectsLogic";
 import Shelter from "./shelter";
 import { 
   makeCreatureDie,
   makeCreatureSleep,
-  eatFood,
   creatureHasFoodInInventory,
   creatureHasFoodInShelter,
   eatFoodFromInventory,
