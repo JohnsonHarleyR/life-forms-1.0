@@ -42,8 +42,8 @@ export const getStatsForCreatureType = (type) => {
     let totalMF = countMaleAndFemaleCreatures(allCreatures);
   let highestGeneration = getHighestGenerationFromArray(allCreatures);
   let mostCommonDeaths = getMostCommonCausesOfDeath(passedOnCreatures);
-  let domMutationsCount = countCreaturesWithDominantMutations(allCreatures);
-  let permMutationsCount = countCreaturesWithPermanentMutations(allCreatures);
+  let domMutationsCount = countCreaturesWithDominantMutations(livingCreatures);
+  let permMutationsCount = countCreaturesWithPermanentMutations(livingCreatures);
 
   let maleCount = countCreaturesWithGender(livingCreatures, Gender.MALE);
   let femaleCount = countCreaturesWithGender(livingCreatures, Gender.FEMALE);
@@ -92,7 +92,7 @@ const getChosenMutationListString = (array) => {
       }
     });
   });
-  mutCounts.sort((a, b) => a.count + b.count);
+  mutCounts.sort((a, b) => b.count - a.count);
   let newString = '';
   let index = 1;
   mutCounts.forEach(mc => {

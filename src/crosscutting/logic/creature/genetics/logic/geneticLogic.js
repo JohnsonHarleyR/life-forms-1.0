@@ -307,7 +307,7 @@ export const determineChosenTrait = (xTrait, yTrait) => {
     let newTrait = getDeepTraitCopy(chosen);
 
     // determine whether to make a trait dominant
-    if (newTrait.Dominance === Dominance.RECESSIVE &&
+    if (newTrait.dominance === Dominance.RECESSIVE &&
         newTrait.generationCount >= GeneticDefaults.GENERATIONS_TO_BECOME_DOMINANT) {
         newTrait.dominance = Dominance.DOMINANT;
         chosen.dominance = Dominance.DOMINANT;
