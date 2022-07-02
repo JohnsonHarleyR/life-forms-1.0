@@ -16,7 +16,7 @@ import { getFoodTargetType } from "./subclasses/logic/safetyLogic";
 import { createGeneticProfileForCreature } from "./genetics/logic/geneticLogic";
 
 export default class Creature {
-    constructor({id, size, color, gender, type, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder,
+    constructor({id, size, color, gender, type, letterCode, lifeSpanRange, lifeStage, fractionAsChild, fractionAsElder,
         food, energy, sightRadius, sightDistance, position, speed, foodNeeded, sleepNeeded, matingNeeded,
         genderOfShelterMaker, canHaveMultipleLitters, minOffspring, maxOffspring,
         mother, father, targetPosition }) {
@@ -26,6 +26,7 @@ export default class Creature {
         this.generation = determineGeneration(mother, father);
 
         this.type = type;
+        this.letterCode = letterCode;
         this.adultSize = size;
         this.adultEnergy = energy;
         this.adultColor = color;

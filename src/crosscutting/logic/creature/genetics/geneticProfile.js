@@ -4,7 +4,7 @@ import {
     LIST_OF_GENES
 } from "../../../constants/geneticConstants";
 import { getRandomItemInArray, isTrueByChance } from "../../universalLogic";
-import { createDefaultGeneticProfile, chooseValidTraitForCreature, createNewGeneFromConstant, createFirstGenerationTraitFromConstant, createNewGeneFromParentGenes, geneHasValidRecessiveTraitForCreature, getGeneFromProfile, replaceXOrYTraitAndChooseTrait, setProfileProperty } from "./logic/geneticLogic";
+import { createDefaultGeneticProfile, chooseValidTraitForCreature, createNewGeneFromConstant, createFirstGenerationTraitFromConstant, createNewGeneFromParentGenes, geneHasValidRecessiveTraitForCreature, getGeneFromProfile, replaceXOrYTraitAndChooseTrait, setProfileProperty, writeGeneticCode } from "./logic/geneticLogic";
 export default class GeneticProfile {
     constructor(creature = null, doSetUpGenes = true, mutateRandomGene = true) {
         this.creature = creature;
@@ -21,6 +21,8 @@ export default class GeneticProfile {
         }
 
         this.applyGenesToCreature();
+
+        this.geneticCode = writeGeneticCode(this);
     }
 
     getAllGenes = () => {

@@ -1,9 +1,10 @@
 
 
 export default class Trait {
-    constructor(name, dominance, generationCount, 
+    constructor(name, letterCode, dominance, generationCount, 
         isMutation, alterationMethod, validationMethod, variables = null) {
         this.name = name;
+        this.letterCode = letterCode;
         this.dominance = dominance;
         this.generationCount = generationCount;
         this.isMutation = isMutation;

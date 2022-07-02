@@ -136,6 +136,7 @@ export const CreatureTypeList = [
 
 export const Boop = {
     type: CreatureType.BOOP,
+    letterCode: 'A',
     color: "#A020F0",
     food: {
         plants: [
@@ -169,6 +170,7 @@ export const Boop = {
 
 export const Bleep = {
     type: CreatureType.BLEEP,
+    letterCode: 'B',
     color: "#03BB85",
     food: {
     plants: [PlantSpecies.WEED],
@@ -197,6 +199,7 @@ export const Bleep = {
 
 export const Biddy = {
     type: CreatureType.BIDDY,
+    letterCode: 'C',
     color: "#AD1360",
     food: {
     plants: [PlantSpecies.BUD],
@@ -225,6 +228,7 @@ export const Biddy = {
 
 export const Dudit = {
     type: CreatureType.DUDIT,
+    letterCode: 'D',
     color: "#ffd736",
     food: {
     plants: [],
@@ -253,6 +257,7 @@ export const Dudit = {
 
 export const Pygmy = {
     type: CreatureType.PYGMY,
+    letterCode: 'E',
     color: "#10AAAB",
     food: {
         plants: [

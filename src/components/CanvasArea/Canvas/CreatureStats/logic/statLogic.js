@@ -50,6 +50,7 @@ export const getStatsForCreatureType = (type) => {
   let childCount = countChildren(livingCreatures);
   let noMateCount = countAdultsWithoutMate(livingCreatures);
   let mutationString = getChosenMutationListString(livingCreatures);
+  let geneticCodesString = getGeneticCodeListString(livingCreatures);
 
   let stats = {
     type: type,
@@ -68,9 +69,48 @@ export const getStatsForCreatureType = (type) => {
     femaleCount: femaleCount,
     childCount: childCount,
     mutationString: mutationString,
+    geneticCodesString: geneticCodesString,
   }
 
   return stats;
+}
+
+const getGeneticCodeListString = (array) => {
+  let codeNames = [];
+  let codeCounts = [];
+  array.forEach(a => {
+    if (codeNames.includes(a.geneticProfile.geneticCode)) {
+      addCountToCode(a.geneticProfile.geneticCode, codeCounts);
+    } else {
+      codeNames.push(a.geneticProfile.geneticCode);
+      codeCounts.push({
+        code: a.geneticProfile.geneticCode,
+        count: 1
+      });
+    }
+  });
+  codeCounts.sort((a, b) => b.count - a.count);
+  let newString = '';
+  let index = 1;
+  codeCounts.forEach(mc => {
+    let toAdd = `${mc.count} ${mc.code}`;
+    if (index != codeCounts.length) {
+      toAdd += ', ';
+    }
+    newString += toAdd;
+    index++;
+  });
+
+  return newString;
+}
+
+const addCountToCode = (code, codeCounts) => {
+  for (let i = 0; i < codeCounts.length; i++) {
+    if (codeCounts[i].code === code) {
+      codeCounts[i].count++;
+      break;
+    }
+  }
 }
 
 const getChosenMutationListString = (array) => {

@@ -5,10 +5,11 @@ import { createFirstGenerationTraitFromConstant, determineChosenTrait, doMakePer
 
 // TODO figure out logic for permanent changes
 export default class Gene {
-    constructor(name, geneType, dominantTraits, recessiveTraits,
+    constructor(name, geneType, letterCode, dominantTraits, recessiveTraits,
         xTrait, yTrait, xPermChanges, yPermChanges) {
         this.name = name;
         this.geneType = geneType;
+        this.letterCode = letterCode;
         this.dominantTraits = dominantTraits;
         this.recessiveTraits = recessiveTraits;
         this.xTrait = xTrait;

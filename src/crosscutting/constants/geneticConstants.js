@@ -9,7 +9,7 @@ import { addToRGBValues,
 export const GeneticDefaults = {
     GENERATIONS_TO_BECOME_DOMINANT: 4,
     
-    CHANCE_OF_MUTATION: .5,
+    CHANCE_OF_MUTATION: .33,
     POSSIBLE_RECESSIVE_MUTATIONS: 3,
     ATTEMPTS_TO_MUTATE_ALLOWED: 15,
 
@@ -61,6 +61,7 @@ export const GeneType = {
 // --traits
 export const SPEED_DEFAULT = {
     name: "DEFAULT",
+    letterCode: "a",
     dominance: Dominance.DOMINANT,
     isMutation: false,
     alter: () => {
@@ -73,6 +74,7 @@ export const SPEED_DEFAULT = {
 
 export const FASTER = {
     name: "FASTER",
+    letterCode: "b",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -104,6 +106,7 @@ export const FASTER = {
 
 export const SLOWER = {
     name: "SLOWER",
+    letterCode: "c",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -137,6 +140,7 @@ export const SLOWER = {
 export const SPEED_GENE = {
     name: "SPEED_GENE",
     geneType: GeneType.SPEED,
+    letterCode: "A",
     dominantTraits: [SPEED_DEFAULT],
     recessiveTraits: [
         FASTER,
@@ -149,6 +153,7 @@ export const SPEED_GENE = {
 // --traits
 export const SIZE_DEFAULT = {
     name: "DEFAULT",
+    letterCode: "a",
     dominance: Dominance.DOMINANT,
     isMutation: false,
     alter: () => {
@@ -161,6 +166,7 @@ export const SIZE_DEFAULT = {
 
 export const LARGER = {
     name: "LARGER",
+    letterCode: "b",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -193,6 +199,7 @@ export const LARGER = {
 
 export const SMALLER = {
     name: "SMALLER",
+    letterCode: "c",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -226,6 +233,7 @@ export const SMALLER = {
 // --gene
 export const SIZE_GENE = {
     name: "SIZE_GENE",
+    letterCode: "B",
     geneType: GeneType.SIZE,
     dominantTraits: [SIZE_DEFAULT],
     recessiveTraits: [
@@ -239,6 +247,7 @@ export const SIZE_GENE = {
 // --traits
 export const COLOR_DEFAULT = {
     name: "DEFAULT",
+    letterCode: "a",
     dominance: Dominance.DOMINANT,
     isMutation: false,
     alter: () => {
@@ -251,6 +260,7 @@ export const COLOR_DEFAULT = {
 
 export const MORE_RED = {
     name: "MORE_RED",
+    letterCode: "b",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -284,6 +294,7 @@ export const MORE_RED = {
 
 export const LESS_RED = {
     name: "LESS_RED",
+    letterCode: "c",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -317,6 +328,7 @@ export const LESS_RED = {
 
 export const MORE_GREEN = {
     name: "MORE_GREEN",
+    letterCode: "d",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -350,6 +362,7 @@ export const MORE_GREEN = {
 
 export const LESS_GREEN = {
     name: "LESS_GREEN",
+    letterCode: "e",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -383,6 +396,7 @@ export const LESS_GREEN = {
 
 export const MORE_BLUE = {
     name: "MORE_BLUE",
+    letterCode: "f",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -416,6 +430,7 @@ export const MORE_BLUE = {
 
 export const LESS_BLUE = {
     name: "LESS_BLUE",
+    letterCode: "g",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -449,6 +464,7 @@ export const LESS_BLUE = {
 
 export const LIGHTER = {
     name: "LIGHTER",
+    letterCode: "h",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -478,6 +494,7 @@ export const LIGHTER = {
 
 export const DARKER = {
     name: "DARKER",
+    letterCode: "i",
     dominance: Dominance.RECESSIVE,
     isMutation: true,
     alter: (creature, variables) => {
@@ -521,6 +538,7 @@ export const DARKER = {
 export const COLOR_GENE = {
     name: "COLOR_GENE",
     geneType: GeneType.COLOR,
+    letterCode: "C",
     dominantTraits: [COLOR_DEFAULT],
     recessiveTraits: [
         MORE_RED,
@@ -539,15 +557,15 @@ export const COLOR_GENE = {
 // List of all genes
 export const LIST_OF_GENES = [
     {
-        geneType: GeneType.COLOR,
-        constant: COLOR_GENE
+        geneType: GeneType.SPEED,
+        constant: SPEED_GENE
     },
     {
         geneType: GeneType.SIZE,
         constant: SIZE_GENE
     },
     {
-        geneType: GeneType.SPEED,
-        constant: SPEED_GENE
-    }
+        geneType: GeneType.COLOR,
+        constant: COLOR_GENE
+    },
 ]

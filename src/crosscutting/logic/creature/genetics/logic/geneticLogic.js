@@ -19,7 +19,7 @@ export const getPrivateGeneticMethodsForTesting = () => {
 
 // deep copy methods
 export const getDeepTraitCopy = (trait) => {
-    let newTrait = new Trait(trait.name, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait, trait.variables);
+    let newTrait = new Trait(trait.name, trait.letterCode, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait, trait.variables);
     return newTrait;
 }
 
@@ -75,6 +75,45 @@ export const getGeneFromProfile = (profile, geneType) => {
     }
 }
 
+export const writeGeneticCode = (profile) => {
+    let code = '';
+    if (profile.creature) {
+        code = `${profile.creature.letterCode}`;
+    }
+    code += `-`;
+
+    let genes = profile.getAllGenes();
+    if (!areAnyGenesNull(genes)) {
+        genes.sort((a, b) => {return a.letterCode.localeCompare(b.letterCode)});
+    }
+
+    genes.forEach(g => {
+        if (g !== null) {
+            if (g.chosenTrait !== null) {
+                code += g.chosenTrait.letterCode;
+            } else {
+                code += `*`;
+            }
+            code += g.letterCode;
+        } else {
+            code += `*%`;
+        }
+
+    })
+
+    console.log(`New genetic code: ${code}`);
+    return code;
+}
+
+const areAnyGenesNull = (genes) => {
+    for (let i = 0; i < genes.length; i++) {
+        if (genes[i] === null) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 // gene and trait logic
 
@@ -83,6 +122,7 @@ export const getGeneFromProfile = (profile, geneType) => {
 export const createNewGeneFromParentGenes = (xGene, yGene) => {
     let name = xGene.name;
     let geneType = xGene.geneType;
+    let letterCode = xGene.letterCode;
     let xTrait = xGene.getRandomTraitToPass();
     let yTrait = yGene.getRandomTraitToPass();
     let xPermChanges = xGene.permanentChanges;
@@ -90,7 +130,7 @@ export const createNewGeneFromParentGenes = (xGene, yGene) => {
     let dominantTraits = combineDominantTraits(xGene.dominantTraitsToPass, yGene.dominantTraitsToPass);
     let recessiveTraits = combineRecessiveTraits(xGene.recessiveTraitsToPass, yGene.recessiveTraitsToPass);
     
-    let newGene = new Gene(name, geneType, dominantTraits, recessiveTraits,
+    let newGene = new Gene(name, geneType, letterCode, dominantTraits, recessiveTraits,
         xTrait, yTrait, xPermChanges, yPermChanges);
     return newGene;
 }
@@ -182,8 +222,8 @@ export const createNewGeneFromConstant = (constant, dominanceToChoose, creature 
     /////////////
 
 
-    let newGene = new Gene(constant.name, constant.geneType, constant.dominantTraits, constant.recessiveTraits,
-        xTrait, yTrait, [], []);
+    let newGene = new Gene(constant.name, constant.geneType, constant.letterCode, constant.dominantTraits,
+        constant.recessiveTraits, xTrait, yTrait, [], []);
     
     return newGene;
 }
@@ -239,8 +279,8 @@ const removeTraitFromArray = (trait, array) => {
 }
 
 // NOTE: When using this method, it will assume generation 1
-export const createFirstGenerationTraitFromConstant = ({name, dominance, alter, isMutation, canHaveTrait}) => {
-    let newTrait = new Trait(name, dominance, 1, isMutation, alter, canHaveTrait);
+export const createFirstGenerationTraitFromConstant = ({name, letterCode, dominance, alter, isMutation, canHaveTrait}) => {
+    let newTrait = new Trait(name, letterCode, dominance, 1, isMutation, alter, canHaveTrait);
     return newTrait;
 }
 
@@ -297,7 +337,7 @@ export const determineChosenTrait = (xTrait, yTrait) => {
             break;
         case 0:
             // HACK temporarily just randomizing for recessive to see if issues stop
-            chosen = getRandomItemInArray(highest);
+            chosen = getRandomItemInArray(traits);
             // let highest = getTraitsWithHighestGenerationCount(traits);
             // if (highest.length > 1) {
             //     chosen = getRandomItemInArray(highest);
