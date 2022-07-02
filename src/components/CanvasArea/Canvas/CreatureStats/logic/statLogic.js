@@ -92,8 +92,12 @@ const getGeneticCodeListString = (array) => {
   codeCounts.sort((a, b) => b.count - a.count);
   let newString = '';
   let index = 1;
+  let denominator = array.length;
   codeCounts.forEach(mc => {
-    let toAdd = `${mc.count} ${mc.code}`;
+    let percent = mc.count / denominator;
+    percent = percent * 100;
+    percent = Math.round(percent * 10) / 10;
+    let toAdd = `${percent}% ${mc.code}`;
     if (index != codeCounts.length) {
       toAdd += ', ';
     }

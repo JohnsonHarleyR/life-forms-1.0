@@ -51,7 +51,7 @@ const CreatureStats = () => {
         <br></br>
         <b>Creatures with dominant mutations: </b> {stats.domMutationsCount}<br></br>
         <b>Creatures with permanent mutations: </b> {stats.permMutationsCount}<br></br>
-        <b>Active mutations: </b> {stats.mutationString}<br></br>
+        {/* <b>Active mutations: </b> {stats.mutationString}<br></br> */}
         <b>Genetic codes: </b> {stats.geneticCodesString}<br></br>
       </div>
     );
