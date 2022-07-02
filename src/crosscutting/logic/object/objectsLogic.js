@@ -370,8 +370,9 @@ const getObjectCornerFromRelativePlacement = (placement) => {
     case RelativeToObject.BOTTOM_RIGHT_CORNER:
       return Corner.BOTTOM_RIGHT;
     default:
-      throw `Error: Placement ${placement} is not a corner. This should not happen inside this method.` +
-      `\n(getObjectCornerFromRelativePlacement inside objectLogic.js)`;
+      console.log(`Error: Placement ${placement} is not a corner. This should not happen inside this method.` +
+      `\n(getObjectCornerFromRelativePlacement inside objectLogic.js)`);
+      return Corner.BOTTOM_RIGHT;
   }
 }
 

@@ -51,7 +51,7 @@ export const CreatureDefaults = {
     MALE_COLOR: "#001CDA",
     GENDER_BLEND_AMOUNT: .15,
     INTERVALS_BEFORE_NEW_TARGET_POSITION: 30,
-    TIME_BEFORE_LEAVING_WORLD: TimeProps.MS_PER_DAY
+    TIME_BEFORE_LEAVING_WORLD: TimeProps.MS_PER_DAY / 2
 }
 
 export const Gender = {
@@ -124,9 +124,11 @@ export const CreatureType = {
     BIDDY: "BIDDY",
     DUDIT: "DUDIT",
     PYGMY: "PYGMY",
+    GRIBBIT: "GRIBBIT",
 };
 
 export const CreatureTypeList = [
+    CreatureType.GRIBBIT,
     CreatureType.BOOP,
     CreatureType.BLEEP,
     CreatureType.BIDDY,
@@ -148,24 +150,24 @@ export const Boop = {
         prey: []
     },
     energy: 20,
-    size: 10,
+    size: 15,
     sightRadius: 20,
     sightDistance: 60,
     speed: 5,
     lifeSpanRange: {
-        low: 25,
-        high: 50
+        low: 60,
+        high: 90
     },
-    fractionAsChild: .1,
-    fractionAsElder: .15,
+    fractionAsChild: .20,
+    fractionAsElder: .20,
     sleepNeeded: 8,
     foodNeeded: 3,
-    matingNeeded: 1.5, // how many days before it's needed again
+    matingNeeded: 5, // how many days before it's needed again
     genderOfShelterMaker: Gender.FEMALE,
     canHaveMultipleLitters: true,
     minOffspring: 1,
     maxOffspring: 3,
-    description: "A mid-sized, peaceful, plant-loving creature just happy to go about their day."
+    description: "A long living herbivore that will keep your lawn cleared. TODO add family trait."
 };
 
 export const Bleep = {
@@ -268,7 +270,7 @@ export const Pygmy = {
         ],
         prey: []
     },
-    energy: 5,
+    energy: 6,
     size: 6,
     sightRadius: 30,
     sightDistance: 70,
@@ -277,16 +279,45 @@ export const Pygmy = {
         low: 2,
         high: 5
     },
-    fractionAsChild: .10,
-    fractionAsElder: .10,
+    fractionAsChild: .15,
+    fractionAsElder: .15,
     sleepNeeded: 4,
     foodNeeded: 3,
     matingNeeded: 0.75,
     genderOfShelterMaker: Gender.FEMALE,
-    canHaveMultipleLitters: true,
+    canHaveMultipleLitters: false,
     minOffspring: 2,
-    maxOffspring: 4,
-    description: "A little creature that lives and dies quickly but is great for studying genetics."
+    maxOffspring: 5,
+    description: "A pesky little critter that is great for studying genetics."
+};
+
+export const Gribbit = {
+    type: CreatureType.GRIBBIT,
+    letterCode: 'F',
+    color: "#bbff00",
+    food: {
+    plants: [],
+    prey: [CreatureType.PYGMY, CreatureType.BIDDY]
+    },
+    energy: 15,
+    size: 10,
+    sightRadius: 40,
+    sightDistance: 70,
+    speed: 7.5,
+    lifeSpanRange: {
+        low: 15,
+        high: 25
+    },
+    fractionAsChild: .08,
+    fractionAsElder: .20,
+    sleepNeeded: 6,
+    foodNeeded: 3,
+    matingNeeded: 1,
+    genderOfShelterMaker: Gender.MALE,
+    canHaveMultipleLitters: true,
+    minOffspring: 1,
+    maxOffspring: 3,
+    description: "Can you say pest control?"
 };
 
 export const AllCreatureDefaults = [
@@ -295,6 +326,7 @@ export const AllCreatureDefaults = [
     Biddy,
     Dudit,
     Pygmy,
+    Gribbit,
 ];
 
 
@@ -330,15 +362,25 @@ export const StartingCreatureDefaults = [
         count: 3
     },
     {
-        type: Dudit,
+        type: Gribbit,
         gender: Gender.FEMALE,
         count: 1
     },
     {
-        type: Dudit,
+        type: Gribbit,
         gender: Gender.MALE,
         count: 1
-    }
+    },
+    {
+        type: Pygmy,
+        gender: Gender.FEMALE,
+        count: 2
+    },
+    {
+        type: Pygmy,
+        gender: Gender.MALE,
+        count: 2
+    },
 ];
 
 export const Creatures = [];

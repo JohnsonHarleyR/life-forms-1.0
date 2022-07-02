@@ -287,7 +287,7 @@ export const createFirstGenerationTraitFromConstant = ({name, letterCode, domina
 
 // trait logic
 export const doMakePermanentChange = (xTrait, yTrait) => { // HACK for now just returns false
-    return false;
+    // return false;
 
     let xQualifies = false;
     if (xTrait.dominance === Dominance.DOMINANT && xTrait.isMutation) {
