@@ -24,6 +24,21 @@ export const getStartingCreatureTypes = () => {
   return typeList;
 }
 
+export const getCreatureTypes = () => {
+  let typeList = [];
+  Creatures.forEach(sc => {
+    if (!typeList.includes(sc.type)) {
+      typeList.push(sc.type);
+    }
+  });
+
+  typeList.sort((a, b) => {
+    return a.localeCompare(b);
+  });
+
+  return typeList;
+}
+
 
 //#endregion
 

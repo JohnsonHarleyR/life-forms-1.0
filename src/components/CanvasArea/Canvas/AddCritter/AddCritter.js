@@ -3,6 +3,7 @@ import {
   AllCreatureDefaults,
   Gender,
   Creatures,
+  StartingCreatureDefaults,
 } from '../../../../crosscutting/constants/creatureConstants';
 import {
   Objects,
@@ -99,10 +100,9 @@ const AddCritter = () => {
       type: chosenCreature,
       gender: chosenGender,
       count: 1
-  }];
-
-  let newCreatureArray = createCreatures(addArray, Objects, Plants, Shelters, Creatures);
-  Creatures.push(newCreatureArray[0]);
+    }];
+    let newCreatureArray = createCreatures(addArray, Objects, Plants, Shelters, Creatures);
+    Creatures.push(newCreatureArray[0]);
   }
 
   // TODO consider adding rules for how often a new creature may be added

@@ -1,15 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { getStartingCreatureTypes, getStatsForCreatureType } from './logic/statLogic';
+import { getStartingCreatureTypes, getStatsForCreatureType, getCreatureTypes } from './logic/statLogic';
 import './css/creatureStats.css';
 
 const CreatureStats = () => {
 
   const updateRef = useRef();
 
-  const types = getStartingCreatureTypes();
+  let types = getStartingCreatureTypes();
   const [display, setDisplay] = useState(<div></div>);
 
   const handleUpdateClick = (e) => {
+    types = getCreatureTypes();
     setDisplay(createDisplay());
   }
 
