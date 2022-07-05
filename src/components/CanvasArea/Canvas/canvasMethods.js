@@ -27,18 +27,18 @@ export const createObjects = (startingObjects) => { // TODO create object class 
     return objs;
 };
 
-export const createCreatures = (startingCreatureTypes, objects, plants, shelters) => {
+export const createCreatures = (startingCreatureTypes, objects, plants, shelters, creatures = []) => {
     
-    let array = [];
     //array.push(creature); // HACK this is only while there is a main creature to test
+    //let array = [];
 
     startingCreatureTypes.forEach(sc => {
         for (let i = 0; i < sc.count; i++) {
-            array.push(generateCreature(sc.gender, LifeStage.ADULT, sc.type, null, null, array, objects, plants, shelters));
+            creatures.push(generateCreature(sc.gender, LifeStage.ADULT, sc.type, null, null, creatures, objects, plants, shelters));
         }
     });
     
-    return array;
+    return creatures;
 }
 
 const generateCreature = (gender, lifeStage = LifeStage.CHILD, info, mother, father, creatures, objects, plants, shelters) => { // TODO Be sure to include an id too - make it easier to pull out

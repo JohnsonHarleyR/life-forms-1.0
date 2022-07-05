@@ -16,6 +16,7 @@ import { getMousePos } from '../../../crosscutting/logic/canvasLogic';
 import Clock from './Clock/Clock';
 import CreatureStats from './CreatureStats/CreatureStats';
 import { DefaultObjects, Shelters, Objects } from '../../../crosscutting/constants/objectConstants';
+import AddCritter from './AddCritter/AddCritter';
 
 const Canvas = () => {
     
@@ -122,6 +123,7 @@ const Canvas = () => {
                 />
             </div>
             <div>
+                <AddCritter />
                 <CreatureStats />
             </div>
         </div>

@@ -303,7 +303,7 @@ export const Gribbit = {
     size: 10,
     sightRadius: 40,
     sightDistance: 70,
-    speed: 7.5,
+    speed: 8,
     lifeSpanRange: {
         low: 15,
         high: 25
