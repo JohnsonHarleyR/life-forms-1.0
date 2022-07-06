@@ -56,11 +56,12 @@ export default class Gene {
     determineNewPermanentChanges = () => {
         
         // See if the x and y traits qualify to make a change permanent
-        if (doMakePermanentChange(this.xTrait, this.yTrait)) {
+        if (doMakePermanentChange(this.xTrait, this.yTrait, this.permanentChanges)) {
             console.log(`MAKING NEW PERMANENT CHANGES!!`);
 
             // they're both the same name but may have different variables, so choose randomly.
             let newPermTrait = getRandomItemInArray([this.xTrait, this.yTrait]);
+            newPermTrait.stamps = [this.xTrait.stamp, this.yTrait.stamp];
             // add to permanent changes
             this.permanentChanges.push(newPermTrait);
 

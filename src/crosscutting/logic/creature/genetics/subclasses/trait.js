@@ -9,6 +9,8 @@ export default class Trait {
         this.generationCount = generationCount;
         this.isMutation = isMutation;
 
+        this.stamp = "D";
+
         this.variables = variables;
         this.alter = (creature, variables = this.variables) => {
             return alterationMethod(creature, variables);

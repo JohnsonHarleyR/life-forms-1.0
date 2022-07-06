@@ -574,3 +574,6 @@ export const LIST_OF_GENES = [
         constant: COLOR_GENE
     },
 ]
+
+// Trait stamps
+export const TraitStamps = [];

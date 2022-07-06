@@ -1,5 +1,5 @@
-import { Dominance, GeneticDefaults, GeneType, LIST_OF_GENES } from "../../../../constants/geneticConstants";
-import { getRandomItemInArray } from "../../../universalLogic";
+import { Dominance, GeneticDefaults, GeneType, LIST_OF_GENES, TraitStamps } from "../../../../constants/geneticConstants";
+import { getRandomIntInRange, getRandomItemInArray } from "../../../universalLogic";
 import GeneticProfile from "../geneticProfile";
 import Gene from "../subclasses/gene";
 import Trait from "../subclasses/trait";
@@ -20,6 +20,7 @@ export const getPrivateGeneticMethodsForTesting = () => {
 // deep copy methods
 export const getDeepTraitCopy = (trait) => {
     let newTrait = new Trait(trait.name, trait.letterCode, trait.dominance, trait.generationCount, trait.isMutation, trait.alter, trait.canHaveTrait, trait.variables);
+    newTrait.stamp = trait.stamp;
     return newTrait;
 }
 
@@ -281,12 +282,15 @@ const removeTraitFromArray = (trait, array) => {
 // NOTE: When using this method, it will assume generation 1
 export const createFirstGenerationTraitFromConstant = ({name, letterCode, dominance, alter, isMutation, canHaveTrait}) => {
     let newTrait = new Trait(name, letterCode, dominance, 1, isMutation, alter, canHaveTrait);
+    if (dominance === Dominance.RECESSIVE) {
+        newTrait.traitStamp = generateRandomTraitStamp();
+    }
     return newTrait;
 }
 
 
 // trait logic
-export const doMakePermanentChange = (xTrait, yTrait) => { // HACK for now just returns false
+export const doMakePermanentChange = (xTrait, yTrait, currentChanges) => { // HACK for now just returns false
     // return false;
 
     let xQualifies = false;
@@ -299,11 +303,26 @@ export const doMakePermanentChange = (xTrait, yTrait) => { // HACK for now just 
         yQualifies = true;
     }
 
-    if (xQualifies && yQualifies && xTrait.name === yTrait.name) {
+    let stamps = getPermanentChangeStamps(currentChanges);
+    if (xQualifies && yQualifies && xTrait.name === yTrait.name &&
+        !stamps.includes(xTrait.stamp) && !stamps.includes(yTrait.stamp)) {
         return true;
     }
 
     return false;
+}
+
+const getPermanentChangeStamps = (permChanges) => {
+    let stamps = [];
+    permChanges.forEach(pc => {
+        pc.stamps.forEach(s => {
+            if (!stamps.includes(s)) {
+                stamps.push(s);
+            }
+        });
+    });
+
+    return stamps;
 }
 
 export const findMainDefaultTrait = (geneType) => {
@@ -369,6 +388,22 @@ export const determineChosenTrait = (xTrait, yTrait) => {
     }
 
     return newTrait;
+}
+
+export const generateRandomTraitStamp = () => {
+    let options = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let howMany = 10;
+
+    let stamp = '';
+    do {
+        for (let i = 0; i < howMany; i++) {
+            let random = getRandomIntInRange(0, options.length - 1);
+            stamp += random;
+        }
+    } while (TraitStamps.includes(stamp));
+
+    TraitStamps.push(stamp);
+    return stamp;
 }
 
 // this method assumes an array with more than one trait
