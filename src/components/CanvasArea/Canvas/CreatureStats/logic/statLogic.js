@@ -32,6 +32,12 @@ export const getCreatureTypes = () => {
     }
   });
 
+  StartingCreatureDefaults.forEach(sc => {
+    if (!typeList.includes(sc.type)) {
+      typeList.push(sc.type);
+    }
+  });
+
   typeList.sort((a, b) => {
     return a.localeCompare(b);
   });

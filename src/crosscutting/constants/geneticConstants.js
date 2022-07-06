@@ -35,7 +35,7 @@ export const Dominance = {
     RECESSIVE: "RECESSIVE"
 }
 
-// misc
+//#region  misc
 export const ColorType = {
     R: "R",
     G: "G",
@@ -49,6 +49,8 @@ export const AddOrSubtract = {
     SUBTRACT: "SUBTRACT"
 }
 
+//#endregion
+
 // genes and accompanying traits
 
 export const GeneType = {
@@ -57,7 +59,7 @@ export const GeneType = {
     SPEED: "SPEED"
 }
 
-// SPEED
+//#region SPEED
 // --traits
 export const SPEED_DEFAULT = {
     name: "DEFAULT",
@@ -148,8 +150,9 @@ export const SPEED_GENE = {
     ]
 }
 
+//#endregion
 
-// SIZE
+//#region SIZE
 // --traits
 export const SIZE_DEFAULT = {
     name: "DEFAULT",
@@ -242,7 +245,9 @@ export const SIZE_GENE = {
     ]
 }
 
-// COLOR
+//#endregion
+
+//#region COLOR
 
 // --traits
 export const COLOR_DEFAULT = {
@@ -552,7 +557,7 @@ export const COLOR_GENE = {
     ]
 }
 
-
+//#endregion
 
 // List of all genes
 export const LIST_OF_GENES = [
