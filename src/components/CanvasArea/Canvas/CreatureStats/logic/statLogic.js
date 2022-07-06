@@ -25,18 +25,23 @@ export const getStartingCreatureTypes = () => {
 }
 
 export const getCreatureTypes = () => {
+  let combined = [...Creatures];
+  PassedOnCreatures.forEach(po => {
+    combined.push(po);
+  })
+
   let typeList = [];
-  Creatures.forEach(sc => {
+  combined.forEach(sc => {
     if (!typeList.includes(sc.type)) {
       typeList.push(sc.type);
     }
   });
 
-  StartingCreatureDefaults.forEach(sc => {
-    if (!typeList.includes(sc.type)) {
-      typeList.push(sc.type);
-    }
-  });
+  // StartingCreatureDefaults.forEach(sc => {
+  //   if (!typeList.includes(sc.type)) {
+  //     typeList.push(sc.type);
+  //   }
+  // });
 
   typeList.sort((a, b) => {
     return a.localeCompare(b);
