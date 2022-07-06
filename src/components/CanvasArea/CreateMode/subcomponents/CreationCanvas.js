@@ -3,6 +3,7 @@ import {
     canSelectTileWithLastCheck,
     createCreationCanvasClass,
     createObjectInfoFromSelected,
+    getCreatureSizesColorsAndPositions,
     getEmptySelectedIndicator,
     getEmptySelectorArray,
     isObjectOnSurroundingTile,
@@ -10,6 +11,7 @@ import {
     isSameGridPosition,
     makeDeepSelectedTilesCopy,
     removeObjectFromTiles,
+    renderCColors,
     renderCreationCanvas,
 } from '../logic/creationLogic';
 import { LifeContext } from '../../../../Context/LifeContext';
@@ -27,6 +29,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const undoRef = useRef();
     const codeRef = useRef();
     const nameRef = useRef();
+    const showCColorsRef = useRef();
     
     const {} = useContext(LifeContext);
     const [bgColor, setBgColor] = useState("#ffffff");
@@ -43,6 +46,9 @@ const CreationCanvas = ({xTiles, yTiles}) => {
     const [objectCount, setObjectCount] = useState(1);
     const [newObjects, setNewObjects] = useState([]);
     const [relativeObjects, setRelativeObjects] = useState([]);
+
+    const [showCColors, setShowCColors] = useState(false);
+    const [cColors, setCColors] = useState(getCreatureSizesColorsAndPositions());
 
     const [landscapeName, setLandscapeName] = useState("Landscape Name Here");
 
@@ -117,7 +123,7 @@ const CreationCanvas = ({xTiles, yTiles}) => {
 
     useEffect(() => {
         renderCanvas();
-    }, [showGridLines]);
+    }, [showGridLines, showCColors]);
 
     //#endregion
 
@@ -126,6 +132,10 @@ const CreationCanvas = ({xTiles, yTiles}) => {
         renderCreationCanvas(canvasRef, creationCanvas, showGridLines);
         if (newObjects) {
             drawNewObjects();
+        }
+        if (showCColors) {
+            console.log('show ccColors');
+            renderCColors(canvasRef, cColors);
         }
     }
     //#endregion
@@ -149,6 +159,14 @@ const CreationCanvas = ({xTiles, yTiles}) => {
             selectTile(tileCoords);
         }
 
+    }
+
+    const toggleCColors = (evt) => {
+        if (showCColors) {
+            setShowCColors(false);
+        } else {
+            setShowCColors(true);
+        }
     }
 
     const clickLogCodeBtn = (evt) => {
@@ -422,6 +440,13 @@ const CreationCanvas = ({xTiles, yTiles}) => {
                     Log Code
                 </button>
                 <br></br>
+                <br></br>
+                <button
+                ref={showCColorsRef}
+                onClick={toggleCColors}
+                >
+                    Toggle Creature Color Display
+                </button>
                 <br></br>
                 Object Color:  
                 <input

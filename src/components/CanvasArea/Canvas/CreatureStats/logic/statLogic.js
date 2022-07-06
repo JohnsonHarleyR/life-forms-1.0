@@ -119,7 +119,7 @@ const getGeneticCodeListString = (array) => {
     percent = percent * 100;
     percent = Math.round(percent * 10) / 10;
     let toAdd = `${percent}% ${mc.code}`;
-    if (index != codeCounts.length) {
+    if (index !== codeCounts.length) {
       toAdd += ', ';
     }
     newString += toAdd;
@@ -162,7 +162,7 @@ const getChosenMutationListString = (array) => {
   let index = 1;
   mutCounts.forEach(mc => {
     let toAdd = `${mc.count} ${mc.name}`;
-    if (index != mutCounts.length) {
+    if (index !== mutCounts.length) {
       toAdd += ', ';
     }
     newString += toAdd;

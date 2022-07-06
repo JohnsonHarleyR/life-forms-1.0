@@ -2,6 +2,8 @@ export const CanvasDefaults = {
     USE_CREATE_MODE: false,
     START_GAME_WITH_CANVAS: false,
     RESIZE_FACTOR: 1, // TODO implement this into all sizing and such - use in any new sizing - keep as 1 until implemented fully
+    SPEED_ADJUSTMENT: 1,
+    PLANT_REGENERATION_ADJUSTMENT: 1
 
 }
 

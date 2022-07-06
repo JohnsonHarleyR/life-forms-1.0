@@ -1,12 +1,37 @@
 
 import { CanvasInfo } from "../../../../crosscutting/constants/canvasConstants"
 import { CreationDefaults } from "../../../../crosscutting/constants/creationConstants";
-import { CreatureDefaults } from "../../../../crosscutting/constants/creatureConstants"
+import {
+  CreatureDefaults,
+  AllCreatureDefaults,
+} from "../../../../crosscutting/constants/creatureConstants"
 import { ObjectType } from "../../../../crosscutting/constants/objectConstants";
 import { drawBox, fillBackground } from "../../../../crosscutting/logic/canvasLogic";
 import CreationCanvasClass from "../subclasses/creationCanvasInfo"
 import TileClass from "../subclasses/tileInfo";
 
+//#region Show creature colors logic
+export const getCreatureSizesColorsAndPositions = () => {
+  let array = [];
+
+  let xStart = 5;
+  let yStart = 5;
+  AllCreatureDefaults.forEach(cd => {
+    array.push({
+      color: cd.color,
+      size: cd.size,
+      xStart: xStart,
+      yStart: yStart
+    });
+
+    xStart = xStart + cd.size + 3;
+  });
+
+  return array;
+}
+
+
+//#endregion
 
 //#region Conversion logic
 
@@ -36,6 +61,8 @@ export const convertJsonCodeToLandscapeObject = (jsonCode) => {
   return landscape;
 }
 
+//#endregion
+
 //#region Creation Canvas Logic
 
 export const createCreationCanvasClass = (xTiles, yTiles, bgColor) => {
@@ -49,6 +76,26 @@ export const renderCreationCanvas = (canvasRef, creationCanvas, showGridLines = 
 
   // render all the tiles
   renderGridTiles(canvasRef, creationCanvas, showGridLines);
+}
+
+export const renderCColors = (canvasRef, cColors) => {
+  console.log(`render cc colors`);
+  cColors.forEach(cc => {
+    renderCColor(canvasRef.current, cc);
+  });
+}
+
+const renderCColor = (canvas, cColor) => {
+  let ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.fillStyle = cColor.color;
+  ctx.fillRect(
+    cColor.xStart,
+    cColor.yStart,
+    cColor.size,
+    cColor.size
+  );
+  ctx.closePath();
 }
 
 const renderGridTiles = (canvasRef, creationCanvas, showGridLines) => {
