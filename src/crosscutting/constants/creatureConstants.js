@@ -329,6 +329,10 @@ export const AllCreatureDefaults = [
     Gribbit,
 ];
 
+AllCreatureDefaults.forEach(c => {
+    c.size = c.size * CanvasDefaults.RESIZE_FACTOR;
+});
+
 
 export const StartingCreatureDefaults = [
     {

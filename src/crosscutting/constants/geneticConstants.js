@@ -4,6 +4,7 @@ import { addToRGBValues,
     getRandomDecimalInRange,
     getRandomIntInRange, 
     roundToPlace} from "../logic/universalLogic"
+    import { CanvasDefaults } from "./canvasConstants"
 
 
 export const GeneticDefaults = {
@@ -18,8 +19,8 @@ export const GeneticDefaults = {
     SPEED_CHANGE_MIN: .10,
     SPEED_CHANGE_MAX: .20,
 
-    MIN_SIZE: 4,
-    MAX_SIZE: 20,
+    MIN_SIZE: 4 * CanvasDefaults.RESIZE_FACTOR,
+    MAX_SIZE: 20 * CanvasDefaults.RESIZE_FACTOR,
     SIZE_CHANGE_MIN: .10,
     SIZE_CHANGE_MAX: .20,
 

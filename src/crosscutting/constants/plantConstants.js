@@ -62,6 +62,11 @@ export const Wheat = {
 
 export const PlantConstants = [Bud, Weed, Shrub, Wheat];
 
+PlantConstants.forEach(p => {
+    p.width = p.width * CanvasDefaults.RESIZE_FACTOR;
+    p.height = p.height * CanvasDefaults.RESIZE_FACTOR;
+})
+
 export const StartingPlants = [Bud, Weed, Shrub, Wheat];
 
 export const Plants = [];
